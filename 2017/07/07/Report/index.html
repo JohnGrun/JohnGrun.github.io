@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Analysis of the Kalman Filter Algorithm | Questionable Engineering</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="KalmanC++Research" />
+  
+  
+  
+  
+  <meta name="description" content="**Analysis of the Kalman Filter Algorithm **         MotivationThe Kalman filter finds applications in extracting useful data from inherently noisy sources. One common application is smoothing sensor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Analysis of the Kalman Filter Algorithm">
+<meta property="og:url" content="http://questionableengineering.com/2017/07/07/Report/index.html">
+<meta property="og:site_name" content="Questionable Engineering">
+<meta property="og:description" content="**Analysis of the Kalman Filter Algorithm **         MotivationThe Kalman filter finds applications in extracting useful data from inherently noisy sources. One common application is smoothing sensor">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/image_0.png">
+<meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/image_1.png">
+<meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/image_2.jpg">
+<meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/image_3.png">
+<meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/image_4.png">
+<meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/Test_setup.png">
+<meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/20170427_214518.jpg">
+<meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/Kalman_sensor_collection_schematic.png">
+<meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/KALMAN_vs_Raw_graph.png">
+<meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/Running_Time_of_Kalman_Filter_vs_input_size.png">
+<meta property="article:published_time" content="2017-07-07T21:46:15.000Z">
+<meta property="article:modified_time" content="2020-09-04T03:41:08.896Z">
+<meta property="article:author" content="John Grun">
+<meta property="article:tag" content="Kalman">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="Research">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://questionableengineering.com/2017/07/07/Report/image_0.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Questionable Engineering" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  
+  <div class="site-header-image">
+    <img id="originBg" width="100%" alt="Hike News" src="">
+  </div>
+
+  <div id="header-blur" class="site-header-image blur" style="position: absolute; top:0; height: 207px; min-height: 207px; min-width: 100%;">
+    <img id="blurBg" width="100%" style="top: 96%" alt="Hike News" src="">
+  </div>
+
+  <script>
+        var imgUrls = "css/images/pose01.jpg,https://source.unsplash.com/collection/954550/1920x1080,https://source.unsplash.com/collection/954550/1920x1081".split(",");
+        var random = Math.floor((Math.random() * imgUrls.length ));
+        if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
+          document.getElementById("originBg").src=imgUrls[random];
+          document.getElementById("blurBg").src=imgUrls[random];
+        } else {
+          document.getElementById("originBg").src='/' + imgUrls[random];
+          document.getElementById("blurBg").src='/' + imgUrls[random];
+        }
+    </script>
+
+
+
+
+<header id="allheader" class="site-header" role="banner" 
+   style="width: 100%; position: absolute; top:0; background: rgba(255,255,255,.8);"  >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="Questionable Engineering" rel="home"> Questionable Engineering </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">A collection of pointless, random, and probaly bad ideas</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">Home</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">Archives</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">About</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Report" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Analysis of the Kalman Filter Algorithm
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2017/07/07/Report/" class="article-date">
+	  <time datetime="2017-07-07T21:46:15.000Z" itemprop="datePublished">July 7, 2017</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>**Analysis of the Kalman Filter Algorithm **</p>
+<h1 id=""><a href="#" class="headerlink" title=""></a><img src="/2017/07/07/Report/image_0.png"  style="width: 90%;"/></h1><table>
+<thead>
+<tr>
+<th><img src="/2017/07/07/Report/image_1.png"  style="width: 80%"/></th>
+<th><img src="/2017/07/07/Report/image_2.jpg" alt="image2" style="width: 80%"/></th>
+</tr>
+</thead>
+</table>
+<h1 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h1><p>The Kalman filter finds applications in extracting useful data from inherently noisy sources. One common application is smoothing sensor data. In order for most sensor data to be effectively employed in applications like control loops or navigation systems it must first be filtered in a manner that removes noise but, does not introduce an unacceptable amount of additional error or increases processing and memory load on the system. In this regard the Kalman filter excels. The Kalman filter can also be extended to combine data from multiple input sources to further reduce the error in a signal or sample. This property has many applications in the area of sensor fusion. Kalman filter sensor fusion is commonly used in robotic control systems. A common use case is autonomous vehicle navigation and control eg. Quadcopters or spacecraft. Additionally, the Kalman filter is often used in analog and digital signal processing. The Kalman filter algorithm enjoys implementations in both software and hardware. </p>
+<a id="more"></a>
+<h2 id="Describe-Algorithm-details"><a href="#Describe-Algorithm-details" class="headerlink" title="Describe Algorithm details"></a>Describe Algorithm details</h2><p>The Kalman filter algorithm uses multiple input signals samples, often periodically, to increase the overall estimation accuracy of the signal with noise removed. The Kalman filter has 5 sets of variables one must understand. The the first is the self-explanatory unfiltered input signal. It is important to state, the algorithm assumes that all input signals into the filter contain a certain amount of noise variance. The Kalman gain, which is recursively calculated from the variance of the input signal over many samples. The last state (Xk-1) of the system, which is a gain weighted sum of all previous input signal samples. The current state (Xk) , which is an estimate of the expected state of the system as calculated by a function that describes the system/signal. The output signal is a gain weighted sum of the value of the current input signal and the current state estimation of the system. The Kalman filter algorithm uses two main components, a predicative step and a update step. See Figure 1. </p>
+<table>
+<thead>
+<tr>
+<th><img src="/2017/07/07/Report/image_3.png" alt="image_3.png" style="width: 90%;"/></th>
+<th><img src="/2017/07/07/Report/image_4.png" alt="image_4.png" style="width: 90%;"/></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Figure 1. Simplified process flow representation of input signal and estimation in kalman filter.</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>In the predictive step the Kalman filter relies upon a function model of the system/signal in order to calculate the predicted current state (Xk) from the last state (Xk-1) and any relevant input signals. The system/signal predicted variance is also calculated in this step. </p>
+<p>In the update step, the next estimated output signal is produced from a gain weighted sum of the estimated current state and the new input signal sample. In the case of a temperature sensor, the Kalman filter would produce a new estimated temperature for the output from the gain weighted sum of previous temperature samples and the new temperature sample. The gain is calculated based upon the variance observed between the predicted variance and the variance of the new sample. The filter is tuned to give a higher weight to samples with lower error. </p>
+<h2 id="Explain-why-the-chosen-algorithms-are-employed-for-the-problem"><a href="#Explain-why-the-chosen-algorithms-are-employed-for-the-problem" class="headerlink" title="Explain why the chosen algorithms are employed for the problem."></a>Explain why the chosen algorithms are employed for the problem.</h2><p>The algorithm has found employment as a solution to many common engineering problems such as processing inputs into control systems and for fusing sensor data from multiple sources. The algorithm is popular as a solution to these problems due to its low memory and processing footprint, constant running time, and comparatively simple design as compared to other solutions. The Kalman filter reduces the amount of working memory required by encoding past history of the inputs into a single current state variable (Xk). This encoding reduces the amount of memory consumed by the algorithm as past information does not need to be retained. Additionally, the amount of data processing per signal sample is reduced as only the current state variable and new sample are processed. These reductions in processing and memory are advantages in resource constrained environments, such as embedded systems or hardware implementations. The Kalman filter algorithm also lends itself well to “real time” systems such as robotic control where a predictable delay and constant runtime is required.The Kalman filter algorithm has a O(1) processing complexity and a O(1) memory space complexity. The Kalman filter can also be extended to combine inputs from multiple sources to further reduce signal sample variance. This    property lends itself well to  applications employing sensor fusion such as inertial navigation units (INUs) </p>
+<h2 id="Experimental-configuration-and-details"><a href="#Experimental-configuration-and-details" class="headerlink" title="Experimental configuration and details."></a>Experimental configuration and details.</h2><p>The experiment consists of a force sensitive resistor sensor sampled once every 100 mSec by an Arduino compatible microcontroller(ESP8266). The microcontroller sends the raw sensor samples to the computer over a serial connection. The computer then writes the raw samples to a file on the hard disk (Data.txt). Once a large number of samples have been collected, the raw samples are passed into the Kalman filter(KalmanFilterWrapper.exe).  KalmanFilterWrapper.exe produces two output files KALMAN_INPUT_VS_OUTPUT.csv and KALMAN_FILTER_RUNNING_TIME_VS_INPUT_SIZE.csv that contain the raw samples vs the Kalman filtered samples and the running time vs input size respectively.  Kalman filters will often have many sensor inputs , process time variant signals, and must account for control inputs. With the addition of more inputs a gain matrix must be maintained that relates each input to each other input in addition to the gain between current Xk and last state Xk-1. These factors quickly drive a simple algorithm into such a complex system that it is used routinely in PHD. thesi.  For these reasons, a simple implementation of the Kalman was chosen. Finally, a simpler implementation will clearly show the algorithm operation. The implemented Kalman filter is processing a single variable, static , time invariant signal(Voltage proportional to the weight of Expo marker) In this implementation, the function model of the system/signal is Current state = last state  I.e Xk = Xk-n. The test should clearly show noise in raw samples and the resulting filtered output of the Kalman filter.<br><img src="/2017/07/07/Report/Test_setup.png"  style="width: 90%;"/><br><img src="/2017/07/07/Report/20170427_214518.jpg" style="width: 90%;"/></p>
+<p>Figure 2: Experimental setup to collect sensor data. EXPO marker used to provide static weight greater than baseline. </p>
+<img src="/2017/07/07/Report/Kalman_sensor_collection_schematic.png" style="width: 90%;"/>
+
+<p>Figure 3. Schematic of the circuit used to collect data and send information the the computer.</p>
+<h3 id="Source-code-and-related-information-to-reproduce-experiment"><a href="#Source-code-and-related-information-to-reproduce-experiment" class="headerlink" title="Source code and related information to reproduce experiment"></a>Source code and related information to reproduce experiment</h3><ul>
+<li><p>Arduino code to collect samples:</p>
+<p>  DataStructuresKalmanFilter.ino </p>
+</li>
+<li><p>Schematic of sensor collection:</p>
+<p>  Kalman_sensor_collection_schematic.pdf</p>
+</li>
+<li><p>Kalman filter Source Code see:</p>
+<p>  KalmanFilterWrapper.cpp – Wrapper to process data and produce output files</p>
+<p>  ./KalmanFilter.cpp – Kalman filter implementation </p>
+</li>
+<li><p>Run make in project root to compile C++ source code.</p>
+<p>  make</p>
+</li>
+<li><p>Exec KalmanFilterWrapper.exe to produce outfiles</p>
+<p>  KALMAN_INPUT_VS_OUTPUT.csv</p>
+<p>  KALMAN_FILTER_RUNNING_TIME_VS_INPUT_SIZE.csv</p>
+</li>
+</ul>
+<p>All code can be found at <a target="_blank" rel="noopener" href="https://github.com/JohnGrun/KalmanFilterPaper">https://github.com/JohnGrun/KalmanFilterPaper</a></p>
+<h3 id="Sources-of-Variance-in-the-experiment"><a href="#Sources-of-Variance-in-the-experiment" class="headerlink" title="Sources of Variance in the experiment"></a>Sources of Variance in the experiment</h3><h4 id="Raw-measurement-sources-of-known-variance"><a href="#Raw-measurement-sources-of-known-variance" class="headerlink" title="Raw measurement sources of known variance"></a>Raw measurement sources of known variance</h4><p>The sensor employed(FSR406) has tolerance of 2% at constant temperature as called out in the data sheet Datasheets_FSR.pdf. At a supply voltage of 3.3v, 2% is ~0.066 Volts of error due to the FSR sensor.See references for link to data sheet. </p>
+<p>The Esp8266 ADC has a resolution of 12 bits or 4096 divisions. With a  Vcc = 3.3V; 4096 = 3.3 Volts, 0 = 0 Volts. A change of 1 in a measurement corresponds to 3.3/4096 = 0.00080566406 Volts. Compared the 0.066 Volts of error introduced by the FSR sensor the ADC resolution is not seen to be significant and, can thus be neglected in calculations.</p>
+<h4 id="Running-time-sources-of-known-variance"><a href="#Running-time-sources-of-known-variance" class="headerlink" title="Running time sources of known variance"></a>Running time sources of known variance</h4><p>The running time of the algorithm may be influenced by external factors such as file system assess, resource allocations, paging, or process scheduling. To compensate for the  aforementioned sources of external variances many samples have to be taken.</p>
+<h2 id="Results-and-Analysis"><a href="#Results-and-Analysis" class="headerlink" title="Results and Analysis"></a>Results and Analysis</h2><img src="/2017/07/07/Report/KALMAN_vs_Raw_graph.png"  style="width: 90%;"/>
+
+<p>Figure 4. Sensor samples of proportional voltage to weight of EXPO marker. Raw samples from FSR sensor (Blue). Kalman filtered data of samples (Orange).</p>
+<p>As can be seen in Figure 4, the raw samples contain a large amount of noise. The standard deviation of the raw samples was 1478.01. A static, time invariant signal( Voltage proportional to the weight of Expo marker) with such a high standard deviation is unusable in real world applications. Once the signal is processed by the Kalman filter, and significant time has passed, the signal become far less variable. The standard deviation of Kalman filtered signal was 98.07, a full order of magnitude less than the raw input signal. Additionally, the filtered signal reached a stable output with low variance as would be expected with a static input signal (Voltage proportional to the weight of Expo marker). </p>
+<img src="/2017/07/07/Report/Running_Time_of_Kalman_Filter_vs_input_size.png"  style="width: 90%;"/>
+
+<p>Figure 5. Running Time vs Input size. Running time (Blue) of each call to the Kalman filter algorithm using same data in Figure 4. </p>
+<p>The second graph Figure 5. depicts the running time of the Kalman filter vs the number of samples processed. As expected, the running time is O(1). The Kalman filter only processes one measurement at a time. The output estimation is a weighted sum the past state( all previous samples) and the current measurement state and is updated once per function call. Only for 2 data points out of 5121 samples did the running time change significantly. These 2 data points are likely due to other factors not related to the Kalman filter, such as process scheduling or file system assesses on the host computer.  </p>
+<h2 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h2><p> As can be seen from the results of the experiments the Kalman filter algorithm manages to clean up a noisy signal while running in constant time. There are two limitations of the Kalman filter algorithm. The algorithm requires a finite amount of startup time to reach a output that is representative of the filtered signal see Figure 4. In practice, as long as this startup time can be tolerated, a valid output signal can be extracted. The other limitation is that the Kalman filter algorithm requires knowledge of the process. This is manifested in the prediction stage, where the value of Xk is based upon an equation describing how the system/signal will change over time. E.g. Xk = F(Xkn-1,input1, input2). This makes it difficult to use a Kalman filter algorithm as general case filter, or where the input signal does not have a known function describing its behavior. If one can tolerate these minor shortcomings the Kalman filter algorithm is an excellent choice to clean up noisy input signals with minimal memory and processing overhead.       </p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p>The Extended Kalman Filter: An Interactive Tutorial for Non-Experts. (2017, April 28). Retrieved April 28, 2017, from <a target="_blank" rel="noopener" href="https://home.wlu.edu/~levys/kalman_tutorial/kalman_01.html">https://home.wlu.edu/~levys/kalman_tutorial/kalman_01.html</a></p>
+<p>Kelly, A. (2006, May 24). A 3D State Space Formulation of a Navigation Kalman Filter for Autonomous Vehicles. Retrieved April 3, 2017, from <a target="_blank" rel="noopener" href="http://www.frc.ri.cmu.edu/~alonzo/pubs/reports/kalman_V2.pdf">http://www.frc.ri.cmu.edu/~alonzo/pubs/reports/kalman_V2.pdf</a></p>
+<p>Welch, G., &amp; Bishop, G. (2001). An Introduction to the Kalman Filter. Retrieved April 3, 2017, from <a target="_blank" rel="noopener" href="http://www.cs.unc.edu/~tracker/media/pdf/SIGGRAPH2001_CoursePack_08.pdf">http://www.cs.unc.edu/~tracker/media/pdf/SIGGRAPH2001_CoursePack_08.pdf</a></p>
+<p>Wikipedia. (2017, April 28). Variance. Retrieved April 3, 2017, from <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Variance">https://en.wikipedia.org/wiki/Variance</a></p>
+<p>Interlink Electronics. (2017, April 4). FS R ® 400 Series Data Sheet. Retrieved April 4, 2017, from <a target="_blank" rel="noopener" href="https://www.interlinkelectronics.com/datasheets/Datasheet_FSR.pdf">https://www.interlinkelectronics.com/datasheets/Datasheet_FSR.pdf</a></p>
+<p>Kohanbash, Y. (2014, January 30). Kalman Filtering – A Practical Implementation Guide (with code!). Retrieved April 29, 2017, from <a target="_blank" rel="noopener" href="http://robotsforroboticists.com/kalman-filtering/">http://robotsforroboticists.com/kalman-filtering/</a></p>
+<p>Wikipedia. (2017, April 06). Kalman filter. Retrieved April 29, 2017, from <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Kalman_filter">https://en.wikipedia.org/wiki/Kalman_filter</a> </p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kalman/" rel="tag">Kalman</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Research/" rel="tag">Research</a></li></ul>
+
+      
+        
+	<section id="comments" class="comment">
+	  <div id="disqus_thread">
+	  <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	  </div>
+	</section>
+
+	<script type="text/javascript">
+	var disqus_shortname = 'questionableengineering.disqus.com';
+	(function(){
+	  var dsq = document.createElement('script');
+	  dsq.type = 'text/javascript';
+	  dsq.async = true;
+	  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	}());
+	(function(){
+	  var dsq = document.createElement('script');
+	  dsq.type = 'text/javascript';
+	  dsq.async = true;
+	  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+	  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	}());
+	</script>
+
+
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/07/10/Orchids/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Orchids
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2014/10/29/CNC-Conversion-MARS/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">CNC Conversion MARS</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Motivation"><span class="nav-number">2.</span> <span class="nav-text">Motivation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Describe-Algorithm-details"><span class="nav-number">2.1.</span> <span class="nav-text">Describe Algorithm details</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Explain-why-the-chosen-algorithms-are-employed-for-the-problem"><span class="nav-number">2.2.</span> <span class="nav-text">Explain why the chosen algorithms are employed for the problem.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Experimental-configuration-and-details"><span class="nav-number">2.3.</span> <span class="nav-text">Experimental configuration and details.</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Source-code-and-related-information-to-reproduce-experiment"><span class="nav-number">2.3.1.</span> <span class="nav-text">Source code and related information to reproduce experiment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sources-of-Variance-in-the-experiment"><span class="nav-number">2.3.2.</span> <span class="nav-text">Sources of Variance in the experiment</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Raw-measurement-sources-of-known-variance"><span class="nav-number">2.3.2.1.</span> <span class="nav-text">Raw measurement sources of known variance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Running-time-sources-of-known-variance"><span class="nav-number">2.3.2.2.</span> <span class="nav-text">Running time sources of known variance</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Results-and-Analysis"><span class="nav-number">2.4.</span> <span class="nav-text">Results and Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Discussion"><span class="nav-number">2.5.</span> <span class="nav-text">Discussion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">2.6.</span> <span class="nav-text">References</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 Questionable Engineering All Rights Reserved.
+        
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+      var headerblur = document.getElementById("header-blur");
+      headerblur.style.minHeight = window.getComputedStyle(document.getElementById("allheader"), null).height;
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>
