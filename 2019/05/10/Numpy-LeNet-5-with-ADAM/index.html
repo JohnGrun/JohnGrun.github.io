@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Numpy LeNet 5 with ADAM | Questionable Engineering</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="ResearchComputingMachine Learning" />
+  
+  
+  
+  
+  <meta name="description" content="John W Grun   AbstractIn this paper, a manually implemented LeNet-5 convolutional NN with an Adam optimizer written in Numpy will be presented. This paper will also cover a description of the data use">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Numpy LeNet 5 with ADAM">
+<meta property="og:url" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/index.html">
+<meta property="og:site_name" content="Questionable Engineering">
+<meta property="og:description" content="John W Grun   AbstractIn this paper, a manually implemented LeNet-5 convolutional NN with an Adam optimizer written in Numpy will be presented. This paper will also cover a description of the data use">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/image3.png">
+<meta property="og:image" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/image2.png">
+<meta property="og:image" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/image3.png">
+<meta property="og:image" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/image8.png">
+<meta property="og:image" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/image1.png">
+<meta property="og:image" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/image4.png">
+<meta property="og:image" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/image11.png">
+<meta property="og:image" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/image9.png">
+<meta property="og:image" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/image10.png">
+<meta property="og:image" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/image7.png">
+<meta property="og:image" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/image12.png">
+<meta property="article:published_time" content="2019-05-10T14:15:12.000Z">
+<meta property="article:modified_time" content="2020-10-22T22:51:51.180Z">
+<meta property="article:author" content="John Grun">
+<meta property="article:tag" content="Research">
+<meta property="article:tag" content="Computing">
+<meta property="article:tag" content="Machine Learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://questionableengineering.com/2019/05/10/Numpy-LeNet-5-with-ADAM/image3.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Questionable Engineering" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+  
+  <div class="site-header-image">
+    <img id="originBg" width="100%" alt="Hike News" src="">
+  </div>
+
+  <div id="header-blur" class="site-header-image blur" style="position: absolute; top:0; height: 207px; min-height: 207px; min-width: 100%;">
+    <img id="blurBg" width="100%" style="top: 96%" alt="Hike News" src="">
+  </div>
+
+  <script>
+        var imgUrls = "css/images/pose01.jpg,https://source.unsplash.com/collection/954550/1920x1080,https://source.unsplash.com/collection/954550/1920x1081".split(",");
+        var random = Math.floor((Math.random() * imgUrls.length ));
+        if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
+          document.getElementById("originBg").src=imgUrls[random];
+          document.getElementById("blurBg").src=imgUrls[random];
+        } else {
+          document.getElementById("originBg").src='/' + imgUrls[random];
+          document.getElementById("blurBg").src='/' + imgUrls[random];
+        }
+    </script>
+
+
+
+
+<header id="allheader" class="site-header" role="banner" 
+   style="width: 100%; position: absolute; top:0; background: rgba(255,255,255,.8);"  >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="Questionable Engineering" rel="home"> Questionable Engineering </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">A collection of pointless, random, and probaly bad ideas</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">Home</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">Archives</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">About</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Numpy-LeNet-5-with-ADAM" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Numpy LeNet 5 with ADAM
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/05/10/Numpy-LeNet-5-with-ADAM/" class="article-date">
+	  <time datetime="2019-05-10T14:15:12.000Z" itemprop="datePublished">May 10, 2019</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>John W Grun</p>
+<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image3.png" class="">
+
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>In this paper, a manually implemented LeNet-5 convolutional NN with an Adam optimizer written in Numpy will be presented. This paper will also cover a description of the data used to train and test the network,technical details of the implementation, the methodology of training the network and determining hyper parameters, and present the results of the effort.</p>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>LeNet-5 was created by Yuan Lecun and described  in the paper “Gradient-Based Learning Applied To Document Recognition” . LeNet-5 was one of the first convolutional neural networks used on a large scale to automatically classify hand-written digits on bank checks in the United States. Prior to LeNet, most character recognition was done by using feature engineering by hand, followed by a simple machine learning model like K nearest neighbors (KNN) or Support Vector Machines (SVM). LeNet made hand engineering features redundant, because the network learns the best internal representation from training images automatically.</p>
+<p>This paper will cover some of the technical details of a manual Numpy implementation of LeNet-5 convolutional Neural Network including the details about the  training set, structure of the lenet-5 CNN, weights and biases initialization, optimizer, gradient descent, the loss function, and speed enhancements. The paper will also cover the methodology used during training and selecting hyperparameters as well as the performance on the test dataset.</p>
+<h1 id="Related-work"><a href="#Related-work" class="headerlink" title="Related work"></a>Related work</h1><p>There are numerous examples of numpy implementations of LeNet 5 found across the internet but, none with more significance than any other. Lenet-5 is now a common architecture used to teach new students fundamental concepts of convolutional neural network</p>
+<h1 id="Data-Description"><a href="#Data-Description" class="headerlink" title="Data Description"></a>Data Description</h1><img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image2.png" class="">
+<p>The MNIST database of handwritten digits, contains a training set of 60,000 examples, and a test set of 10,000 examples. Each example is a 28 x 28 pixel grayscale image.<br>All training and test examples of the MNIST  were converted from gray scale images to bilevel representation to simplify the function the CNN needed to learn. Only pixel positional information is required to correctly classify digits, while grayscale offers no useful additional information and only aids in increasing complexity. The labels of both the test and training examples were converted to one hot vectors to make them compatible with the softmax output and cross entropy loss function.  Both indexes of the training and test sets were further randomized to ensure each batch was a random distribution of all 10 classes.</p>
+<h1 id="Model-Description"><a href="#Model-Description" class="headerlink" title="Model Description"></a>Model Description</h1><h2 id="Structure"><a href="#Structure" class="headerlink" title="Structure"></a>Structure</h2><img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image3.png" class="">
+<p>The model is  a implementation of LeNet 5 with the following structure:</p>
+<ul>
+<li>Input 28 x 28</li>
+<li>Convolutional layer (Pad =  2 , Stride = 1, Activation = ReLu, Filters = 6, Size = 5)</li>
+<li>Max Pool (Filter = 2, Stride = 2)</li>
+<li>Convolutional layer  (Pad =  0 , Stride = 1, Activation = ReLu, Filters = 16 )</li>
+<li>Max Pool (Filter = 2, Stride = 2)</li>
+<li>Convolutional layer  (Pad =  0 , Stride = 1, Activation = ReLu, Filters = 120)</li>
+<li>Fully Connected ( Size = 120, Activation = ReLu)</li>
+<li>Fully Connected (Size = 84, Activation = ReLu)</li>
+<li>Soft Max (  10 Classes )</li>
+</ul>
+<h2 id="Weight-and-bias-initialization"><a href="#Weight-and-bias-initialization" class="headerlink" title="Weight and bias initialization"></a>Weight and bias initialization</h2><p>Since the  original lenet-5 predates many of the more optimal weight initialization schemes such as Xavier or HE initialization, the weights were initialized with numpy random.randn while biases were zero filled with numpy zeros.</p>
+<h2 id="Optimizer"><a href="#Optimizer" class="headerlink" title="Optimizer"></a>Optimizer</h2><p>At first a constant learning  rate optimizer was used for this network but, stable convergence required a very small learning rate. This small learning rate required a very long training time to achieve a reasonable accuracy on the test set. The constant learning rate optimizer was replaced with a numpy implementation of the ADAM optimizer. ADAM allowed for the use of higher learning rate that resulted in quicker and smoother convergence. The formulas that describe ADAM are shown below:</p>
+<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image8.png" class="">
+<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image1.png" class="">
+<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image4.png" class="">
+<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image11.png" class="">
+<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image9.png" class="">
+
+<h1 id="Gradient-Descent"><a href="#Gradient-Descent" class="headerlink" title="Gradient Descent"></a>Gradient Descent</h1><p>This implementation of LeNet-5 uses Mini-batch gradient descent. Mini-batch gradient descent is a trade-off between stochastic gradient descent (training on 1 sample at a time) and gradient descent (training on the entire training set).  In mini-batch gradient descent, the cost function (and therefore gradient) is averaged over a small number of samples. Mini batch gradient descent was selected due to its increased convergence rate and the ability to escape local minimum.</p>
+<h2 id="Loss-function"><a href="#Loss-function" class="headerlink" title="Loss function"></a>Loss function</h2><p>LeNet 5 produces a 10 class categorical output representing the numbers 0 to 9.  The original LeNEt-5 used Maximum a posteriori (MAP) as the loss loss function. Cross-entropy was chosen as the loss function in this implementation instead of MAP since cross entropy appears to be the dominant loss function for similar classification problems and source code was available to check against. The formula for cross entropy loss is given below:</p>
+<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image10.png" class="">
+
+<h2 id="Speed-Enhancements"><a href="#Speed-Enhancements" class="headerlink" title="Speed Enhancements"></a>Speed Enhancements</h2><p>To train the CNN in a reasonable amount of time several performance enhancements had to be made.</p>
+<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image7.png" class="">
+<p>The python profiler was used to identify locations in the code that would have the largest effect on performance. The convolutional and max pooling layers consumed the majority of the running time. The running time  of the convolutional and max pool layers was decreased by first converting the single threaded functions into multithreaded functions. Processing was divided up equally across the number of threads. Once threading was confirmed to be working properly, the Numba Just in Time compiler (JIT) was employed to convert python functions into native code. Numba JIT was then liberally applied throughout the code.  These enhancements reduced the training time from over 1 day to a few hours, constituting a 6-8x speed up on average.</p>
+<h1 id="Method-Description-And-Experimental-Procedure"><a href="#Method-Description-And-Experimental-Procedure" class="headerlink" title="Method Description And Experimental Procedure"></a>Method Description And Experimental Procedure</h1><p>The LeNet 5 model implementation  was trained on the MNIST dataset. After each training, the training loss versus epoch was plotted. The learning rate was decreased until the training loss vs epochs was a monotonically decreasing function. The number of epochs was selected to minimize the training loss while the training loss continued to decrease with every training epoch. Adjustments to the epochs sometimes also required adjustments to the learning rate to keep the training loss vs epoch a monotonically decreasing function.<br>In addition to the training loss, the prediction accuracy was computed. The accuracy was computed by the following method:<br>The input images were forward propagated through the network with the weights and biases learned during training. The class with the largest magnitude was selected as the prediction. The predicted class was compared to the label for a given input image. The percentage of correct predictions was computed across all  input images forward propagated through the network.<br>The prediction accuracy was computed for both the  training and testing sets . In a well trained network (one not underfitting or overfitting ) the test prediction accuracy should be close to the training prediction accuracy. If the training prediction accuracy is far greater than the test prediction accuracy  it is a sign the network is overfitting on the training data and failing to generalize well.<br>The batch size was selected primary upon the cache limitations of the processor. A batch size of around 32 was determined to be small enough to fit in cache while also large enough to reduce overhead from thread context switching.</p>
+<h1 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h1><h2 id="Hyper-parameters"><a href="#Hyper-parameters" class="headerlink" title="Hyper parameters"></a>Hyper parameters</h2><p>The hyper parameters for this numpy implementation of LeNet 5 are as follows:</p>
+<ul>
+<li>Epochs = 20</li>
+<li>Learning rate = 0.0002</li>
+<li>Batch = 32</li>
+</ul>
+<h2 id="Training-time"><a href="#Training-time" class="headerlink" title="Training time"></a>Training time</h2><p>The total training time was brought down from 26 hours to train on the entire training set of 60000 examples to only 2.75 hours after applying speed enhancements.</p>
+<h2 id="Training-loss"><a href="#Training-loss" class="headerlink" title="Training loss"></a>Training loss</h2><img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image12.png" class="">
+
+<p>The training loss of LeNet-5 as plotted over 20 epochs. The training loss is monotonically decreasing indicating the network is effectively learning to differentiate between the ten classes in the MNIST dataset.</p>
+<h2 id="Accuracy"><a href="#Accuracy" class="headerlink" title="Accuracy"></a>Accuracy</h2><p>Accuracy on test set = 95.07%<br>Accuracy on Train set = 94.90%<br>The Lenet-5 implementation achieved a high accuracy on the test and train sets without a significant difference in prediction accuracy between the train and test sets which would be an indication of overfitting.</p>
+<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>A Lenet 5 Convolutional Neural Network has been implemented only using Numpy that yields prediction accuracies over 95% on the test set. The network was trained on all 60000 examples found in the MNIST dataset and tested against the 10000 examples in the MNIST test set. The network used the standard LeNet Architecture with modifications where required. To decrease convergence time, a numpy ADAM optimizer was written. Several speed enhancements such as multi threading and just in time compilation were employed to decrease training time to a reasonable period.</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p>[1] Lavorini, Vincenzo. “Speeding up Your Code (4): in-Time Compilation with Numba.” <em>Medium</em>, Medium, 6 Mar. 2018, medium.com/@vincenzo.lavorini/speeding-up-your-code-4-in-time-compilation-with-numba-177d6849820e.<br>[2] “Convolutional Neural Networks.” <em>Coursera</em>, <a target="_blank" rel="noopener" href="http://www.coursera.org/learn/convolutional-neural-networks">www.coursera.org/learn/convolutional-neural-networks</a>.<br>[3] LeCun, Yann. <em>MNIST Demos on Yann LeCun’s Website</em>, yann.lecun.com/exdb/lenet/.<br>[4] Lecun, Y., Bottou, L., Bengio, Y., &amp; Haffner, P. (1998). <em>Gradient-based learning applied to document recognition. Proceedings of the IEEE, 86(11), 2278–2324.</em> doi:10.1109/5.726791<br>[5]  “MNIST Database.” Wikipedia, Wikimedia Foundation, 11 Apr. 2019, en.wikipedia.org/wiki/MNIST_database.<br>[6] “Cross Entropy.” Wikipedia, Wikimedia Foundation, 8 May 2019, en.wikipedia.org/wiki/Cross_entropy.<br>[7] “Stochastic Gradient Descent.” Wikipedia, Wikimedia Foundation, 29 Mar. 2019, en.wikipedia.org/wiki/Stochastic_gradient_descent.</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Computing/" rel="tag">Computing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Research/" rel="tag">Research</a></li></ul>
+
+      
+        
+	<section id="comments" class="comment">
+	  <div id="disqus_thread">
+	  <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	  </div>
+	</section>
+
+	<script type="text/javascript">
+	var disqus_shortname = 'questionableengineering.disqus.com';
+	(function(){
+	  var dsq = document.createElement('script');
+	  dsq.type = 'text/javascript';
+	  dsq.async = true;
+	  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	}());
+	(function(){
+	  var dsq = document.createElement('script');
+	  dsq.type = 'text/javascript';
+	  dsq.async = true;
+	  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+	  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	}());
+	</script>
+
+
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/12/23/Grub-Boot-Loader-Not-Found/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Grub Boot Loader Not Found
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/01/20/QuadCopterBumbleBee/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">QuadCopterBumbleBee</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-number">1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-number">2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Related-work"><span class="nav-number">3.</span> <span class="nav-text">Related work</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Data-Description"><span class="nav-number">4.</span> <span class="nav-text">Data Description</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Model-Description"><span class="nav-number">5.</span> <span class="nav-text">Model Description</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Structure"><span class="nav-number">5.1.</span> <span class="nav-text">Structure</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Weight-and-bias-initialization"><span class="nav-number">5.2.</span> <span class="nav-text">Weight and bias initialization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Optimizer"><span class="nav-number">5.3.</span> <span class="nav-text">Optimizer</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradient-Descent"><span class="nav-number">6.</span> <span class="nav-text">Gradient Descent</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Loss-function"><span class="nav-number">6.1.</span> <span class="nav-text">Loss function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Speed-Enhancements"><span class="nav-number">6.2.</span> <span class="nav-text">Speed Enhancements</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Method-Description-And-Experimental-Procedure"><span class="nav-number">7.</span> <span class="nav-text">Method Description And Experimental Procedure</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Results"><span class="nav-number">8.</span> <span class="nav-text">Results</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hyper-parameters"><span class="nav-number">8.1.</span> <span class="nav-text">Hyper parameters</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Training-time"><span class="nav-number">8.2.</span> <span class="nav-text">Training time</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Training-loss"><span class="nav-number">8.3.</span> <span class="nav-text">Training loss</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Accuracy"><span class="nav-number">8.4.</span> <span class="nav-text">Accuracy</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Conclusion"><span class="nav-number">9.</span> <span class="nav-text">Conclusion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">10.</span> <span class="nav-text">References</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2020 Questionable Engineering All Rights Reserved.
+        
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+      var headerblur = document.getElementById("header-blur");
+      headerblur.style.minHeight = window.getComputedStyle(document.getElementById("allheader"), null).height;
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>
