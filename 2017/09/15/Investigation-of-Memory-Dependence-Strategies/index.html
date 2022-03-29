@@ -6,7 +6,7 @@
   <title>Investigation of Memory Dependence Strategies | Questionable Engineering</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="ResearchComputing" />
+  <meta name="keywords" content="ComputingResearch" />
   
   
   
@@ -33,8 +33,8 @@
 <meta property="article:published_time" content="2017-09-16T01:43:08.000Z">
 <meta property="article:modified_time" content="2020-09-04T03:40:48.524Z">
 <meta property="article:author" content="John Grun">
-<meta property="article:tag" content="Research">
 <meta property="article:tag" content="Computing">
+<meta property="article:tag" content="Research">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://questionableengineering.com/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image7.png">
   
@@ -69,7 +69,7 @@
   <link rel="stylesheet" href="/css/fashion.css" >
   <link rel="stylesheet" href="/css/glyphs.css" >
 
-<meta name="generator" content="Hexo 5.2.0"></head>
+<meta name="generator" content="Hexo 5.4.0"></head>
 
 
 
@@ -175,7 +175,7 @@
 <img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image12.jpg" style="width: 90%;"/>
 
 <h1 id="0-0-Abstract"><a href="#0-0-Abstract" class="headerlink" title="0.0 Abstract"></a>0.0 Abstract</h1><p>A dynamically scheduled processor may default to in-order execution of Load/Store instructions to avoid Memory Order Violations. This is because, loads executed out of order may be dependent upon prior stores, the addresses of which were initially unknown. To overcome the potentially wasted clock cycles of conservatively stalled loads, known as False Dependencies, Memory Dependence Predictor (MDP) schemes have been developed. This paper demonstrates the implementation of two experimental MDP schemes, Store Sets and Counting Dependence Predictor (CDP) within the SimpleScalar framework. In addition, it demonstrates two baseline MDP schemes, No Speculation and Naive Speculation. The conceptual overview, the software implementation details, as well as quantitative simulation results are provided. The performance of these MDP schemes has been evaluated in terms of three metrics: the number of Memory Order Violations, the number of False Dependencies, and the average IPC. Although the results did not indicate a performance enhancement in terms of execution time, they do demonstrate expected behavior in terms of Memory Order Violations and False Dependencies. Possible implementation shortcomings, and future alterations are later proposed.</p>
-<a id="more"></a>
+<span id="more"></span>
 <h1 id="1-0-Introduction"><a href="#1-0-Introduction" class="headerlink" title="1.0 Introduction"></a>1.0 Introduction</h1><h2 id="1-1-The-Question-To-Issue-Load-or-not-to-Issue-Load"><a href="#1-1-The-Question-To-Issue-Load-or-not-to-Issue-Load" class="headerlink" title="1.1 The Question: To Issue Load or not to Issue Load?"></a>1.1 The Question: To Issue Load or not to Issue Load?</h2><p>In a pipelined In-Order execution processor, if an instruction is dependent upon the result of a previously issued instruction then entire processor pipeline must be stalled. This has the effect of drastically reducing the throughput of the processor by, stalling later instructions that have no dependence upon the stalling instruction. To circumvent the performance limitations inherent in the In-Order pipelined processor designs,  dynamic scheduling (Out of Order execution) was introduced. Dynamic scheduling works by allowing instructions to issue out of order. Thus if an instruction is issued and is dependent upon the result of a previous instruction, later instructions do not need to wait. Later non-dependent instructions are allowed to issue as long as the processor has available resources (e.g. Adder, Multiplier, FPU, etc.). Inconveniently, the target memory addresses of memory access instructions (i.e. load/store) are not resolved until after issue. Therefore, earlier implementations of dynamic scheduling (e.g.Tomasulo) issued loads and stores in program order to prevent memory order violations. Memory Order Violations occur when loads and store operate on the same memory address in the incorrect order and thus produce incorrect program execution. While this method ensured the correct program execution, the benefits of dynamic scheduling were not realized for load and store instructions. Additionally, any instructions that are dependent have to wait for the Load or store operation to complete even if disperse loads and stores do not operate on the same memory address. In order to maximize performance gains, researchers began experimenting with schemes to allow for out of order execution of loads and stores. In this paper we shall evaluate two such schemes: Store Sets, and Counting Dependency Predictors.</p>
 <h2 id="1-2-The-Answer-Memory-Dependence-Prediction-Schemes"><a href="#1-2-The-Answer-Memory-Dependence-Prediction-Schemes" class="headerlink" title="1.2 The Answer: Memory Dependence Prediction Schemes"></a>1.2 The Answer: Memory Dependence Prediction Schemes</h2><p>When issuing a load out of program order, it is assumed that the load does not share an address with (i.e. depend upon) any stores which it has overtaken. Therefore, to issue loads out of program order while target addresses are unavailable, the processor requires Memory Dependence Prediction (MDP). This is very similar to Branch Prediction in that the processor guesses on a decision, detects a mishap, recovers state, and learns to avoid the same mistake on future encounters.</p>
 <p>The two baseline (i.e. corner-cases) MPD schemes are No Speculation and Naive Speculation. Under the terms of No Speculation,  no ready loads will queue unless there are no non-ready stores behind it. Under the terms of Naive Speculation, loads will queue as soon as they are ready regardless of the number of non-ready loads behind it. Figure 2 illustrates the concepts of these two schemes. No Speculation and Naive Speculation represent the most conservative and the most aggressive MDP schemes, respectively.</p>
@@ -659,7 +659,7 @@
 
   <div class="clearfix container">
       <div class="site-info">
-	      &copy; 2020 Questionable Engineering All Rights Reserved.
+	      &copy; 2022 Questionable Engineering All Rights Reserved.
         
       </div>
       <div class="site-credit">

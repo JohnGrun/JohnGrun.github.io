@@ -6,7 +6,7 @@
   <title>Analysis of the Kalman Filter Algorithm | Questionable Engineering</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="KalmanC++ResearchComputing" />
+  <meta name="keywords" content="ComputingResearchKalmanC++" />
   
   
   
@@ -31,10 +31,10 @@
 <meta property="article:published_time" content="2017-07-07T21:46:15.000Z">
 <meta property="article:modified_time" content="2020-10-19T17:18:45.668Z">
 <meta property="article:author" content="John Grun">
+<meta property="article:tag" content="Computing">
+<meta property="article:tag" content="Research">
 <meta property="article:tag" content="Kalman">
 <meta property="article:tag" content="C++">
-<meta property="article:tag" content="Research">
-<meta property="article:tag" content="Computing">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://questionableengineering.com/2017/07/07/Report/image_0.png">
   
@@ -69,7 +69,7 @@
   <link rel="stylesheet" href="/css/fashion.css" >
   <link rel="stylesheet" href="/css/glyphs.css" >
 
-<meta name="generator" content="Hexo 5.2.0"></head>
+<meta name="generator" content="Hexo 5.4.0"></head>
 
 
 
@@ -177,7 +177,7 @@
 </thead>
 </table>
 <h1 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h1><p>The Kalman filter finds applications in extracting useful data from inherently noisy sources. One common application is smoothing sensor data. In order for most sensor data to be effectively employed in applications like control loops or navigation systems it must first be filtered in a manner that removes noise but, does not introduce an unacceptable amount of additional error or increases processing and memory load on the system. In this regard the Kalman filter excels. The Kalman filter can also be extended to combine data from multiple input sources to further reduce the error in a signal or sample. This property has many applications in the area of sensor fusion. Kalman filter sensor fusion is commonly used in robotic control systems. A common use case is autonomous vehicle navigation and control eg. Quadcopters or spacecraft. Additionally, the Kalman filter is often used in analog and digital signal processing. The Kalman filter algorithm enjoys implementations in both software and hardware. </p>
-<a id="more"></a>
+<span id="more"></span>
 <h2 id="Describe-Algorithm-details"><a href="#Describe-Algorithm-details" class="headerlink" title="Describe Algorithm details"></a>Describe Algorithm details</h2><p>The Kalman filter algorithm uses multiple input signals samples, often periodically, to increase the overall estimation accuracy of the signal with noise removed. The Kalman filter has 5 sets of variables one must understand. The the first is the self-explanatory unfiltered input signal. It is important to state, the algorithm assumes that all input signals into the filter contain a certain amount of noise variance. The Kalman gain, which is recursively calculated from the variance of the input signal over many samples. The last state (Xk-1) of the system, which is a gain weighted sum of all previous input signal samples. The current state (Xk) , which is an estimate of the expected state of the system as calculated by a function that describes the system/signal. The output signal is a gain weighted sum of the value of the current input signal and the current state estimation of the system. The Kalman filter algorithm uses two main components, a predicative step and a update step. See Figure 1. </p>
 <table>
 <thead>
@@ -295,7 +295,7 @@
   
     <a href="/2014/10/29/CNC-Conversion-MARS/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">CNC Conversion MARS</div>
+      <div class="article-nav-title">CNC Conversion Mechanical</div>
     </a>
   
 </nav>
@@ -332,7 +332,7 @@
 
   <div class="clearfix container">
       <div class="site-info">
-	      &copy; 2020 Questionable Engineering All Rights Reserved.
+	      &copy; 2022 Questionable Engineering All Rights Reserved.
         
       </div>
       <div class="site-credit">
