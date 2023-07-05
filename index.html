@@ -126,6 +126,376 @@
         
           <section id="main">
   
+    <article id="post-MQTT-K8s-Setup-on-Ubuntu-20-04"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/04/16/MQTT-K8s-Setup-on-Ubuntu-20-04/">MQTT K8s Setup on Ubuntu 20.04</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/04/16/MQTT-K8s-Setup-on-Ubuntu-20-04/" class="article-date">
+	  <time datetime="2023-04-16T13:35:18.000Z" itemprop="datePublished">April 16, 2023</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Install-the-k8s-cluster"><a href="#Install-the-k8s-cluster" class="headerlink" title="Install the k8s cluster"></a>Install the k8s cluster</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s enable dns storage helm3</span><br><span class="line">microk8s status</span><br></pre></td></tr></table></figure>
+
+<h1 id="Install-the-Mqtt-helm-chart"><a href="#Install-the-Mqtt-helm-chart" class="headerlink" title="Install the Mqtt helm chart"></a>Install the Mqtt helm chart</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&#x2F;</span><br><span class="line">microk8s helm pull truecharts&#x2F;mosquitto --version 8.0.11</span><br><span class="line"></span><br><span class="line">microk8s helm install my-mosquitto truecharts&#x2F;mosquitto --version 8.0.11</span><br></pre></td></tr></table></figure>
+
+<h2 id="Check-the-status-of-the-installed-application"><a href="#Check-the-status-of-the-installed-application" class="headerlink" title="Check the status of the installed application."></a>Check the status of the installed application.</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">microk8s status</span><br><span class="line">microk8s kubectl show pods</span><br><span class="line">microk8s kubectl</span><br><span class="line">microk8s kubectl logs</span><br><span class="line">microk8s kubectl describe pods</span><br></pre></td></tr></table></figure>
+<h1 id="Service-yaml-file"><a href="#Service-yaml-file" class="headerlink" title="Service yaml file"></a>Service yaml file</h1><p>We need to expose the service to the outside world.<br>Thankfully microk8s has a built in loadbalancer called metallb</p>
+<p>Replace Y with the MQTT port number. Default 1883<br>Replace Z with the MQTT API number  Default 9001</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: mqtt-service</span><br><span class="line">spec:</span><br><span class="line">  type: LoadBalancer</span><br><span class="line">  selector:</span><br><span class="line">    app.kubernetes.io&#x2F;name: mosquitto</span><br><span class="line">  ports:</span><br><span class="line">    - name: http</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: Y</span><br><span class="line">      targetPort: Y</span><br><span class="line">    - name: https</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: Z</span><br><span class="line">      targetPort: Z</span><br><span class="line">  externalIPs:</span><br><span class="line">    - X.X.X.X</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>More information here<br><a target="_blank" rel="noopener" href="https://medium.com/swlh/kubernetes-external-ip-service-type-5e5e9ad62fcd">https://medium.com/swlh/kubernetes-external-ip-service-type-5e5e9ad62fcd</a></p>
+<h1 id="Apply-the-service"><a href="#Apply-the-service" class="headerlink" title="Apply the service"></a>Apply the service</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl apply -f .&#x2F;mqtt-service.yaml </span><br></pre></td></tr></table></figure>
+<h2 id="Confirm-the-service-is-active"><a href="#Confirm-the-service-is-active" class="headerlink" title="Confirm the service is active"></a>Confirm the service is active</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl describe services mqtt-service</span><br></pre></td></tr></table></figure>
+<h1 id="Local-test-client"><a href="#Local-test-client" class="headerlink" title="Local test client"></a>Local test client</h1><p>You can test the connection locally on the server with this simple CLI mqtt client<br>Test client<br><a target="_blank" rel="noopener" href="https://mqttx.app/cli">https://mqttx.app/cli</a></p>
+<h1 id="Firewall-Rules"><a href="#Firewall-Rules" class="headerlink" title="Firewall Rules"></a>Firewall Rules</h1><p>This assumes you are using ufw.<br>ufw is bascally a wrapper for IPTABLES. If you have ever used IPTABLES before you understand why ufw exists.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw default allow routed </span><br><span class="line">sudo ufw allow from X.X.X.0&#x2F;X to any port Y proto tcp</span><br><span class="line">sudo ufw status</span><br></pre></td></tr></table></figure>
+<h1 id="Test-external-Connections"><a href="#Test-external-Connections" class="headerlink" title="Test external Connections"></a>Test external Connections</h1><p>Once again try to connect to port Y with <a target="_blank" rel="noopener" href="https://mqttx.app/cli">https://mqttx.app/cli</a></p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/services-networking/service/">https://kubernetes.io/docs/concepts/services-networking/service/</a></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-Microscope-Camera"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/02/20/Microscope-Camera/">Microscope Camera</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/02/20/Microscope-Camera/" class="article-date">
+	  <time datetime="2023-02-20T15:21:18.000Z" itemprop="datePublished">February 20, 2023</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Camera-Selection"><a href="#Camera-Selection" class="headerlink" title="Camera Selection"></a>Camera Selection</h1><p>5MP camera is the min. Cellphone adapter is also available but I want a dedicated camera. </p>
+<h1 id="Research"><a href="#Research" class="headerlink" title="Research"></a>Research</h1><p>This was a similar project to what I am trying to build. Very nice blog as well<br><a target="_blank" rel="noopener" href="https://www.briandorey.com/post/raspberry-pi-high-quality-camera-on-the-microscope">https://www.briandorey.com/post/raspberry-pi-high-quality-camera-on-the-microscope</a></p>
+<h1 id="Hardware"><a href="#Hardware" class="headerlink" title="Hardware"></a>Hardware</h1><p>Raspberrypi High Quaility Camera 12 MP C mount<br><a target="_blank" rel="noopener" href="https://www.adafruit.com/product/4561">https://www.adafruit.com/product/4561</a></p>
+<p>The framerate on a raspberry pi is very low so I perchased an arducam camera to usb board.<br><a target="_blank" rel="noopener" href="https://www.arducam.com/product/arducam-uvc-camera-adapter-board-for-12mp-imx477-raspberry-pi-hq-camera/">https://www.arducam.com/product/arducam-uvc-camera-adapter-board-for-12mp-imx477-raspberry-pi-hq-camera/</a><br><a target="_blank" rel="noopener" href="https://www.amazon.com/gp/product/B08NVG2CY4/ref=ppx_od_dt_b_asin_title_s00?ie=UTF8&amp;psc=1">https://www.amazon.com/gp/product/B08NVG2CY4/ref=ppx_od_dt_b_asin_title_s00?ie=UTF8&amp;psc=1</a><br>I got the idea to use the arducam adapter from <a target="_blank" rel="noopener" href="https://www.briandorey.com/post/raspberry-pi-high-quality-camera-on-the-microscope">https://www.briandorey.com/post/raspberry-pi-high-quality-camera-on-the-microscope</a></p>
+<h2 id="User-Manual-for-the-Pi-camera-adapter"><a href="#User-Manual-for-the-Pi-camera-adapter" class="headerlink" title="User Manual for the Pi camera adapter."></a>User Manual for the Pi camera adapter.</h2><a href="/2023/02/20/Microscope-Camera/Arducam-UVC-Camera-Adapter-Board-for-12MP-IMX477-Raspberry-Pi-HQ-Camera-b0278.pdf" title="Arducam-UVC-Camera-Adapter-Board-for-12MP-IMX477-Raspberry-Pi-HQ-Camera-b0278.pdf">Arducam-UVC-Camera-Adapter-Board-for-12MP-IMX477-Raspberry-Pi-HQ-Camera-b0278.pdf</a>
+<a href="/2023/02/20/Microscope-Camera/UC-733_DIM.pdf" title="UC-733_DIM.pdf">UC-733_DIM.pdf</a>
+
+<img src="/2023/02/20/Microscope-Camera/PXL_20230223_004435934.jpg" style="width: 100%; height: 100%;"/>
+
+<p>Raspberrypi High Quaility Camera 12 MP C mount</p>
+<img src="/2023/02/20/Microscope-Camera/PXL_20230223_004547089.jpg" style="width: 100%; height: 100%;"/>
+
+<p>Components: Raspberrypi High Quaility Camera 12 MP C mount, ribbion cable, and Arducam UVC Camera Adapter Board.</p>
+<img src="/2023/02/20/Microscope-Camera/PXL_20230223_004725052.jpg" style="width: 100%; height: 100%;"/>
+
+<p>Connecting the Arducam UVC Camera Adapter Board to the Raspberrypi High Quaility Camera</p>
+<h1 id="Mechanical"><a href="#Mechanical" class="headerlink" title="Mechanical"></a>Mechanical</h1><h2 id="Camera-Adapter-Mount"><a href="#Camera-Adapter-Mount" class="headerlink" title="Camera Adapter Mount"></a>Camera Adapter Mount</h2><p>I orginally went with mounting the camera without any lenses. Using this Raspberry Pi HQ camera adapter 3d printed<br><a target="_blank" rel="noopener" href="https://www.printables.com/model/59927-raspberry-hq-camera-to-amscope-adapter">https://www.printables.com/model/59927-raspberry-hq-camera-to-amscope-adapter</a> </p>
+<img src="/2023/02/20/Microscope-Camera/PXL_20230225_141808927.jpg" style="width: 100%; height: 100%;"/>
+
+<p>The adapter mounted to the camera port of my AmScope T720B Scope</p>
+<img src="/2023/02/20/Microscope-Camera/PXL_20230225_141813448.jpg" style="width: 100%; height: 100%;"/>
+
+<p>Front-Side</p>
+<img src="/2023/02/20/Microscope-Camera/PXL_20230225_141817710.jpg" style="width: 100%; height: 100%;"/>
+
+<p>Side</p>
+<img src="/2023/02/20/Microscope-Camera/Plant_Leaf.png" style="width: 100%; height: 100%;"/>
+Using the above setup I was able to take this image with the camera.
+This is a plant leaf from the [Codiaeum variegatum](https://en.wikipedia.org/wiki/Codiaeum_variegatum) at ~40x
+
+<h2 id="Camera-Issues"><a href="#Camera-Issues" class="headerlink" title="Camera Issues"></a>Camera Issues</h2><p>The camera sensor size causes an inherent magnification effect called crop factor. The field of view becomes reduced due to the this magnification effect. You can see this in the image above.<br>More information here<br><a target="_blank" rel="noopener" href="https://learn.adafruit.com/raspberry-pi-hq-camera-lenses/crop-factor">https://learn.adafruit.com/raspberry-pi-hq-camera-lenses/crop-factor</a><br><a target="_blank" rel="noopener" href="https://www.microscopeworld.com/p-3341-microscope-c-mount-field-of-view.aspx">https://www.microscopeworld.com/p-3341-microscope-c-mount-field-of-view.aspx</a><br><a target="_blank" rel="noopener" href="https://www.microscopeworld.com/t-microscope_c-mounts.aspx">https://www.microscopeworld.com/t-microscope_c-mounts.aspx</a></p>
+<p>In order to correct for the inherent magnification effect an adapter was purchased.<br>From these sources I was able to find that 0.3x to 0.5x is about correct for my sensor size</p>
+<h2 id="Adapter-lens-selection"><a href="#Adapter-lens-selection" class="headerlink" title="Adapter lens selection"></a>Adapter lens selection</h2><p>AmScope RU050 0.5X Reduction Lens for C-mount Cameras FMA050 Cmount to 23mm adapter. This fits my AmScope T720B Scope</p>
+<img src="/2023/02/20/Microscope-Camera/C_MOUNT_05X.jpg" style="width: 100%; height: 100%;"/>
+
+<img src="/2023/02/20/Microscope-Camera/C_MOUNT_05X_2.jpg" style="width: 100%; height: 100%;"/>
+
+<p><a target="_blank" rel="noopener" href="https://www.ebay.com/itm/141950389592">https://www.ebay.com/itm/141950389592</a></p>
+<img src="/2023/02/20/Microscope-Camera/Dust.png" style="width: 100%; height: 100%;"/>
+Picture of dust taken with the 0.5x adapter. It's hard to tell from the images above but the field of view is noticably larger. 
+
+<h2 id="Enclosure"><a href="#Enclosure" class="headerlink" title="Enclosure"></a>Enclosure</h2><p> To protect the hardware I designed an enclouse </p>
+<a href="/2023/02/20/Microscope-Camera/Microscope_Camera_Enclosure-Lid.stl" title="Microscope_Camera_Enclosure-Lid.stl">Microscope_Camera_Enclosure-Lid.stl</a>
+
+<a href="/2023/02/20/Microscope-Camera/Microscope_Camera_Enclosure-Enclosure.stl" title="Microscope_Camera_Enclosure-Enclosure.stl">Microscope_Camera_Enclosure-Enclosure.stl</a>
+
+<a href="/2023/02/20/Microscope-Camera/Microscope_Camera_Enclosure.FCStd" title="Microscope_Camera_Enclosure.FCStd">Microscope_Camera_Enclosure.FCStd</a>
+
+<a href="/2023/02/20/Microscope-Camera/Microscope_Camera_Enclosure.FCStd1" title="Microscope_Camera_Enclosure.FCStd1">Microscope_Camera_Enclosure.FCStd1</a>
+
+<h1 id="Software"><a href="#Software" class="headerlink" title="Software"></a>Software</h1><p>I had problems with Cheese constantly changing the exposure. Thankfully many have suffered from this issue before. I found this link that is specific to the raspberry pi but useful. <a target="_blank" rel="noopener" href="https://hackernoon.com/polising-raspberry-pi-high-quality-camera-3z113u18">https://hackernoon.com/polising-raspberry-pi-high-quality-camera-3z113u18</a><br>I had to use a more advanced pieace of software called qv4l2</p>
+<p>To install on debian linux</p>
+<p>sudo apt-get install qv4l2</p>
+<img src="/2023/02/20/Microscope-Camera/V4L2.png" style="width: 100%; height: 100%;"/>
+
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p><a target="_blank" rel="noopener" href="https://www.edmundoptics.com/knowledge-center/application-notes/microscopy/understanding-microscopes-and-objectives/">https://www.edmundoptics.com/knowledge-center/application-notes/microscopy/understanding-microscopes-and-objectives/</a><br><a target="_blank" rel="noopener" href="https://www.microscopeworld.com/p-3341-microscope-c-mount-field-of-view.aspx">https://www.microscopeworld.com/p-3341-microscope-c-mount-field-of-view.aspx</a><br><a target="_blank" rel="noopener" href="https://www.microscopeworld.com/t-microscope_c-mounts.aspx">https://www.microscopeworld.com/t-microscope_c-mounts.aspx</a><br><a target="_blank" rel="noopener" href="https://www.briandorey.com/post/raspberry-pi-high-quality-camera-on-the-microscope">https://www.briandorey.com/post/raspberry-pi-high-quality-camera-on-the-microscope</a></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-Microscope-Selection"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/02/20/Microscope-Selection/">Microscope Selection</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/02/20/Microscope-Selection/" class="article-date">
+	  <time datetime="2023-02-20T15:15:30.000Z" itemprop="datePublished">February 20, 2023</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Research"><a href="#Research" class="headerlink" title="Research"></a>Research</h1><p><a target="_blank" rel="noopener" href="https://www.reddit.com/r/microbiology/comments/q5h8vv/what_is_considered_a_great_microscope_in_todays/">https://www.reddit.com/r/microbiology/comments/q5h8vv/what_is_considered_a_great_microscope_in_todays/</a><br><a target="_blank" rel="noopener" href="https://www.edmundoptics.com/knowledge-center/application-notes/microscopy/understanding-microscopes-and-objectives/">https://www.edmundoptics.com/knowledge-center/application-notes/microscopy/understanding-microscopes-and-objectives/</a></p>
+<h1 id="Requirements"><a href="#Requirements" class="headerlink" title="Requirements"></a>Requirements</h1><p>From the research above I was able to settle on the following requirements</p>
+<ul>
+<li>Greater than 1000X</li>
+<li>Kohler light source</li>
+<li>infinity corrected optics</li>
+<li>Camera port</li>
+</ul>
+<h1 id="Selection"><a href="#Selection" class="headerlink" title="Selection"></a>Selection</h1><p>Amscope T720B <a target="_blank" rel="noopener" href="https://amscope.com/products/t720b-hc2">https://amscope.com/products/t720b-hc2</a></p>
+<p>Infinity Corrected Optical System with High Resolution<br>Fully Coated Optics with Crystal Clear &amp; Sharp Images<br>Precise Mechanical Control System<br>Reversed Nosepiece Design<br>Kohler Illumination System with Field Diaphragm for Lighting Control<br>30-Degree Inclined, 360-Degree Swiveling, Compensation Free Trinocular Head<br>Eight Magnification Levels: 40X, 80X, 100X, 200X, 400X, 800X, 1000X, 2000X<br>Intensity-Variable Transmitted LED Lighting System<br>Abbe Condenser with Iris Diaphragm and Filter Holder<br>Rack and Pinion Adjustment for Condenser<br>Low Position Coaxial Stage Movement Controlling Knobs<br>Dual Side Coaxial Coarse and Fine Focusing Control<br>Adjustable Interpupillary Distance<br>Adjustable Diopter on Eyepieces<br>Durable Cast Alloy Frame with Stain Resistant Enamel Finish<br>Four Infinity Plan Objectives Included<br>Two Pairs of Extreme Widefield Eyepieces Included (EWF10X &amp; WF20X)<br>Quadruple, Reversed, Extra-Large Nosepiece with Wide, Knurled Grip for Easy Operation<br>Large Double Layer Mechanical Stage with Stain Resistant Coating<br>Upward Stage Limit Stop to Protect Objectives and Slides<br>Manufactured under ISO 9001 Quality Control Standards<br>Excellent Five (5) Year Factory Warranty</p>
+<p>Specifications :<br>Optical System: infinity corrected<br>Nosepiece: reversed, ball bearing quadruple<br>Head: gemel type trinocular head, 30-degree inclined<br>Eyepiece: high eye-point eyepieces, WF10X22mm, WF20X<br>Objectives: infinity plan objective 4X, 10X, 40X (spring), 100X (spring, oil)<br>Focusing: low position coaxial focus system<br>Focusing Range: 1-3/16” (30mm)<br>Interpupillary Adjustment Range: 2-3/16” - 3” (55-75mm)<br>Mechanical Tube Length: 6-5/16” (160mm)<br>Mechanical Stage: 8.5” x 5.9” (216mm x 150mm)<br>Stage Traveling Range: 2.9” x 2” (75x50mm)<br>Focusing Rang: 0.95” (24mm)<br>Division of Fine Focusing: 0.00003935” (0.001mm)<br>Illuminator: Built-in Kohler LED illumination system<br>Condenser: N.A. 1.25 achromatic condenser<br>Illumination: Kohler, LED<br>Power Supply: 90V-240 wide voltage, CE certified<br>Built in measurement capabilities<br>Weight: 28 lbs</p>
+<p>Packing List :<br>One Trinocular Compensation-Free Head<br>One Microscope Body with Frame, Base, and Kohler Illumination System<br>Four High Quality DIN Plan Achromatic Objectives: 4X, 10X, 40X and 100X<br>One Pair of Widefield Eyepieces: WF10X<br>One Pair of Widefield Eyepieces: WF20X<br>One Dust Cover<br>One HDMI camera<br>One HDMI cable<br>Immersion Oil<br>User’s Manual</p>
+<h1 id="Purchasing"><a href="#Purchasing" class="headerlink" title="Purchasing"></a>Purchasing</h1><p>There is no reason pay top dollar for a microscope. You can find massive discounts on refunbised microscopes on ebay!<br><a target="_blank" rel="noopener" href="https://www.ebay.com/itm/381546384234?hash=item58d5efcb6a:g:9qkAAOSwPXFcFU2K">https://www.ebay.com/itm/381546384234?hash=item58d5efcb6a:g:9qkAAOSwPXFcFU2K</a></p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p><a target="_blank" rel="noopener" href="https://storage.googleapis.com/software-download-d79bb.appspot.com/Manual%20Download%20Files/Manual%20Files/Compound/720%20Series_Manual_151006.pdf">https://storage.googleapis.com/software-download-d79bb.appspot.com/Manual%20Download%20Files/Manual%20Files/Compound/720%20Series_Manual_151006.pdf</a></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-WLED-Degchi-Lamp"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2022/08/17/WLED-Degchi-Lamp/">WLED Degchi Lamp</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2022/08/17/WLED-Degchi-Lamp/" class="article-date">
+	  <time datetime="2022-08-17T20:16:59.000Z" itemprop="datePublished">August 17, 2022</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>While traveling in India I came across these nice looking tin lamps. </p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp.jpg" style="width: 90%;"/>
+
+<p>It is sometimes called a Degchi lamp. Since I am not a fan of open flames so leds will have to fill in the role of a candle. This build will be a bit rough. I will refine the lamp in later posts.</p>
+<h1 id="Parts"><a href="#Parts" class="headerlink" title="Parts"></a>Parts</h1><h3 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h3><h3 id="ESP8266"><a href="#ESP8266" class="headerlink" title="ESP8266"></a>ESP8266</h3><img src="/2022/08/17/WLED-Degchi-Lamp/ESP8266.jpg" style="width: 90%;"/>
+
+<p><a target="_blank" rel="noopener" href="https://www.adafruit.com/product/2471">Esp8266 Huzzah</a></p>
+<p><a target="_blank" rel="noopener" href="https://learn.adafruit.com/adafruit-huzzah-esp8266-breakout">Esp8266 Huzzah documentation</a></p>
+<h3 id="Level-shifter"><a href="#Level-shifter" class="headerlink" title="Level shifter"></a>Level shifter</h3><img src="/2022/08/17/WLED-Degchi-Lamp/TXS0108E.jpg" style="width: 90%;"/>
+
+<p><a target="_blank" rel="noopener" href="https://www.amazon.com/gp/product/B088LMJR5K/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1">GeeekPi 6Pack TXS0108E 8 Channel Logic Level Converter Bi-Directional High Speed Full Duplex Shifter 3.3V 5V for Arduino Raspberry Pi</a></p>
+<h3 id="LED-Strip"><a href="#LED-Strip" class="headerlink" title="LED Strip"></a>LED Strip</h3><img src="/2022/08/17/WLED-Degchi-Lamp/sk6812.jpg" style="width: 90%;"/>
+
+<p><a target="_blank" rel="noopener" href="https://smile.amazon.com/BTF-LIGHTING-Individually-Addressable-Flexible-Non-waterproof/dp/B01N0MA729/ref=sr_1_2?keywords=sk6812+led&qid=1659749420&sr=8-2">Led Strip</a></p>
+<h3 id="Power-supply"><a href="#Power-supply" class="headerlink" title="Power supply"></a>Power supply</h3><img src="/2022/08/17/WLED-Degchi-Lamp/Power_Supply_5V_10A.jpg" style="width: 90%;"/>
+
+<p><a target="_blank" rel="noopener" href="https://www.amazon.com/gp/product/B01M0KLECZ/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1">5v 10 amp power upply with barrel plug</a></p>
+<h3 id="Plug"><a href="#Plug" class="headerlink" title="Plug"></a>Plug</h3><img src="/2022/08/17/WLED-Degchi-Lamp/Barrel_Plug.jpg" style="width: 90%;"/>
+
+<p><a target="_blank" rel="noopener" href="https://www.amazon.com/Power-Connector-Female-Adapter-Camera/dp/B07C61434H/ref=sr_1_3?crid=1C8THCD6688TZ&keywords=barrel+plugs&qid=1659770244&sprefix=barel+plugs,aps,92&sr=8-3">Barrel plug</a></p>
+<h1 id="Software"><a href="#Software" class="headerlink" title="Software"></a>Software</h1><h2 id="WLED"><a href="#WLED" class="headerlink" title="WLED"></a>WLED</h2><p><a target="_blank" rel="noopener" href="https://github.com/Aircoookie/WLED">wled</a></p>
+<h3 id="Binary"><a href="#Binary" class="headerlink" title="Binary"></a>Binary</h3><p><a target="_blank" rel="noopener" href="https://github.com/Aircoookie/WLED/releases/download/v0.13.1/WLED_0.13.1_ESP8266.bin">Wled binary</a></p>
+<h1 id="Flashing"><a href="#Flashing" class="headerlink" title="Flashing"></a>Flashing</h1><p>You will need a 3.3v usb to serial adapter. An FTDI based usb to serial adapteris perfered. </p>
+<p><a target="_blank" rel="noopener" href="https://docs.espressif.com/projects/esptool/en/latest/esp32/">https://docs.espressif.com/projects/esptool/en/latest/esp32/</a><br>Method 2 <a target="_blank" rel="noopener" href="https://kno.wled.ge/basics/install-binary/">https://kno.wled.ge/basics/install-binary/</a> </p>
+<h2 id="Connections"><a href="#Connections" class="headerlink" title="Connections"></a>Connections</h2><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041807877.jpg" style="width: 90%;"/>
+<br></br>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041838804.jpg" style="width: 90%;"/>
+
+<p>Connection between the usb to serial adapter and the ESP8266.</p>
+<ul>
+<li>Logic Level set to 3.3V</li>
+<li>ESP -&gt; FTDI</li>
+<li>TX -&gt; RX</li>
+<li>RX -&gt; TX</li>
+<li>VCC -&gt; 5V</li>
+<li>GND -&gt; GND</li>
+</ul>
+<h2 id="Operating-system-permission-workarounds"><a href="#Operating-system-permission-workarounds" class="headerlink" title="Operating system permission workarounds"></a>Operating system permission workarounds</h2><p>In order to write data to ttyUSB or other serieal ports you must be a member of the dialout group. </p>
+<pre><code>sudo usermod -a -G dialout your_user_name
+
+Log out log in
+
+sudo esptool.py -p ttyUSB0sudo esptool.py -p ttyUSB0 write_flash 0x0 ./WLED_0.13.1_ESP8266.bin</code></pre>
+<h1 id="Electronics"><a href="#Electronics" class="headerlink" title="Electronics"></a>Electronics</h1><h2 id="Schematic"><a href="#Schematic" class="headerlink" title="Schematic"></a>Schematic</h2><p><br></br><br><img src="/2022/08/17/WLED-Degchi-Lamp/Degchi-Lamp-Electronics.png" style="width: 90%;"/><br><br></br></p>
+<h2 id="Electronics-Rough-Fit"><a href="#Electronics-Rough-Fit" class="headerlink" title="Electronics Rough Fit"></a>Electronics Rough Fit</h2><p>Playing around with the electronics to confirm that the design works as expected.</p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030411413.jpg" style="width: 90%;"/>
+<br></br>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030424508.jpg" style="width: 90%;"/>
+<br></br>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030434512.jpg" style="width: 90%;"/>
+<br></br>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030451769.jpg" style="width: 90%;"/>
+
+<p>Everything is hooked up but the lights are not working. </p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030508542.jpg" style="width: 90%;"/>
+
+<p>Discovered that the OE pin on the TXS0108E needs to be pulled high to VA (ESP Logic Level High 3.3V)</p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041756325.jpg" style="width: 90%;"/>
+<br></br>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_212503830.jpg" style="width: 90%;"/>
+
+
+<h1 id="Physical-Construction"><a href="#Physical-Construction" class="headerlink" title="Physical Construction"></a>Physical Construction</h1><h2 id="Lamp"><a href="#Lamp" class="headerlink" title="Lamp"></a>Lamp</h2><h2 id="Test-Fit"><a href="#Test-Fit" class="headerlink" title="Test Fit"></a>Test Fit</h2><p>Lets see how everything could fit inside the lamp. Who cares how it looks at the moment. We will polish it later. </p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005652066.jpg" style="width: 90%;"/>
+<br></br>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005656922.jpg" style="width: 90%;"/>
+<br></br>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005704671.jpg" style="width: 90%;"/>
+<br></br>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_224801450.jpg" style="width: 90%;"/>
+
+<h2 id="Electronics-Enclosure"><a href="#Electronics-Enclosure" class="headerlink" title="Electronics Enclosure"></a>Electronics Enclosure</h2><h3 id="FreeCad-Model"><a href="#FreeCad-Model" class="headerlink" title="FreeCad Model"></a>FreeCad Model</h3><a href="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp_Enclosure.FCStd" title="Degchi_Lamp_Enclosure.FCStd">Degchi_Lamp_Enclosure.FCStd</a>
+
+<img src="/2022/08/17/WLED-Degchi-Lamp/FreeCad.png" style="width: 90%;"/>
+
+<p>First atttempt to create a quick enclosure. </p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp.png" style="width: 90%;"/>
+
+<p>View of the enclosure lid.</p>
+<h3 id="Enclosure-STLs"><a href="#Enclosure-STLs" class="headerlink" title="Enclosure STLs"></a>Enclosure STLs</h3><a href="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Enclosure.stl" title="Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Enclosure.stl">Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Enclosure.stl</a>
+<p>Enclosure Main Body</p>
+<a href="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Cover.stl" title="Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Cover.stl">Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Cover.stl</a>
+<p>Enclosure Main Body</p>
+<h3 id="Enclosure-Assembly"><a href="#Enclosure-Assembly" class="headerlink" title="Enclosure Assembly"></a>Enclosure Assembly</h3><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193334453.jpg" style="width: 90%;"/>
+
+<p>1 amp Fuse</p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193337120.jpg" style="width: 90%;"/>
+
+<p>All the electronics seem to fit. A more professional version will be created when I get the parts.</p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193339631.jpg" style="width: 90%;"/>
+
+<p>Forcing all the electronics into the enclosure.</p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193658141.jpg" style="width: 90%;"/>
+
+<p>Everything is coming together.</p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193854465.jpg" style="width: 90%;"/>
+
+<p>Power on testing</p>
+<h2 id="Led-Mounts"><a href="#Led-Mounts" class="headerlink" title="Led Mounts"></a>Led Mounts</h2><p>The inside of the lamp is coated in a thick non conductive coating. For the time being the led strip is just placed inside the lamp body.</p>
+<h1 id="Connecting-to-WIFI"><a href="#Connecting-to-WIFI" class="headerlink" title="Connecting to WIFI"></a>Connecting to WIFI</h1><p>WLED 13.1 has some trouble connecting to wifi networks. </p>
+<ul>
+<li><p>Set wifi control channel to a fixed channel. e.g 1</p>
+</li>
+<li><p>Change channel width to 20 Mhz</p>
+</li>
+<li><p>Bind to static ip in router</p>
+</li>
+<li><p>Add the same static ip in wled wifi settings </p>
+</li>
+</ul>
+<h1 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h1><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_195121212.jpg" style="width: 90%;"/>
+
+<p>I am not a fan of this very large black power cable. I will replace the power cord with USB-C.<br>After measuring the power usage of the lamp at peak load it looks like USB-C is a good option. Peak load 0.6 Amps<br>This will be covered in a follow up article. </p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025451240.jpg" style="width: 90%;"/>
+<br></br>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025516535.jpg" style="width: 90%;"/>
+<br></br>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025517876.jpg" style="width: 90%;"/>
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Electronics/" rel="tag">Electronics</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hyperion/" rel="tag">Hyperion</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LED/" rel="tag">LED</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RestAPI/" rel="tag">RestAPI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WLED/" rel="tag">WLED</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
     <article id="post-TP-Link-U3T-Ubuntu"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
     
@@ -266,6 +636,90 @@ sudo modprobe 88x2bu</code></pre>
       
   <span class="ico-tags"></span>
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Electrical/" rel="tag">Electrical</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fixes/" rel="tag">Fixes</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-CNC-Enclosure-Door"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2019/12/26/CNC-Enclosure-Door/">CNC Enclosure Door</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2019/12/26/CNC-Enclosure-Door/" class="article-date">
+	  <time datetime="2019-12-26T23:50:50.000Z" itemprop="datePublished">December 26, 2019</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Parts"><a href="#Parts" class="headerlink" title="Parts"></a>Parts</h1><h2 id="Magnetic-Door-LAtch"><a href="#Magnetic-Door-LAtch" class="headerlink" title="Magnetic Door LAtch"></a>Magnetic Door LAtch</h2><a href="/2019/12/26/CNC-Enclosure-Door/DoorMagnetLatchMount.scad" title="DoorMagnetLatchMount.scad">DoorMagnetLatchMount.scad</a>
+<a href="/2019/12/26/CNC-Enclosure-Door/DoorMagnetLatchMount.stl" title="DoorMagnetLatchMount.stl">DoorMagnetLatchMount.stl</a>
+
+<h2 id="Handle"><a href="#Handle" class="headerlink" title="Handle"></a>Handle</h2><a href="/2019/12/26/CNC-Enclosure-Door/ENCLOSURE_HANDLE.zip" title="ENCLOSURE_HANDLE.zip">ENCLOSURE_HANDLE.zip</a>
+<a href="/2019/12/26/CNC-Enclosure-Door/MU_HANDLE.3mf" title="MU_HANDLE.3mf">MU_HANDLE.3mf</a>
+
+<h2 id="Hinges"><a href="#Hinges" class="headerlink" title="Hinges"></a>Hinges</h2><a href="/2019/12/26/CNC-Enclosure-Door/parametric_butt_hinge_3.7.scad" title="parametric_butt_hinge_3.7.scad">parametric_butt_hinge_3.7.scad</a>
+<a href="/2019/12/26/CNC-Enclosure-Door/parametric_butt_hinge_7.stl" title="parametric_butt_hinge_7.stl">parametric_butt_hinge_7.stl</a>
+
+<h1 id="Mounting-the-Door"><a href="#Mounting-the-Door" class="headerlink" title="Mounting the Door"></a>Mounting the Door</h1><img src="/2019/12/26/CNC-Enclosure-Door/20200110_145308.jpg" style="width: 60%;"/>
+<img src="/2019/12/26/CNC-Enclosure-Door/20200110_145251.jpg" style="width: 60%;"/>
+<img src="/2019/12/26/CNC-Enclosure-Door/20200110_145254.jpg" style="width: 60%;"/>
+3d Printed Magnetic Latch mount
+
+<img src="/2019/12/26/CNC-Enclosure-Door/20191226_203758.jpg" style="width: 60%;"/>
+3d Printed Hinges
+
+<img src="/2019/12/26/CNC-Enclosure-Door/20200111_140324.jpg" style="width: 60%;"/>
+<img src="/2019/12/26/CNC-Enclosure-Door/20200111_140316.jpg" style="width: 60%;"/>
+<img src="/2019/12/26/CNC-Enclosure-Door/20200111_140331.jpg" style="width: 60%;"/>
+Determining the correct drilling points with a punch
+
+<img src="/2019/12/26/CNC-Enclosure-Door/20191226_185050.jpg" style="width: 60%;"/>
+Drilling Hinge Mounting Holes
+
+<img src="/2019/12/26/CNC-Enclosure-Door/20200111_150517.jpg" style="width: 60%;"/>
+<img src="/2019/12/26/CNC-Enclosure-Door/20200111_150509.jpg" style="width: 60%;"/>
+Mounting the door with the hinges
+
+<img src="/2019/12/26/CNC-Enclosure-Door/20200111_150458.jpg" style="width: 60%;"/>
+Door Mounted to Hinges
+
+
+
+
+
+
+
+
+
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CNC/" rel="tag">CNC</a></li></ul>
 
       
     </footer>
@@ -521,321 +975,6 @@ sudo modprobe 88x2bu</code></pre>
 <!-- Table of Contents -->
 
   
-    <article id="post-React-Native-Watch-Limit-Fix"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2017/12/30/React-Native-Watch-Limit-Fix/">React_Native_Watch_Limit_Fix</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2017/12/30/React-Native-Watch-Limit-Fix/" class="article-date">
-	  <time datetime="2017-12-31T00:02:42.000Z" itemprop="datePublished">December 30, 2017</time>
-	</a>
-
-       
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Ubuntu-Watch-filesystem-limit-Work-Around"><a href="#Ubuntu-Watch-filesystem-limit-Work-Around" class="headerlink" title="Ubuntu Watch filesystem limit Work Around"></a>Ubuntu Watch filesystem limit Work Around</h1><p>In the terminal run </p>
-<p>sudo gedit /etc/sysctl.conf</p>
-<pre><code>fs.inotify.max_user_instances=524288
-fs.inotify.max_user_watches=524288
-fs.inotify.max_queued_events=524288</code></pre>
-<p>Reboot for changes to take effect. </p>
-
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fixes/" rel="tag">Fixes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/React-Native/" rel="tag">React Native</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-Electrical-Enclosures-With-OpenScad"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2017/12/30/Electrical-Enclosures-With-OpenScad/">Electrical_Enclosures_With_OpenScad</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2017/12/30/Electrical-Enclosures-With-OpenScad/" class="article-date">
-	  <time datetime="2017-12-30T18:38:54.000Z" itemprop="datePublished">December 30, 2017</time>
-	</a>
-
-       
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-          <div class="entry-summary">
-          Using open scad to produce backplates for electrical enclosuresI needed a backplate for an electrical enclosure. Instead of waiting a few days I decided to 3d print one. 
-
-Figure 1: NEMA4X Electrical Enclosure
-
-        
-          <p class="article-more-link">
-            <a href="/2017/12/30/Electrical-Enclosures-With-OpenScad/#more">Continue Reading →</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Electrical/" rel="tag">Electrical</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Mechanical/" rel="tag">Mechanical</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenScad/" rel="tag">OpenScad</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-Peer-to-Peer-Domain-Name-System-P2PN-DNS"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/">Peer to Peer Domain Name System (P2PN-DNS)</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/" class="article-date">
-	  <time datetime="2017-12-29T19:49:34.000Z" itemprop="datePublished">December 29, 2017</time>
-	</a>
-
-       
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>John Grun    Arjun Ohri     Raj Balaji</p>
-<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>In this paper, we introduce the Peer to Peer  Network Domain Name System (P2PN-DNS) a distributed implementation of the<br>Domain Name System (DNS) that hopes to offer solutions to shortcomings of the current DNS such as susceptibility to outages while mitigating attempts of domain name censorship, and provide a fault tolerant name lookup service for software containers that is independent of upstream servers. Performance metrics including the time to reach consistency between nodes, service availability in lieu of loss of nodes, and average response time to DNS queries will be examined.</p>
-<h2 id="I-Introduction"><a href="#I-Introduction" class="headerlink" title="I. Introduction"></a>I. Introduction</h2><p>The  Domain Name System (DNS) is a critical element of internet infrastructure that associates IP addresses to human readable domain names. E.g Google.com is located a IP:172.217.6.238. When DNS was introduced in 1987 with the RFC 1034 /RFC 1035 17/18 standards, the internet consisted of relatively few computers where a simple hierarchical tree model functioned well.<br>As the internet scaled, DNS was expanded to accommodate the exponential growth in computers. In this regard, DNS has been a tremendous success but, it is not without serious flaws, most notably respectability to attacks on or failures of the Root DNS servers. A Root DNS Server acts as the authoritative source for the entire network.</p>
-<img src="/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure1.png" class="">
-<p>Figure 1: DNS tree structure <sup> 24</sup></p>
-<p>In part due to the tree structure of DNS, there are only thirteen DNS Root Servers in the world. An attacker only needs to target a few DNS root servers to cripple IP address to domain name translation in an entire region effectively blocking internet access for most users. Attacks against DNS Root Servers have occurred and appear to be becoming more frequent from various entities, such as hackers, or state actors. It is also quite conceivable that DNS would be a target in wartime. Additionally, centrally located servers are vulnerable to regional events such as power outages or natural disasters.</p>
-<p>Another issue that has been seen in the wild is the censorship of websites by state, corporate, or other actors via DNS poisoning. DNS poisoning blocks access to websites by disrupting the domain name lookup between a DNS resolver and the regional DNS server. E.g Google.com is located at IP:172.217.6.238. China <sup> 26 </sup> and Iran <sup> 25 </sup> have both used DNS poisoning to block access to internet domains. Corporations such as Charter, Comcast, and Optonline <sup>3</sup>  have used DNS poisoning to reroute search results away from competitor websites or to collect advertising profits.</p>
-<p>An additional limitation of the existing DNS system is a lack of software container support.<br>Existing DNS solutions for software containers either rely upon a DNS repeater or upon a standard DNS server. These methods simply extend the existing DNS system. If the upstream DNS is made inoperable or poisoned, the containers will be affected as well. This dependency upon existing DNS introduces a  single point of failure into what would otherwise be fault tolerant architecture.</p>
-<p>The aforementioned problems encountered are a consequence of the centralized hierarchical architecture of DNS. A different architecture can be defined to address these problems while providing the same functionality. We propose to build a decentralized Peer to Peer Network DNS (P2PN-DNS) that will not rely on central servers. We intended to take the best practices from existing distributed robust protocols such as bitTorrent and bitcoin to accomplish our goal. Also, each P2PN-DNS node should be able to contain an internal store of the domain name IP address relations without relying on additional software or servers.</p>
-<h2 id="II-Related-and-Previous-Work"><a href="#II-Related-and-Previous-Work" class="headerlink" title="II. Related and Previous Work"></a>II. Related and Previous Work</h2><p>There have been several different methods over the years to address some or all of the aforementioned problems with DNS.</p>
-<p>Amazon Web Services (AWS) offers a implementation of DNS known as Amazon Route 53. Route 53 is believed to be a distributed DNS system but, architectural details have not been forthcoming from Amazon.<sup>27</sup></p>
-<p>Another project DC/OS, (the Distributed Cloud Operating System) contains an internal DNS repeater. While the DC/OS DNS repeater is distributed on the internal network and consists of multiple nodes, it is not a true distributed peer to peer DNS. The DC/OS DNS is a redundant DNS system that acts as a DNS forwarder from a DNS server further up the DNS tree making it vulnerable to the same issues as DNS.28 See <a target="_blank" rel="noopener" href="https://dcos.io/">https://dcos.io/</a></p>
-<p>A third related work, Kad Node claims to be a small peer to peer DNS resolver or to act as a DNS proxy. Kad node stores DNS records in a distributed hash table, similar to our proposal but, it differs in that it does not appear to utilize a hash based DNS update ordering scheme. At the writing of this paper Kad Node appears to be inactive.<sup> 29</sup> See Kad Node at <a target="_blank" rel="noopener" href="https://github.com/kadtools/kad">https://github.com/kadtools/kad</a></p>
-<h2 id="III-Contribution"><a href="#III-Contribution" class="headerlink" title="III. Contribution"></a>III. Contribution</h2><h3 id="Technical-Problems"><a href="#Technical-Problems" class="headerlink" title="Technical Problems"></a>Technical Problems</h3><p>The main technical concerns affecting a distributed DNS are the same as those encountered in any system where information is distributed between disparate nodes, namely  data consistency, availability, and network partition tolerance. As stated by the CAP (Consistency, Availability, and Partition Tolerance) theorem, it is impossible for a distributed data store to simultaneously provide all three of the guarantees of consistency, availability, and partition tolerance at any given time. This implies compromises must be made between the three. In the case of a distributed DNS the decision as to which guarantees to support and which to neglect is relatively straight forward. In a real world environment, computers crash, network connections fail, and infrastructure can be disabled, thus network partition tolerance is a requirement of any realistic distributed DNS. As a critical service of internet infrastructure, DNS must be always available for the internet to operate properly. Thus availability is a required guarantee as well.</p>
-<p>With partition tolerance and availability as required guarantees, continuous consistency becomes impossible to guarantee according to the CAP theorem. In the case of DNS, continuous consistency is not a requirement and eventual consistency is more than sufficient. In fact, currently a DNS record updates are eventually consistent and  can take up to 24 hours to complete.</p>
-<p>Partition tolerance and availability can both be addressed by designing each node to operate independently of all the others on the network. The independent nodes need only exchange update information to ensure eventual consistency of the DNS records. In this architecture, the more nodes added to a network, the more reliable the system will become.</p>
-<p>In a distributed system relying upon eventual consistency to make data agree across nodes, the issue of order of updates arises, since there is the possibility of updates arriving at other nodes in a different order than they must be applied to ensure agreement between nodes.<br>This can be addressed by writing updates to a commit log prior to writing the DNS update. A commit log is a data structure that keeps track of the operations to be performed in first in first out (FIFO) order. When a new DNS record update is received by a node, the update is first written to the commit log. While changes are in the commit log, actions can be taken to ensure the correct ordering of the updates. The ordering of the commits can be verified and corrected by comparing timestamps or by using a hashing based scheme. An update will only be removed from the commit log once the node has finished updating the DNS record.</p>
-<img src="/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure2.png" class="">
-<p>Figure 2: Commit Log Functionality <sup>16</sup></p>
-<p>There are some properties of DNS record updates that allow for some simplifications.<br>Since the update history of each domain name in DNS is independent of all other domain names, we do not need to ensure ordering between different domain names. This property can be utilized to simplify the consistency requirement since it greatly limits the amount of possible combinations in ordering. We need only establish an update chain on a per domain name basis.<br>The update history can be established with  timestamping. Each update is time stamped, and if every node is synced to the same clock the order of updates can be ordered correctly. If the nodes do not have a common clock source this method fails to guarantee the correct update ordering. This ordering problem is what data structures and algorithms such as Merkle trees and blockchains were developed to solve. A Blockchain or Merkle tree takes a hash of a data record, then the next data update in line is a hash of the new update combined with the previous hash. The update received by a node can be confirmed ordered correctly by hashing the previous hash with the current update and comparing the result. If the hash is the same, the DNS record can be updated. If the hash is incorrect a Quorum can be called to reach a consensus between nodes. Since a record update is only concerned about the most recent update and is not dependent upon the entire history of the update chain the ordering requirement can be relaxed to only include the last few updates. In this case, a Quorum can serve the purpose of correcting out of order entries. This situation may arise if some nodes do not receive a DNS update or network issues cause updates to arrive in the wrong order.</p>
-<p>The next technical challenge is how to store the DNS records. Since DNS are retrieved based upon the domain name, the most logical method is a simple key value store, where the domain name is used as the key and the corresponding ip address is the value.</p>
-<p>Another issue that arises in the real world is the need to automatically find peers. In a small scale system, manually assigning peer address is possible but, as the system scales this method quickly becomes untenable. Nodes must employ a method to locate each other without the intervention of humans. One such method that has proven to be quite effective in other distributed applications is the distributed hash table (DHT). A distributed hash table (DHT) provides a lookup service similar to a hash table: (<em>key</em>, <em>value</em>) pairs are stored in a DHT, and any participating node can efficiently retrieve the value associated with a given key. Responsibility for maintaining the mapping from keys to values is distributed among the nodes, in such a way that a change in the set of participants causes a minimal amount of disruption. This allows a DHT to scale to an extremely large numbers of nodes while handling continual node arrivals, and departures.</p>
-<img src="/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure3.png" class="">
-<p>Figure 3: Distributed Hash Table Functionality <sup>15</sup></p>
-<p>Possibly the hardest technical problem to address in a distributed system is known as the “Trust Problem.” The trust problem brings forth the question of which node is friendly, and which is malicious. If this implementation was utilized on the open web, the trust problem can be addressed with strategies such as proof of work as employed by technologies such as Blockchain. Nevertheless, if only running on a isolated network, methods such as trusted tokens would are viable. This problem is beyond the scope of this paper but, the authors felt it was important enough to mention and it will have to be addressed in future releases.</p>
-<h2 id="IV-Algorithm-and-Implementation"><a href="#IV-Algorithm-and-Implementation" class="headerlink" title="IV.  Algorithm and Implementation"></a>IV.  Algorithm and Implementation</h2><p>The implementation of P2PN-DNS involved the union of several aforementioned key concepts in distributed computing, the key-value store, distributed hash table, and the commit log.</p>
-<img src="/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure4.png" class="">
-<p>Figure 4: Implementation Block Diagram</p>
-<p>At the most basic level DNS can be viewed as a  key value store where the domain name serves as the key and the IP address serves as the value. In practice, the DNS domain name to ip address relation is called a resource record and may contain a plethora of data including IP address, CNAME, TXT, etc. For our demonstration only a simple domain name to ip address was implemented.</p>
-<p>The main data structure enabling P2PN-DNS is the distributed hash table. In theory a distributed hash table appears simple but, in practice the implementation of the data structure and overlay network can be very labor and time intensive. There was no reason to reinvent the wheel for P2PN-DNS so, OpenDHT was used for the DHT. OpenDHT aligns well with the scope and goals of P2PN-DNS while bundling in support for other desirable features such as IPv4 and IPv6, public key cryptography, distributed shared keys, and an overall concise, and clear approach. OpenDHT can be found at <a target="_blank" rel="noopener" href="https://github.com/savoirfairelinux/opendht">https://github.com/savoirfairelinux/opendht</a></p>
-<p>Since OpenDHT was originally targeted similar distributed applications, the key-value store and commit log functionality were already present and did not have to be implemented independently.</p>
-<p>The other major facet of P2PN-DNS was the implementation of the DNS protocol. DNS protocol support was based upon a bare bones implementation of DNS called SimpleDNS. The C source code had to be heavily modified to make it compatible with the C++ elements of P2PN-DNS. Most eventenly the use of C++ 11 std::function as callbacks. Additionally, the DNS update (22) message had to be implemented. The DNS update (22) message did not become a public facing feature in the current DNS system and as such it is not included in most DNS resolvers. Systems that do implement a DNS update scheme are called Dynamic Dns or (DDNS) and have accompanying attenication to update a DNS record. (DDNS) is not directly compatible with standard DNS and relies upon an authoritative entity to make the DNS update to the rest of the Domain Name System. In the interests of time and simplicity, a minimal DNS update scheme was implemented. This shortcoming will be rectified in future releases. Please see for the original SimpleDNS source code at <a target="_blank" rel="noopener" href="https://github.com/mwarning/SimpleDNS">https://github.com/mwarning/SimpleDNS</a></p>
-<p>The ordering of the updates is determined strictly based upon timestamp in this release. This timestamp method works as long as all the nodes are time synced. This is not a valid assumption in a real world environment as nodes may be operating on seperate networks with differing time sources. In future releases a hash bashed ordering scheme as mentioned in Section 3 will be investigated.</p>
-<p>The source code for the P2PN-DNS and further documentation can be found at: <a target="_blank" rel="noopener" href="https://github.com/P2PN-DNS/P2PN-DNS">https://github.com/P2PN-DNS/P2PN-DNS</a></p>
-<h2 id="V-Results-and-Analysis"><a href="#V-Results-and-Analysis" class="headerlink" title="V.  Results and Analysis"></a>V.  Results and Analysis</h2><h3 id="Experiment-and-Evaluation"><a href="#Experiment-and-Evaluation" class="headerlink" title="Experiment and Evaluation"></a>Experiment and Evaluation</h3><p>There are a few metrics that matter in a real world application such as the response time to DNS queries, service availability in lieu of loss of nodes, and the average time required to sync records across nodes. For our experiments we propose to examine these metrics and compare, where applicable, to the current DNS system. Dnsmasq will serve as the comparison benchmark as it is a widely deployed DNS forwarder for DNS queries.</p>
-<p>To measure the response time of the nodes to a DNS request, a DNS request was sent to a  P2PN-DNS node via the dig utility, and the record response was recorded. The time taken from request to response was recorded by Wireshark. The same method was employed against DNS(dnsmasq). Five common domain names were chosen; google.com, Amazon.com, Nytimes.com, alibaba.com, and stackoverflow.com. Three samples were taken for each domain name on both P2PN-DNS and dnsmasq to establish a trend and to compensate for outliers. This resulted in 15 queries per dnsmasq and 15 queries for P2PN-DNS. Dnsmasq was running on same network as P2PN-DNS. P2PN-DNS records were added via the DNS update message prior to running the experiment.</p>
-<img src="/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure5.png" class="">
-<p>Figure 5: Query Response Times of DNS versus P2PN-DNS</p>
-<p>The first request for each domain name to Dnsmasq was of longer duration.This was due to Dnsmasq requesting current information from a higher tier DNS server( Google DNS 8.8.8.8). The second and third requests were served from the Dnsmasq local cache, hence the much shorter duration in response time. P2PN-DNS had slightly longer response time than the Dnsmasq cached response but, less than the first non cached result. This behavior was to be expected as P2PN-DNS has to search the DHT on every lookup and currently does not have local caching enabled. Response time of P2PN-DNS could be improved by enabling local caching in future releases.</p>
-<p>To test to the availability of P2PN-DNS in lieu of loss of nodes, is to observe the behavior of the P2PN-DNS nodes when nodes disappear from the network. To conduct this experiment, five nodes were started. A DNS record update message was sent to one of the nodes. The nodes were allowed to reach a consistent state where all nodes are informed of the updated record as observed by querying each node for the updated record. One node was be taken offline at a time. Each time a node was removed, the DNS records were checked for consistency between the remaining nodes.</p>
-<img src="/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure6.png" class="">
-<p>Figure 6: Progression of loss of nodes to test availability</p>
-<p>The DNS record was returned correctly even after only one node of the original five remained. This shows that the P2PN-DNS can fulfill the availability and partition tolerance guarantees even as nodes are removed from the network.</p>
-<p>To observe the amount of time required to sync records across nodes, the timestamp in the commit log was compared between two different nodes. The difference in the arrival timestamp between the two nodes is directly correlated to the time required to sync records. To ensure accurate timestamping, all nodes were  tied to an common clock and synced with  Network Time Protocol (NTP).</p>
-<img src="/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure7.png" class="">
-<p>Figure 7: Syslog output from two nodes</p>
-<p>In the figure above, the syslog output of two nodes can be observed. To produce these results, a DNS update packet was sent to one node. Syslog was monitored for logs containing information about the record update between the two nodes. The update to a record can be seen in one node and in less than one second later, the update is available on the other node. Network capabilities have an impact on the overall record sync time and can affect time jitter. The network variability(jitter) timing issue was avoided by running the nodes on the same network with a common NTP server.</p>
-<h2 id="VI-Conclusion"><a href="#VI-Conclusion" class="headerlink" title="VI.  Conclusion"></a>VI.  Conclusion</h2><p>With our implementation of a distributed DNS we were able to find a workable tradeoff between consistency, availability, and partition tolerance. By conducting thorough experiments and analysis, we showed that P2PN-DNS can guarantee eventually consistency, availability, and partition tolerance while also providing a comparable amount time required to process DNS queries as compared to existing DNS solutions such as DNSmasq.P2PN-DNS was shown to be available even as nodes were removed giving credence to the claim that P2PN-DNS would be less susceptible than current DNS to regional outages or purposeful attacks.<br>Additionally, the distributed nature of P2PN-DNS makes it applicable for software containers which would benefit from a fault tolerant solution such as P2PN-DNS.</p>
-<h2 id="VII-References"><a href="#VII-References" class="headerlink" title="VII.  References"></a>VII.  References</h2><p>[1] “Domain Name System”. En.wikipedia.org. N.p., 2017. Web. 2 November 2017.<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Domain_Name_System">https://en.wikipedia.org/wiki/Domain_Name_System</a><br>[2] “Distributed Denial of Service Attacks on Root Nameservers ”. En.wikipedia.org. N.p., 2017. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Distributed_denial-of-service_attacks_on_root_nameservers">https://en.wikipedia.org/wiki/Distributed_denial-of-service_attacks_on_root_nameservers</a><br>[3] “I Fought My ISPS Bad Behavior and Won”. Eric Helgeson. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://erichelgeson.github.io/blog/2013/12/31/i-fought-my-isps-bad-behavior-and-won/">https://erichelgeson.github.io/blog/2013/12/31/i-fought-my-isps-bad-behavior-and-won/</a><br>[4] Eckersley, Technical Analysis by Peter. “Widespread Hijacking of Search Traffic in the United States.” Electronic Frontier Foundation, 14 Oct. 2011. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://www.eff.org/deeplinks/2011/07/widespread-search-hijacking-in-the-us">https://www.eff.org/deeplinks/2011/07/widespread-search-hijacking-in-the-us</a><br>[5] “Transaction Log”. En.wikipedia.org. N.p., 2017. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Transaction_log">https://en.wikipedia.org/wiki/Transaction_log</a><br>[6] “Merkle Tree”. En.wikipedia.org. N.p., 2017. Web. 2 November 2017.<br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Merkle_tree">https://en.wikipedia.org/wiki/Merkle_tree</a><br>[7]  Kangasharju, Jussi. Chapter 4: Distributed Systems: Replication and Consistency. N.p., 2017. Web. 7 November 2017. <a target="_blank" rel="noopener" href="https://www.cs.helsinki.fi/webfm_send/1256">https://www.cs.helsinki.fi/webfm_send/1256</a><br>[8] “Blockchain”. En.wikipedia.org. N.p., 2017. Web. 7 November 2017. <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Blockchain">https://en.wikipedia.org/wiki/Blockchain</a><br>[9] Jacquin, Ludovic, et al. “The Trust Problem in Modern Network Infrastructures.” SpringerLink, Springer, Cham, 28 Apr. 2015. N.p., 2017. Web. 7 November 2017.  <a target="_blank" rel="noopener" href="https://link.springer.com/chapter/10.1007/978-3-319-25360-2_10">https://link.springer.com/chapter/10.1007/978-3-319-25360-2_10</a><br>[10] “ACID”. En.wikipedia.org. N.p., 2017. Web. 8 November 2017. <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/ACID">https://en.wikipedia.org/wiki/ACID</a><br>[11] DataStax Academy Follow. “A Deep Dive Into Understanding Apache Cassandra.”LinkedIn SlideShare, 25 Sept. 2013. N.p., 2017. Web. 2 December 2017.  <a target="_blank" rel="noopener" href="https://www.slideshare.net/planetcassandra/a-deep-dive-into-understanding-apache-cassandra">https://www.slideshare.net/planetcassandra/a-deep-dive-into-understanding-apache-cassandra</a><br>[12] “Peer-to-Peer (P2P) Systems.” SlidePlayer. N.p., 2017. Web. 2 December 2017 <a target="_blank" rel="noopener" href="http://slideplayer.com/slide/4168557/">http://slideplayer.com/slide/4168557/</a><br>[13] “Non-Transitive Connectivity and DHTs “<a target="_blank" rel="noopener" href="https://www.usenix.org/legacy/events/worlds05/tech/full_papers/freedman/freedman_html/index.html">https://www.usenix.org/legacy/events/worlds05/tech/full_papers/freedman/freedman_html/index.html</a><br>[14] “Amazon Route 53”. En.wikipedia.org. N.p., 2017. Web. 6 December 2017.<br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Amazon_Route_53">https://en.wikipedia.org/wiki/Amazon_Route_53</a><br>[15] “Distributed hash table” .En.wikipedia.org. N.p., 2017. Web. 6 December 2017. <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Distributed_hash_table">https://en.wikipedia.org/wiki/Distributed_hash_table</a><br>[16] “FIFO (computing and electronics)” .En.wikipedia.org. N.p., 2017. Web. 6 December 2017. <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/FIFO_(computing_and_electronics)">https://en.wikipedia.org/wiki/FIFO_(computing_and_electronics)</a><br>[17] “RFC 1034  DOMAIN NAMES - CONCEPTS AND FACILITIES”, N.p., 2017. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://www.ietf.org/rfc/rfc1034.txt">https://www.ietf.org/rfc/rfc1034.txt</a><br>[18] “RFC 1035 DOMAIN NAMES - IMPLEMENTATION AND SPECIFICATION” , N.p., 2017. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://www.ietf.org/rfc/rfc1035.txt">https://www.ietf.org/rfc/rfc1035.txt</a><br>[19] “Embedded DNS server in user-defined networks” N.p., 2017. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://docs.docker.com/engine/userguide/networking/configure-dns/">https://docs.docker.com/engine/userguide/networking/configure-dns/</a><br>[20] “OpenDHT”   Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://github.com/savoirfairelinux/opendht">https://github.com/savoirfairelinux/opendht</a><br>[21] “SimpleDNS: Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://github.com/mwarning/SimpleDNS">https://github.com/mwarning/SimpleDNS</a><br>[22] “  Dynamic Updates in the Domain Name System (DNS UPDATE)” Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2136">https://tools.ietf.org/html/rfc2136</a><br>[23] “ You can’t Peer to Peer the DNS”<br><a target="_blank" rel="noopener" href="https://nohats.ca/wordpress/blog/2012/04/09/you-cant-p2p-the-dns-and-have-it-too/">https://nohats.ca/wordpress/blog/2012/04/09/you-cant-p2p-the-dns-and-have-it-too/</a><br>[24] “DNS Server”<br><a target="_blank" rel="noopener" href="https://gitlearning.wordpress.com/2015/06/23/dns-server/">https://gitlearning.wordpress.com/2015/06/23/dns-server/</a><br>[25] “Internet censorship in Iran” <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Internet_censorship_in_Iran">https://en.wikipedia.org/wiki/Internet_censorship_in_Iran</a><br>[26] “Great Firewall”<br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Great_Firewall">https://en.wikipedia.org/wiki/Great_Firewall</a><br>[27] “ Amazon Route 53”<br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Amazon_Route_53">https://en.wikipedia.org/wiki/Amazon_Route_53</a><br>[28] “DC/OS” <a target="_blank" rel="noopener" href="https://dcos.io/">https://dcos.io/</a><br>[29] “Kad Node” <a target="_blank" rel="noopener" href="https://github.com/kadtools/kad">https://github.com/kadtools/kad</a></p>
-
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Computing/" rel="tag">Computing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Distributed-Computing/" rel="tag">Distributed Computing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Research/" rel="tag">Research</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-Hexo-Asset-Posts-Work-Around"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2017/12/26/Hexo-Asset-Posts-Work-Around/">Hexo Asset Posts Work Around</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2017/12/26/Hexo-Asset-Posts-Work-Around/" class="article-date">
-	  <time datetime="2017-12-27T01:15:57.000Z" itemprop="datePublished">December 26, 2017</time>
-	</a>
-
-       
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-          <div class="entry-summary">
-          Even though Hexo suports markdown, the current asset folders implmention is hacky at best.It does not allow for additional fields. Without the asset_path or image tag your image will often not show up on the index page.The following code will allow you to set properties and display the image on the index page 
-&lt;img src=&quot;&#123;% asset_path image_0.png %&#125;&quot; style=&quot;width: 90%;&quot;/&gt;
-A better way would be to include the markdown file in the Asset Folder. 
-
-        
-          <p class="article-more-link">
-            <a href="/2017/12/26/Hexo-Asset-Posts-Work-Around/#more">Continue Reading →</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fixes/" rel="tag">Fixes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-Investigation-of-Memory-Dependence-Strategies"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/">Investigation of Memory Dependence Strategies</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/" class="article-date">
-	  <time datetime="2017-09-16T01:43:08.000Z" itemprop="datePublished">September 15, 2017</time>
-	</a>
-
-       
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-          <div class="entry-summary">
-          
-
-Computer ArchitectureInvestigation of Memory Dependence Prediction Strategies with SimpleScalarLorenzo Allas, John Grun, Sanandeesh Kamat
-
-
-
-0.0 AbstractA dynamically scheduled processor may default to in-order execution of Load/Store instructions to avoid Memory Order Violations. This is because, loads executed out of order may be dependent upon prior stores, the addresses of which were initially unknown. To overcome the potentially wasted clock cycles of conservatively stalled loads, known as False Dependencies, Memory Dependence Predictor (MDP) schemes have been developed. This paper demonstrates the implementation of two experimental MDP schemes, Store Sets and Counting Dependence Predictor (CDP) within the SimpleScalar framework. In addition, it demonstrates two baseline MDP schemes, No Speculation and Naive Speculation. The conceptual overview, the software implementation details, as well as quantitative simulation results are provided. The performance of these MDP schemes has been evaluated in terms of three metrics: the number of Memory Order Violations, the number of False Dependencies, and the average IPC. Although the results did not indicate a performance enhancement in terms of execution time, they do demonstrate expected behavior in terms of Memory Order Violations and False Dependencies. Possible implementation shortcomings, and future alterations are later proposed.
-
-        
-          <p class="article-more-link">
-            <a href="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/#more">Continue Reading →</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Computing/" rel="tag">Computing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Research/" rel="tag">Research</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
 
 
   <nav id="page-nav">
@@ -933,6 +1072,54 @@ Computer ArchitectureInvestigation of Memory Dependence Prediction Strategies wi
               <div class="widget-entry-summary" style="margin: 0;">
             
 
+              <h6 style="margin: 0;"><a href="/2023/04/16/MQTT-K8s-Setup-on-Ubuntu-20-04/">MQTT K8s Setup on Ubuntu 20.04</a></h6>
+              <span>April 16, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/02/20/Microscope-Camera/">Microscope Camera</a></h6>
+              <span>February 20, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/02/20/Microscope-Selection/">Microscope Selection</a></h6>
+              <span>February 20, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2022/08/17/WLED-Degchi-Lamp/">WLED Degchi Lamp</a></h6>
+              <span>August 17, 2022</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
               <h6 style="margin: 0;"><a href="/2021/03/11/TP-Link-U3T-Ubuntu/">TP Link U3T Ubuntu</a></h6>
               <span>March 11, 2021</span>
             </div>
@@ -951,54 +1138,6 @@ Computer ArchitectureInvestigation of Memory Dependence Prediction Strategies wi
 
           </li>
         
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2019/12/23/Grub-Boot-Loader-Not-Found/">Grub Boot Loader Not Found</a></h6>
-              <span>December 23, 2019</span>
-            </div>
-
-          </li>
-        
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2019/05/10/Numpy-LeNet-5-with-ADAM/">Numpy LeNet 5 with ADAM</a></h6>
-              <span>May 10, 2019</span>
-            </div>
-
-          </li>
-        
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2019/01/20/QuadCopterBumbleBee/">QuadCopterBumbleBee</a></h6>
-              <span>January 20, 2019</span>
-            </div>
-
-          </li>
-        
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2017/12/30/React-Native-Watch-Limit-Fix/">React_Native_Watch_Limit_Fix</a></h6>
-              <span>December 30, 2017</span>
-            </div>
-
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1011,7 +1150,7 @@ Computer ArchitectureInvestigation of Memory Dependence Prediction Strategies wi
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C++</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CNC/" rel="tag">CNC</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Computing/" rel="tag">Computing</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Distributed-Computing/" rel="tag">Distributed Computing</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Electrical/" rel="tag">Electrical</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fixes/" rel="tag">Fixes</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kalman/" rel="tag">Kalman</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mechanical/" rel="tag">Mechanical</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NodeJs/" rel="tag">NodeJs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenScad/" rel="tag">OpenScad</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React-Native/" rel="tag">React Native</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Research/" rel="tag">Research</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ubuntu/" rel="tag">Ubuntu</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C++</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CNC/" rel="tag">CNC</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Computing/" rel="tag">Computing</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Distributed-Computing/" rel="tag">Distributed Computing</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Electrical/" rel="tag">Electrical</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Electronics/" rel="tag">Electronics</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fixes/" rel="tag">Fixes</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hyperion/" rel="tag">Hyperion</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kalman/" rel="tag">Kalman</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LED/" rel="tag">LED</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mechanical/" rel="tag">Mechanical</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NodeJs/" rel="tag">NodeJs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenScad/" rel="tag">OpenScad</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React-Native/" rel="tag">React Native</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Research/" rel="tag">Research</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RestAPI/" rel="tag">RestAPI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ubuntu/" rel="tag">Ubuntu</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WLED/" rel="tag">WLED</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1021,7 +1160,7 @@ Computer ArchitectureInvestigation of Memory Dependence Prediction Strategies wi
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CNC/" style="font-size: 13.33px;">CNC</a> <a href="/tags/Computing/" style="font-size: 16.67px;">Computing</a> <a href="/tags/Distributed-Computing/" style="font-size: 10px;">Distributed Computing</a> <a href="/tags/Electrical/" style="font-size: 13.33px;">Electrical</a> <a href="/tags/Fixes/" style="font-size: 20px;">Fixes</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Kalman/" style="font-size: 10px;">Kalman</a> <a href="/tags/Machine-Learning/" style="font-size: 10px;">Machine Learning</a> <a href="/tags/Mechanical/" style="font-size: 10px;">Mechanical</a> <a href="/tags/NodeJs/" style="font-size: 10px;">NodeJs</a> <a href="/tags/OpenScad/" style="font-size: 10px;">OpenScad</a> <a href="/tags/React-Native/" style="font-size: 10px;">React Native</a> <a href="/tags/Research/" style="font-size: 16.67px;">Research</a> <a href="/tags/Ubuntu/" style="font-size: 10px;">Ubuntu</a>
+      <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CNC/" style="font-size: 15px;">CNC</a> <a href="/tags/Computing/" style="font-size: 17.5px;">Computing</a> <a href="/tags/Distributed-Computing/" style="font-size: 10px;">Distributed Computing</a> <a href="/tags/Electrical/" style="font-size: 12.5px;">Electrical</a> <a href="/tags/Electronics/" style="font-size: 10px;">Electronics</a> <a href="/tags/Fixes/" style="font-size: 20px;">Fixes</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Hyperion/" style="font-size: 10px;">Hyperion</a> <a href="/tags/Kalman/" style="font-size: 10px;">Kalman</a> <a href="/tags/LED/" style="font-size: 10px;">LED</a> <a href="/tags/Machine-Learning/" style="font-size: 10px;">Machine Learning</a> <a href="/tags/Mechanical/" style="font-size: 10px;">Mechanical</a> <a href="/tags/NodeJs/" style="font-size: 10px;">NodeJs</a> <a href="/tags/OpenScad/" style="font-size: 10px;">OpenScad</a> <a href="/tags/React-Native/" style="font-size: 10px;">React Native</a> <a href="/tags/Research/" style="font-size: 17.5px;">Research</a> <a href="/tags/RestAPI/" style="font-size: 10px;">RestAPI</a> <a href="/tags/Ubuntu/" style="font-size: 10px;">Ubuntu</a> <a href="/tags/WLED/" style="font-size: 10px;">WLED</a>
     </div>
   </div>
 
@@ -1031,7 +1170,7 @@ Computer ArchitectureInvestigation of Memory Dependence Prediction Strategies wi
     <h3 class="widget-title">Archives</h3>
 
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">April 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">February 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/08/">August 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1056,7 +1195,7 @@ Computer ArchitectureInvestigation of Memory Dependence Prediction Strategies wi
 
   <div class="clearfix container">
       <div class="site-info">
-	      &copy; 2022 Questionable Engineering All Rights Reserved.
+	      &copy; 2023 Questionable Engineering All Rights Reserved.
         
       </div>
       <div class="site-credit">
