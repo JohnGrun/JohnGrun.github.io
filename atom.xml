@@ -36,13 +36,13 @@
     </summary>
     
     
+      <category term="Electronics" scheme="http://questionableengineering.com/tags/Electronics/"/>
+    
       <category term="LED" scheme="http://questionableengineering.com/tags/LED/"/>
     
       <category term="WLED" scheme="http://questionableengineering.com/tags/WLED/"/>
     
       <category term="Hyperion" scheme="http://questionableengineering.com/tags/Hyperion/"/>
-    
-      <category term="Electronics" scheme="http://questionableengineering.com/tags/Electronics/"/>
     
       <category term="RestAPI" scheme="http://questionableengineering.com/tags/RestAPI/"/>
     
@@ -169,9 +169,9 @@
     </summary>
     
     
-      <category term="Research" scheme="http://questionableengineering.com/tags/Research/"/>
-    
       <category term="Computing" scheme="http://questionableengineering.com/tags/Computing/"/>
+    
+      <category term="Research" scheme="http://questionableengineering.com/tags/Research/"/>
     
       <category term="Machine Learning" scheme="http://questionableengineering.com/tags/Machine-Learning/"/>
     
@@ -241,9 +241,9 @@
     </summary>
     
     
-      <category term="OpenScad" scheme="http://questionableengineering.com/tags/OpenScad/"/>
-    
       <category term="Electrical" scheme="http://questionableengineering.com/tags/Electrical/"/>
+    
+      <category term="OpenScad" scheme="http://questionableengineering.com/tags/OpenScad/"/>
     
       <category term="Mechanical" scheme="http://questionableengineering.com/tags/Mechanical/"/>
     
@@ -269,9 +269,9 @@
     </summary>
     
     
-      <category term="Research" scheme="http://questionableengineering.com/tags/Research/"/>
-    
       <category term="Computing" scheme="http://questionableengineering.com/tags/Computing/"/>
+    
+      <category term="Research" scheme="http://questionableengineering.com/tags/Research/"/>
     
       <category term="Distributed Computing" scheme="http://questionableengineering.com/tags/Distributed-Computing/"/>
     
@@ -323,9 +323,9 @@
     </summary>
     
     
-      <category term="Research" scheme="http://questionableengineering.com/tags/Research/"/>
-    
       <category term="Computing" scheme="http://questionableengineering.com/tags/Computing/"/>
+    
+      <category term="Research" scheme="http://questionableengineering.com/tags/Research/"/>
     
   </entry>
   
@@ -377,9 +377,9 @@
     </summary>
     
     
-      <category term="Research" scheme="http://questionableengineering.com/tags/Research/"/>
-    
       <category term="Computing" scheme="http://questionableengineering.com/tags/Computing/"/>
+    
+      <category term="Research" scheme="http://questionableengineering.com/tags/Research/"/>
     
       <category term="Kalman" scheme="http://questionableengineering.com/tags/Kalman/"/>
     
