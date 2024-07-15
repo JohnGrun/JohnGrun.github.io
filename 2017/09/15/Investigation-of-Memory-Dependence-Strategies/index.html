@@ -25,13 +25,11 @@
 <meta property="og:image" content="http://questionableengineering.com/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image8.png">
 <meta property="og:image" content="http://questionableengineering.com/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image3.png">
 <meta property="og:image" content="http://questionableengineering.com/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image11.png">
-<meta property="og:image" content="http://questionableengineering.com/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image10.png">
-<meta property="og:image" content="http://questionableengineering.com/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image9.png">
 <meta property="og:image" content="http://questionableengineering.com/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image2.png">
 <meta property="og:image" content="http://questionableengineering.com/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image1.png">
 <meta property="og:image" content="http://questionableengineering.com/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image6.png">
 <meta property="article:published_time" content="2017-09-16T01:43:08.000Z">
-<meta property="article:modified_time" content="2020-09-04T03:40:48.524Z">
+<meta property="article:modified_time" content="2023-09-02T16:14:27.100Z">
 <meta property="article:author" content="John Grun">
 <meta property="article:tag" content="Computing">
 <meta property="article:tag" content="Research">
@@ -77,32 +75,10 @@
 
 
   
-  
-  <div class="site-header-image">
-    <img id="originBg" width="100%" alt="Hike News" src="">
-  </div>
-
-  <div id="header-blur" class="site-header-image blur" style="position: absolute; top:0; height: 207px; min-height: 207px; min-width: 100%;">
-    <img id="blurBg" width="100%" style="top: 96%" alt="Hike News" src="">
-  </div>
-
-  <script>
-        var imgUrls = "css/images/pose01.jpg,https://source.unsplash.com/collection/954550/1920x1080,https://source.unsplash.com/collection/954550/1920x1081".split(",");
-        var random = Math.floor((Math.random() * imgUrls.length ));
-        if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
-          document.getElementById("originBg").src=imgUrls[random];
-          document.getElementById("blurBg").src=imgUrls[random];
-        } else {
-          document.getElementById("originBg").src='/' + imgUrls[random];
-          document.getElementById("blurBg").src='/' + imgUrls[random];
-        }
-    </script>
-
-
 
 
 <header id="allheader" class="site-header" role="banner" 
-   style="width: 100%; position: absolute; top:0; background: rgba(255,255,255,.8);"  >
+   >
   <div class="clearfix container">
       <div class="site-branding">
 
@@ -168,11 +144,11 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image7.png"  style="width: 90%;"/>
+        <img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image7.png" class="">
 
-<h2 id="Computer-Architecture"><a href="#Computer-Architecture" class="headerlink" title="Computer Architecture"></a>Computer Architecture</h2><h2 id="Investigation-of-Memory-Dependence-Prediction-Strategies-with-SimpleScalar"><a href="#Investigation-of-Memory-Dependence-Prediction-Strategies-with-SimpleScalar" class="headerlink" title="Investigation of Memory Dependence Prediction Strategies with SimpleScalar"></a>Investigation of Memory Dependence Prediction Strategies with SimpleScalar</h2><h3 id="Lorenzo-Allas-John-Grun-Sanandeesh-Kamat"><a href="#Lorenzo-Allas-John-Grun-Sanandeesh-Kamat" class="headerlink" title="Lorenzo Allas, John Grun, Sanandeesh Kamat"></a>Lorenzo Allas, John Grun, Sanandeesh Kamat</h3><img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image5.png"  style="width: 90%;"/>
+<h2 id="Computer-Architecture"><a href="#Computer-Architecture" class="headerlink" title="Computer Architecture"></a>Computer Architecture</h2><h2 id="Investigation-of-Memory-Dependence-Prediction-Strategies-with-SimpleScalar"><a href="#Investigation-of-Memory-Dependence-Prediction-Strategies-with-SimpleScalar" class="headerlink" title="Investigation of Memory Dependence Prediction Strategies with SimpleScalar"></a>Investigation of Memory Dependence Prediction Strategies with SimpleScalar</h2><h3 id="Lorenzo-Allas-John-Grun-Sanandeesh-Kamat"><a href="#Lorenzo-Allas-John-Grun-Sanandeesh-Kamat" class="headerlink" title="Lorenzo Allas, John Grun, Sanandeesh Kamat"></a>Lorenzo Allas, John Grun, Sanandeesh Kamat</h3><img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image5.png" class="">
 
-<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image12.jpg" style="width: 90%;"/>
+<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image12.jpg" class="">
 
 <h1 id="0-0-Abstract"><a href="#0-0-Abstract" class="headerlink" title="0.0 Abstract"></a>0.0 Abstract</h1><p>A dynamically scheduled processor may default to in-order execution of Load/Store instructions to avoid Memory Order Violations. This is because, loads executed out of order may be dependent upon prior stores, the addresses of which were initially unknown. To overcome the potentially wasted clock cycles of conservatively stalled loads, known as False Dependencies, Memory Dependence Predictor (MDP) schemes have been developed. This paper demonstrates the implementation of two experimental MDP schemes, Store Sets and Counting Dependence Predictor (CDP) within the SimpleScalar framework. In addition, it demonstrates two baseline MDP schemes, No Speculation and Naive Speculation. The conceptual overview, the software implementation details, as well as quantitative simulation results are provided. The performance of these MDP schemes has been evaluated in terms of three metrics: the number of Memory Order Violations, the number of False Dependencies, and the average IPC. Although the results did not indicate a performance enhancement in terms of execution time, they do demonstrate expected behavior in terms of Memory Order Violations and False Dependencies. Possible implementation shortcomings, and future alterations are later proposed.</p>
 <span id="more"></span>
@@ -183,7 +159,7 @@
 <p>Today, distributed systems within which centralized fetch and execution streams are  infeasible pose a complication for MDP schemes such as Store Sets. To accommodate distributed systems for which memory dependence predictors do not have global knowledge stores at the full program level, the Counting Dependence Predictor (CDP) scheme predicts the number of stores (not specific PCs) which a load must wait for before it is issued. Moreover, the CDP can default the behavior of a given load to No Speculation (conservative) or Naive Speculation (aggressive) depending on how well it performs at run time. A state machine shown in Figure 4 prescribes the behavior of a given load and is designed to maximize overall performance without requisite maintenance of global store information.</p>
 <h2 id="1-3-The-Purpose-of-this-Project"><a href="#1-3-The-Purpose-of-this-Project" class="headerlink" title="1.3 The Purpose of this Project"></a>1.3 The Purpose of this Project</h2><p>The purpose of this project was to extend the SimpleScalar’s sim-outorder simulator to investigate the effectiveness of Store Sets and CDP as MDP schemes. This required familiarization with the SimpleScalar/sim-outorder source code as well as with the selected MDP schemes. Practical feasibility (e.g. memory/power economy) was not a concern of this simulation-driven project, and so the presented implementations represent idealized  behavior with unrestricted architectural resources.</p>
 <h1 id="2-0-Methods-amp-Materials"><a href="#2-0-Methods-amp-Materials" class="headerlink" title="2.0 Methods &amp; Materials"></a>2.0 Methods &amp; Materials</h1><h2 id="2-1-Overview-of-the-SimpleScalar-Out-of-Order-Simulator"><a href="#2-1-Overview-of-the-SimpleScalar-Out-of-Order-Simulator" class="headerlink" title="2.1    Overview of the SimpleScalar Out-of-Order Simulator"></a>2.1    Overview of the SimpleScalar Out-of-Order Simulator</h2><p>This project utilized the SimpleScalar Toolset to design/evaluate MDP schemes. The SimpleScalar toolset is divided into modules which are applicable to different types/levels of architectural analysis. Because this project was investigating a type of dynamic scheduling, the sim-outorder module was used. Conveniently, the sim-outorder software is solely confined to the file,simoutorder.c. Sim-outorder centers around the Register-Update-Unit(RUU) and Load-Store-Queue (LSQ) which allow instructions to issue/execute out of order but retire in order. Figure 1 illustrates the pipeline of sim-outorder. The RUU and LSQ are themselves simply arrays of the RUU_Station type, which is container for status information of in-flight instructions.</p>
-<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image4.png" style="width: 90%;"/>
+<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image4.png" class="">
 
 <p>Figure 1: Pipeline for sim-outorder with Memory Dependence Management Highlighted</p>
 <h3 id="2-1-1-Memory-Dependence-Management-with-Load-Store-Queue-Refresh"><a href="#2-1-1-Memory-Dependence-Management-with-Load-Store-Queue-Refresh" class="headerlink" title="2.1.1 Memory Dependence Management with Load-Store-Queue Refresh"></a>2.1.1 Memory Dependence Management with Load-Store-Queue Refresh</h3><p>Memory operations are split into two separate instructions: the addition to compute the effective address  and the memory operations itself. The Load-Store-Queue Refresh function (lsq_refresh()), indicated in Figure 1, is an array of RUU_Stations of exclusively loads and stores. It’s functionality is to facilitate memory dependence checking and safe issuing of loads (stores are issued in ruu_issue()). Therefore, lsq_refresh() represented the entry point for most of the software developed for this project. In fact, seach MDP scheme implemented in this project is represented entirely by a variant of lsq_refresh() which is selectively called in it’s stead (See Section 2.3 for details).</p>
@@ -193,9 +169,9 @@
 <p>False Dependency program slow-down in which a ready load is stalled due to the detection of a prior unready store which does not have a matching effective address. This results in wasted clock cycles which reduces program execution speed.</p>
 <p>Instructions Per Cycle (IPC) The average number of instructions which are retired per cycle. In multiple-issue processors like SimpleScalar, this can easily rise above 1.</p>
 <h2 id="2-3-Implementation-of-the-MDP-Schemes-and-Metrics-Acquisition"><a href="#2-3-Implementation-of-the-MDP-Schemes-and-Metrics-Acquisition" class="headerlink" title="2.3    Implementation of the  MDP Schemes and Metrics Acquisition"></a>2.3    Implementation of the  MDP Schemes and Metrics Acquisition</h2><p>Implementing the MDP schemes primarily involved altering the actions taken during lsq_refresh(). Specifically, what to do in the event of a detected unready store and ready load. By default, simoutorder does not risk the possibility of Memory Order Violations. Moreover, the functionality to track the number of False Dependencies did not exist. Therefore, this project also involved developing code detect/track the events of Memory Order Violations and False Dependencies, which can be found in check_mem_violation() and countNumFalseDependencies(), respectively.</p>
-<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image8.png" style="width: 90%;"/>
+<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image8.png" class="">
 
-<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image3.png" style="width: 90%;"/>
+<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image3.png" class="">
 
 <p>Figure 2 : Logic for Memory Dependence Algorithms</p>
 <table>
@@ -248,11 +224,11 @@
 <h3 id="2-3-1-No-Speculation-Conservative"><a href="#2-3-1-No-Speculation-Conservative" class="headerlink" title="2.3.1 No Speculation (Conservative)"></a>2.3.1 No Speculation (Conservative)</h3><p>For an algorithm which performs no speculation, the load instructions are dispatched to the memory system only when the addresses of all previous stores are known and the operands of those stores are ready. This configuration successfully avoids memory dependence violations entirely by ensuring memory instructions are issued in program order, but provides no prevention against false memory dependencies (see Table 1). As such, this conservative algorithm served as the baseline memory dependence management scheme against which subsequently implemented prediction schemes were compared for maximum false dependencies.</p>
 <h3 id="2-3-2-Naive-Speculation-Aggressive"><a href="#2-3-2-Naive-Speculation-Aggressive" class="headerlink" title="2.3.2 Naive Speculation (Aggressive)"></a>2.3.2 Naive Speculation (Aggressive)</h3><p>The naive prediction algorithm assumes  no memory dependencies among store/load instructions. All load and store instructions are issued as soon as possible. This configuration is the opposite of no speculation in that no false dependencies occur, but maximum amount of memory violations are incurred. As such, this aggressive algorithm served as the baseline MDP scheme against which subsequently implemented MDP schemes were compared for maximum memory violations. Functionality to flush the pipeline when a memory violation occurs was not implemented in this simulation due to time constraints.</p>
 <p>###2.3.3 Infinite Store Sets<br>The Store Sets algorithm predicts future memory violations based on their previous occurrences. Each load is initialized to behave according to Naive Speculation, in that it assumes it can issue as soon as it is able to. Upon detection of a memory order violation, the conflicted store and load relationship is saved into a table for future reference. This table is known as a Store Set. During a queue refresh, each ready load’s Store Set is searched for a match (i.e. conflict) with any unready store currently behind it. If a conflict is found, the load is stalled until the matching store is no longer on the  LSQ. Because no limits are imposed upon (1) the number of stores a load’s store set can contain, or (2) the number of store sets within which a unique store PC can exist, this implementation is considered to be an Infinite Store Set. These limits do exist in practical implementations which were not considered in this project. Figure 2 illustrates the simplified Infinite Store Sets concept implemented in this project.  For the project implementation, the Store Set Index is a C struct and the Store Set itself is simply a C array of addresses.</p>
-<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image11.png" style="width: 80%;"/>
+<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image11.png" class="">
 
 <p>Figure 3: Infinite Store Sets</p>
 <h3 id="2-3-4-Counting-Dependence-Prediction"><a href="#2-3-4-Counting-Dependence-Prediction" class="headerlink" title="2.3.4 Counting Dependence Prediction"></a>2.3.4 Counting Dependence Prediction</h3><p>The counting dependence prediction algorithm uses a state machine for each unique load to determine the correct course of action. Unlike the Store Sets algorithm, the CDP algorithm does not maintain a record of specific Store PCs. Rather, it logs the number of stores which a load must wait for after being ready. This layer of detachment makes CDP an attractive MDP scheme for distributed systems within which globally broadcasted information may not be feasible.Similar to the store set algorithm, each load is initialized to behave according to Naive Speculation (i.e.Aggressive 00 ). As soon as a Memory Order Violation is detected, the state changes to No Speculation (i.e. Conservative.</p>
-<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image10.png" style="width: 80%;"/>
+
 
 <p>Figure 4: Counting Dependence Predictor State Machine Diagram</p>
 <p>As long as there is determined to be &gt;1 prior stores upon which this load depends (i.e. a Match ), the load will remain Conservative. As soon as there is determined to be 0 or 1 matching stores, the state will change to One-Store and volley between 01 or 11, respectively. If at any time, however, a Memory Order Violation is detected, the load’s CDP state will return to Conservative.  Figure 2 illustrates the CDP concept implemented in this project. For the project implementation, CDP Index is a C struct and the CDP state itself is simply a C enum comprising of the four aforementioned states.</p>
@@ -263,7 +239,7 @@
 <li>Initializes/Updates the CDP of the Offending Load</li>
 </ol>
 <p>Therefore, although check_mem_violation() is ostensibly merely metric tracker, it also completes the implementation of Store Set and CDP with state feedback The algorithm for Memory Order Violation detection is shown in Figure 5. What allows this algorithm to be effective is that it is called within RUU_Issue() specifically when a ready load is about to be executed. The False Dependency detection function ( countNumFalseDependencies() ), however, is purely a metric tracker and does not alter the state of ongoing Store Sets or CDP state structures. It is called immediately after the LSQ is refreshed. As shown in Figure 5, it simply counts the number of ready loads which come after an unready store. This is a definition of False Dependency which applies closely to No Speculation, but is loosely applicable to the other MDP schemes.</p>
-<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image9.png" style="width: 80%;"/>
+
 
 <p>Figure 5: Logic for Memory order Violation Check and False Dependency Check</p>
 <h2 id="2-4-Implementation-of-the-Simulations"><a href="#2-4-Implementation-of-the-Simulations" class="headerlink" title="2.4    Implementation of the Simulations"></a>2.4    Implementation of the Simulations</h2><p>The following test programs were run using the aforementioned MDP schemes.</p>
@@ -413,7 +389,7 @@
 </tr>
 </tbody></table>
 <p>Table 4: Raw IPC Across Test Programs and MDP Schemes</p>
-<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image2.png" style="width: 160%;"/>
+<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image2.png" class="">
 
 <p>Figure 6: Plotted IPC Across Test Programs and MDP Schemes</p>
 <h2 id="3-2-Number-of-Memory-Order-Violations"><a href="#3-2-Number-of-Memory-Order-Violations" class="headerlink" title="3.2 Number of Memory Order Violations"></a>3.2 Number of Memory Order Violations</h2><p>The number of Memory Order Violations generated by the simulations was largely consistent with the initial hypothesis. This is in that the Default, and No Speculation MDP schemes consistently resulted in zero Memory Order Violations. This verifies the project’s implementation of the check_mem_violation() function. By design, the Store Sets and CDP algorithm are intended to incur a few number of Memory Order Violations while affording an enhanced IPC. Because the results of the previous section indicated no IPC enhancements, sadly, we merely have only the predicted Memory Order Violation incursion.</p>
@@ -482,7 +458,7 @@
 </tr>
 </tbody></table>
 <p>Table 5 : Memory Violation Count Across Test Programs and MDP Schemes</p>
-<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image1.png" style="width: 160%;"/>
+<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image1.png" class="">
 
 <p>Figure 7: Plotted Memory Violation Count Across Test Programs and MDP Schemes</p>
 <h2 id="3-2-Number-of-False-Dependencies"><a href="#3-2-Number-of-False-Dependencies" class="headerlink" title="3.2 Number of False Dependencies"></a>3.2 Number of False Dependencies</h2><p>The number of False Dependencies generated by the simulations was also largely consistent with the initial hypothesis. This is in that the Naive Speculation consistently resulted in zero False Dependencies. In addition the No Speculation MDP scheme resulted in the largest number of False Dependencies. This verifies the project’s implementation of the countNumFalseDependencies() function as well as baseline MDP schemes. It is optimistic that the Store Sets and CDP schemes resulted in fewer False Dependencies than the Default and No Speculation. However, as there was no significant improvement in IPC, the overall value of these experimental MDP schemes is still undemonstrated.</p>
@@ -551,7 +527,7 @@
 </tr>
 </tbody></table>
 <p>Table 6: False Dependency Count Across Test Programs and MDP Schemes</p>
-<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image6.png" style="width: 160%;"/>
+<img src="/2017/09/15/Investigation-of-Memory-Dependence-Strategies/image6.png" class="">
 
 <p>Figure 8: Plotted False Dependency Count Across Test Programs and MDP Schemes</p>
 <h1 id="4-0-Discussion"><a href="#4-0-Discussion" class="headerlink" title="4.0 Discussion"></a>4.0 Discussion</h1><p>The most significant metric which justifies an algorithm’s utility is the IPC. Because these results did not demonstrate a significant enhancement of IPC for either of the two experimental MDP schemes (Store Sets and CDP), their implementations cannot be proclaimed entirely successful. However, there were several aspects of the results which did support the correctness of their implementations and their consistency with theory. For example:</p>
@@ -659,7 +635,7 @@
 
   <div class="clearfix container">
       <div class="site-info">
-	      &copy; 2023 Questionable Engineering All Rights Reserved.
+	      &copy; 2024 Questionable Engineering All Rights Reserved.
         
       </div>
       <div class="site-credit">
@@ -680,9 +656,6 @@
 
 
     <!-- headerblur min height -->
-    
-      var headerblur = document.getElementById("header-blur");
-      headerblur.style.minHeight = window.getComputedStyle(document.getElementById("allheader"), null).height;
     
     
 </script>

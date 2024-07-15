@@ -11,12 +11,12 @@
   
   
   
-  <meta name="description" content="John Grun    Arjun Ohri     Raj Balaji AbstractIn this paper, we introduce the Peer to Peer  Network Domain Name System (P2PN-DNS) a distributed implementation of theDomain Name System (DNS) that hope">
+  <meta name="description" content="John Grun AbstractIn this paper, we introduce the Peer to Peer  Network Domain Name System (P2PN-DNS) a distributed implementation of theDomain Name System (DNS) that hopes to offer solutions to short">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Peer to Peer Domain Name System (P2PN-DNS)">
 <meta property="og:url" content="http://questionableengineering.com/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/index.html">
 <meta property="og:site_name" content="Questionable Engineering">
-<meta property="og:description" content="John Grun    Arjun Ohri     Raj Balaji AbstractIn this paper, we introduce the Peer to Peer  Network Domain Name System (P2PN-DNS) a distributed implementation of theDomain Name System (DNS) that hope">
+<meta property="og:description" content="John Grun AbstractIn this paper, we introduce the Peer to Peer  Network Domain Name System (P2PN-DNS) a distributed implementation of theDomain Name System (DNS) that hopes to offer solutions to short">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://questionableengineering.com/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure1.png">
 <meta property="og:image" content="http://questionableengineering.com/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure2.png">
@@ -26,7 +26,7 @@
 <meta property="og:image" content="http://questionableengineering.com/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure6.png">
 <meta property="og:image" content="http://questionableengineering.com/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure7.png">
 <meta property="article:published_time" content="2017-12-29T19:49:34.000Z">
-<meta property="article:modified_time" content="2020-10-22T20:35:26.702Z">
+<meta property="article:modified_time" content="2023-08-30T03:51:31.191Z">
 <meta property="article:author" content="John Grun">
 <meta property="article:tag" content="Computing">
 <meta property="article:tag" content="Research">
@@ -73,32 +73,10 @@
 
 
   
-  
-  <div class="site-header-image">
-    <img id="originBg" width="100%" alt="Hike News" src="">
-  </div>
-
-  <div id="header-blur" class="site-header-image blur" style="position: absolute; top:0; height: 207px; min-height: 207px; min-width: 100%;">
-    <img id="blurBg" width="100%" style="top: 96%" alt="Hike News" src="">
-  </div>
-
-  <script>
-        var imgUrls = "css/images/pose01.jpg,https://source.unsplash.com/collection/954550/1920x1080,https://source.unsplash.com/collection/954550/1920x1081".split(",");
-        var random = Math.floor((Math.random() * imgUrls.length ));
-        if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
-          document.getElementById("originBg").src=imgUrls[random];
-          document.getElementById("blurBg").src=imgUrls[random];
-        } else {
-          document.getElementById("originBg").src='/' + imgUrls[random];
-          document.getElementById("blurBg").src='/' + imgUrls[random];
-        }
-    </script>
-
-
 
 
 <header id="allheader" class="site-header" role="banner" 
-   style="width: 100%; position: absolute; top:0; background: rgba(255,255,255,.8);"  >
+   >
   <div class="clearfix container">
       <div class="site-branding">
 
@@ -164,7 +142,7 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <p>John Grun    Arjun Ohri     Raj Balaji</p>
+        <p>John Grun</p>
 <h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>In this paper, we introduce the Peer to Peer  Network Domain Name System (P2PN-DNS) a distributed implementation of the<br>Domain Name System (DNS) that hopes to offer solutions to shortcomings of the current DNS such as susceptibility to outages while mitigating attempts of domain name censorship, and provide a fault tolerant name lookup service for software containers that is independent of upstream servers. Performance metrics including the time to reach consistency between nodes, service availability in lieu of loss of nodes, and average response time to DNS queries will be examined.</p>
 <h2 id="I-Introduction"><a href="#I-Introduction" class="headerlink" title="I. Introduction"></a>I. Introduction</h2><p>The  Domain Name System (DNS) is a critical element of internet infrastructure that associates IP addresses to human readable domain names. E.g Google.com is located a IP:172.217.6.238. When DNS was introduced in 1987 with the RFC 1034 /RFC 1035 17/18 standards, the internet consisted of relatively few computers where a simple hierarchical tree model functioned well.<br>As the internet scaled, DNS was expanded to accommodate the exponential growth in computers. In this regard, DNS has been a tremendous success but, it is not without serious flaws, most notably respectability to attacks on or failures of the Root DNS servers. A Root DNS Server acts as the authoritative source for the entire network.</p>
 <img src="/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure1.png" class="">
@@ -307,7 +285,7 @@
 
   <div class="clearfix container">
       <div class="site-info">
-	      &copy; 2023 Questionable Engineering All Rights Reserved.
+	      &copy; 2024 Questionable Engineering All Rights Reserved.
         
       </div>
       <div class="site-credit">
@@ -328,9 +306,6 @@
 
 
     <!-- headerblur min height -->
-    
-      var headerblur = document.getElementById("header-blur");
-      headerblur.style.minHeight = window.getComputedStyle(document.getElementById("allheader"), null).height;
     
     
 </script>

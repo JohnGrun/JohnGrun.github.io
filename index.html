@@ -58,32 +58,10 @@
 
 
   
-  
-  <div class="site-header-image">
-    <img id="originBg" width="100%" alt="Hike News" src="">
-  </div>
-
-  <div id="header-blur" class="site-header-image blur" style="position: absolute; top:0; height: 207px; min-height: 207px; min-width: 100%;">
-    <img id="blurBg" width="100%" style="top: 96%" alt="Hike News" src="">
-  </div>
-
-  <script>
-        var imgUrls = "css/images/pose01.jpg,https://source.unsplash.com/collection/954550/1920x1080,https://source.unsplash.com/collection/954550/1920x1081".split(",");
-        var random = Math.floor((Math.random() * imgUrls.length ));
-        if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
-          document.getElementById("originBg").src=imgUrls[random];
-          document.getElementById("blurBg").src=imgUrls[random];
-        } else {
-          document.getElementById("originBg").src='/' + imgUrls[random];
-          document.getElementById("blurBg").src='/' + imgUrls[random];
-        }
-    </script>
-
-
 
 
 <header id="allheader" class="site-header" role="banner" 
-   style="width: 100%; position: absolute; top:0; background: rgba(255,255,255,.8);"  >
+   >
   <div class="clearfix container">
       <div class="site-branding">
 
@@ -126,6 +104,334 @@
         
           <section id="main">
   
+    <article id="post-Home-Assistant-Setup-on-Kubernetes"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/10/03/Home-Assistant-Setup-on-Kubernetes/">Home Assistant Setup on Kubernetes</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/10/03/Home-Assistant-Setup-on-Kubernetes/" class="article-date">
+	  <time datetime="2023-10-03T04:22:39.000Z" itemprop="datePublished">October 3, 2023</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Install-the-k8s-cluster-if-not-alreadly-installed"><a href="#Install-the-k8s-cluster-if-not-alreadly-installed" class="headerlink" title="Install the k8s cluster if not alreadly installed"></a>Install the k8s cluster if not alreadly installed</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s enable dns storage helm3</span><br><span class="line">microk8s status</span><br></pre></td></tr></table></figure>
+
+<h1 id="Add-the-helm-Repo"><a href="#Add-the-helm-Repo" class="headerlink" title="Add the helm Repo"></a>Add the helm Repo</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm repo add alekc-charts https:&#x2F;&#x2F;charts.alekc.dev&#x2F;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Install-the-helm-chart"><a href="#Install-the-helm-chart" class="headerlink" title="Install the helm chart"></a>Install the helm chart</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm install home-assistant alekc-charts&#x2F;home-assistant</span><br></pre></td></tr></table></figure>
+
+<h2 id="Check-the-status-of-the-installed-application"><a href="#Check-the-status-of-the-installed-application" class="headerlink" title="Check the status of the installed application."></a>Check the status of the installed application.</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s status</span><br><span class="line">microk8s kubectl describe pods</span><br></pre></td></tr></table></figure>
+
+<h1 id="Service-yaml-file"><a href="#Service-yaml-file" class="headerlink" title="Service yaml file"></a>Service yaml file</h1><p>We need to expose the service to the outside world.<br>Thankfully microk8s has a built in loadbalancer called metallb</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nano home-assistant-service.yaml</span><br></pre></td></tr></table></figure>
+<p>Replace port_number with the real port number </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: home-assistant-service</span><br><span class="line">spec:</span><br><span class="line">  type: LoadBalancer</span><br><span class="line">  selector:</span><br><span class="line">    app.kubernetes.io&#x2F;name: home-assistant</span><br><span class="line">  ports:</span><br><span class="line">    - name: webportal</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: port_number</span><br><span class="line">      targetPort: port_number</span><br><span class="line">  externalIPs:</span><br><span class="line">    - A.B.C.D</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="Apply-the-service"><a href="#Apply-the-service" class="headerlink" title="Apply the service"></a>Apply the service</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl apply -f .&#x2F;home-assistant-service.yaml</span><br></pre></td></tr></table></figure>
+<h2 id="Confirm-the-service-is-active"><a href="#Confirm-the-service-is-active" class="headerlink" title="Confirm the service is active"></a>Confirm the service is active</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl describe services home-assistant-service</span><br></pre></td></tr></table></figure>
+
+<h1 id="Firewall-Rules"><a href="#Firewall-Rules" class="headerlink" title="Firewall Rules"></a>Firewall Rules</h1><p>This assumes you are using ufw.<br>ufw is bascally a wrapper for IPTABLES. If you have ever used IPTABLES before you understand why ufw exists.<br>Replace port_number with the real port number </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw default allow routed </span><br><span class="line">sudo ufw allow from A.B.C.0&#x2F;24 to any port port_number proto tcp</span><br><span class="line">sudo ufw allow from D.E.F.0&#x2F;24 to any port port_number proto tcp</span><br><span class="line">sudo ufw status</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-Jellyfin-Media-Server-Setup-on-Kubernetes"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/08/30/Jellyfin-Media-Server-Setup-on-Kubernetes/">Jellyfin Media Server Setup on Kubernetes</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/08/30/Jellyfin-Media-Server-Setup-on-Kubernetes/" class="article-date">
+	  <time datetime="2023-08-31T02:52:08.000Z" itemprop="datePublished">August 30, 2023</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Install-the-k8s-cluster-if-not-alreadly-installed"><a href="#Install-the-k8s-cluster-if-not-alreadly-installed" class="headerlink" title="Install the k8s cluster if not alreadly installed"></a>Install the k8s cluster if not alreadly installed</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s enable dns storage helm3</span><br><span class="line">microk8s status</span><br></pre></td></tr></table></figure>
+
+<h1 id="Add-the-Truecharts-Repo"><a href="#Add-the-Truecharts-Repo" class="headerlink" title="Add the Truecharts Repo"></a>Add the Truecharts Repo</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&#x2F;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Pull-the-helm-chart"><a href="#Pull-the-helm-chart" class="headerlink" title="Pull the helm chart"></a>Pull the helm chart</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm pull truecharts&#x2F;jellyfin </span><br></pre></td></tr></table></figure>
+
+<h1 id="To-enable-DLNA-we-need-to-enable-access-to-the-host-network"><a href="#To-enable-DLNA-we-need-to-enable-access-to-the-host-network" class="headerlink" title="To enable DLNA we need to enable access to the host network."></a>To enable DLNA we need to enable access to the host network.</h1><p><a target="_blank" rel="noopener" href="https://microk8s.io/docs/addon-host-access">Host Access addon</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s enable host-access:ip&#x3D;A.B.C.D</span><br></pre></td></tr></table></figure>
+
+<h1 id="Modify-the-values-yaml-file-to-set-the-configuration"><a href="#Modify-the-values-yaml-file-to-set-the-configuration" class="headerlink" title="Modify the values.yaml file to set the configuration"></a>Modify the values.yaml file to set the configuration</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf .&#x2F;jellyfin-*.tgz</span><br><span class="line">cd jellyfin</span><br><span class="line">cat values.yamls</span><br></pre></td></tr></table></figure>
+
+<h2 id="Make-the-data-directory"><a href="#Make-the-data-directory" class="headerlink" title="Make the data directory"></a>Make the data directory</h2><p>APPLICATION_ROOT_DIRECTORY: Path where the application config and data files are stored</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p APPLICATION_ROOT_DIRECTORY&#x2F;config</span><br><span class="line">mkdir -p APPLICATION_ROOT_DIRECTORY&#x2F;data</span><br><span class="line">sudo chown -R 777 APPLICATION_ROOT_DIRECTORY</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="Create-Persistent-Volumes-and-Persistent-Volume-Claims"><a href="#Create-Persistent-Volumes-and-Persistent-Volume-Claims" class="headerlink" title="Create Persistent Volumes and Persistent Volume Claims"></a>Create Persistent Volumes and Persistent Volume Claims</h1><h2 id="Persistent-Volumes"><a href="#Persistent-Volumes" class="headerlink" title="Persistent Volumes"></a>Persistent Volumes</h2><h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h3><p>jellyfin-config-pv.yaml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: jellyfin-config-pv</span><br><span class="line">spec:</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 100Gi</span><br><span class="line">  volumeMode: Filesystem</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteOnce</span><br><span class="line">  persistentVolumeReclaimPolicy: Retain</span><br><span class="line">  storageClassName: local-storage</span><br><span class="line">  local:</span><br><span class="line">    path: APPLICATION_ROOT_DIRECTORY&#x2F;config # This must exist on the host</span><br><span class="line">  nodeAffinity:</span><br><span class="line">    required:</span><br><span class="line">      nodeSelectorTerms:</span><br><span class="line">      - matchExpressions:</span><br><span class="line">        - key: kubernetes.io&#x2F;hostname</span><br><span class="line">          operator: In</span><br><span class="line">          values:</span><br><span class="line">          - dionysus</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl apply -f jellyfin-config-pv.yaml</span><br></pre></td></tr></table></figure>
+
+<h3 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h3><p>jellyfin-data-pv.yaml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: jellyfin-data-pv</span><br><span class="line">spec:</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 5Ti</span><br><span class="line">  volumeMode: Filesystem</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteOnce</span><br><span class="line">  persistentVolumeReclaimPolicy: Retain</span><br><span class="line">  storageClassName: local-storage</span><br><span class="line">  local:</span><br><span class="line">    path: APPLICATION_ROOT_DIRECTORY&#x2F;data # This must exist on the host</span><br><span class="line">  nodeAffinity:</span><br><span class="line">    required:</span><br><span class="line">      nodeSelectorTerms:</span><br><span class="line">      - matchExpressions:</span><br><span class="line">        - key: kubernetes.io&#x2F;hostname</span><br><span class="line">          operator: In</span><br><span class="line">          values:</span><br><span class="line">          - dionysus</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl apply -f jellyfin-data-pv.yaml</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl get pv </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NAME                               CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                       STORAGECLASS    REASON   AGE</span><br><span class="line">jellyfin-config-pv   100Gi      RWO            Retain           Bound    default&#x2F;jellyfin-config-pvc   local-storage            98s</span><br><span class="line">jellyfin-data-pv     5Ti        RWO            Retain           Bound    default&#x2F;jellyfin-data-pvc     local-storage            78s</span><br></pre></td></tr></table></figure>
+
+<h2 id="Persistent-Volume-Claims"><a href="#Persistent-Volume-Claims" class="headerlink" title="Persistent Volume Claims"></a>Persistent Volume Claims</h2><h3 id="Config-1"><a href="#Config-1" class="headerlink" title="Config"></a>Config</h3><p>jellyfin-config-pvc.yaml<br>Bonds to jellyfin-config-pv</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: jellyfin-config-pvc</span><br><span class="line">spec:</span><br><span class="line">  storageClassName: local-storage # Empty string must be explicitly set otherwise default StorageClass will be set</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteOnce</span><br><span class="line">  volumeName: jellyfin-config-pv</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 100Gi</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl apply -f jellyfin-config-pvc.yaml</span><br></pre></td></tr></table></figure>
+
+<h3 id="Data-1"><a href="#Data-1" class="headerlink" title="Data"></a>Data</h3><p>jellyfin-data-pvc.yaml<br>Bonds to jellyfin-data-pv</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: jellyfin-data-pvc</span><br><span class="line">spec:</span><br><span class="line">  storageClassName: local-storage # Empty string must be explicitly set otherwise default StorageClass will be set</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteOnce</span><br><span class="line">  volumeName: jellyfin-data-pv</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 5Ti</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl apply -f jellyfin-data-pvc.yaml</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl get pvc</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NAME                                STATUS   VOLUME                             CAPACITY   ACCESS MODES   STORAGECLASS    AGE</span><br><span class="line">jellyfin-config-pvc   Bound    jellyfin-config-pv   100Gi      RWO            local-storage   26s</span><br><span class="line">jellyfin-data-pvc     Bound    jellyfin-data-pv     5Ti        RWO            local-storage   12s</span><br></pre></td></tr></table></figure>
+
+<h1 id="Modify-the-values-yaml-file-to-set-the-configuration-1"><a href="#Modify-the-values-yaml-file-to-set-the-configuration-1" class="headerlink" title="Modify the values.yaml file to set the configuration"></a>Modify the values.yaml file to set the configuration</h1><p>We’re going to set the jellyfin configuration within the container.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd jellyfin</span><br><span class="line">nano values.yaml</span><br></pre></td></tr></table></figure>
+
+<p>DLNA_PORT: Port the dlna server will listen on<br>AUTO_DISCOVER_PORT: DLNA autodiscover port<br>WEB_GUI_PORT: Port to access the web gui</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line">image:</span><br><span class="line">  repository: tccr.io&#x2F;truecharts&#x2F;jellyfin</span><br><span class="line">  pullPolicy: IfNotPresent</span><br><span class="line">  tag: v10.8.10@sha256:d2c377ee7ea463110a1dda7eb1b231424ad05245aaf95744e76164bd2e593377</span><br><span class="line">broadcastProxyImage:</span><br><span class="line">  repository: tccr.io&#x2F;truecharts&#x2F;socat</span><br><span class="line">  pullPolicy: IfNotPresent</span><br><span class="line">  tag: v1.7.4.4@sha256:2417f121a5fd08012c927bfb7cdedb00ce97e0ec53fbf38352be8c6f197f7294</span><br><span class="line">service:</span><br><span class="line">  main:</span><br><span class="line">    ports:</span><br><span class="line">      main:</span><br><span class="line">        port: WEB_GUI_PORT</span><br><span class="line">        targetPort: WEB_GUI_PORT</span><br><span class="line">  autodiscovery:</span><br><span class="line">    enabled: true</span><br><span class="line">    ports:</span><br><span class="line">      autodiscovery:</span><br><span class="line">        enabled: true</span><br><span class="line">        protocol: udp</span><br><span class="line">        port: AUTO_DISCOVER_PORT</span><br><span class="line">        hostPort: AUTO_DISCOVER_PORT</span><br><span class="line">        hostIP: A.B.C.D</span><br><span class="line">  dlna:</span><br><span class="line">    enabled: true</span><br><span class="line">    ports:</span><br><span class="line">      dlna:</span><br><span class="line">        enabled: true</span><br><span class="line">        protocol: udp</span><br><span class="line">        port: DLNA_PORT</span><br><span class="line">        hostPort: DLNA_PORT</span><br><span class="line">        hosstIP: A.B.C.D</span><br><span class="line"></span><br><span class="line">persistence:</span><br><span class="line">  config:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;config&quot;</span><br><span class="line">    type: pvc</span><br><span class="line">    existingClaim: jellyfin-config-pvc</span><br><span class="line">  cache:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;cache&quot;</span><br><span class="line">    type: &quot;emptyDir&quot;</span><br><span class="line">  transcode:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;config&#x2F;transcodes&quot;</span><br><span class="line">    type: &quot;emptyDir&quot;</span><br><span class="line">  media:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &#x2F;media</span><br><span class="line">    type: pvc</span><br><span class="line">    existingClaim: jellyfin-data-pvc</span><br><span class="line">portal:</span><br><span class="line">  open:</span><br><span class="line">    enabled: true</span><br><span class="line">securityContext:</span><br><span class="line">  container:</span><br><span class="line">    readOnlyRootFilesystem: false</span><br><span class="line">workload:</span><br><span class="line">  main:</span><br><span class="line">    podSpec:</span><br><span class="line">      hostNetwork: true</span><br><span class="line">      containers:</span><br><span class="line">        main:</span><br><span class="line">          env:</span><br><span class="line">            JELLYFIN_PublishedServerUrl: &quot;&#123;&#123; $.Values.chartContext.APPURL &#125;&#125;&quot;</span><br><span class="line">  broadcastproxy:</span><br><span class="line">    enabled: false</span><br><span class="line">    type: DaemonSet</span><br><span class="line">    podSpec:</span><br><span class="line">      hostNetwork: true</span><br><span class="line">      # Proxy doesn&#39;t seem to respect the TERM signal, so by default</span><br><span class="line">      # this ends up just hanging until the default grace period ends.</span><br><span class="line">      # This is unnecesary since this workload only proxies autodiscovery</span><br><span class="line">      # messages.</span><br><span class="line">      terminationGracePeriodSeconds: 3</span><br><span class="line">      containers:</span><br><span class="line">        broadcastproxy:</span><br><span class="line">          enabled: true</span><br><span class="line">          primary: true</span><br><span class="line">          imageSelector: broadcastProxyImage</span><br><span class="line">          securityContext:</span><br><span class="line">            readOnlyRootFilesystem: true</span><br><span class="line">          command: [&quot;&#x2F;bin&#x2F;sh&quot;]</span><br><span class="line">          # Quite a lot going on here:</span><br><span class="line">          # - Resolve Jellyfin&#39;s autodiscovery service IP from its FQDN via getent hosts</span><br><span class="line">          # - Export the IP to &#96;$TARGET_IP&#96;</span><br><span class="line">          # - Check &#96;$TARGET_IP&#96; is not empty (so we can crash if it is - will help to detect templating errors)</span><br><span class="line">          # - Touch &#96;&#x2F;tmp&#x2F;healty&#96; to use with the readiness, liveness and startup probes</span><br><span class="line">          # - Start socat in proxy mode</span><br><span class="line">          # - On exit remove &#96;&#x2F;tmp&#x2F;healthy&#96;</span><br><span class="line">          args: [&quot;-c&quot;, &quot;export TARGET_IP&#x3D;$(getent hosts &#39;&#123;&#123; printf \&quot;%v-autodiscovery\&quot; (include \&quot;tc.v1.common.lib.chart.names.fullname\&quot; $) &#125;&#125;&#39; | awk &#39;&#123; print $1 &#125;&#39;) &amp;&amp; [[ ! -z $TARGET_IP ]] &amp;&amp; touch &#x2F;tmp&#x2F;healthy &amp;&amp; socat UDP-LISTEN:AUTO_DISCOVER_PORT,fork,reu&gt;</span><br><span class="line">          probes:</span><br><span class="line">            readiness:</span><br><span class="line">              enabled: true</span><br><span class="line">              type: exec</span><br><span class="line">              command:</span><br><span class="line">                - cat</span><br><span class="line">                - &#x2F;tmp&#x2F;healthy</span><br><span class="line">            liveness:</span><br><span class="line">              enabled: true</span><br><span class="line">              type: exec</span><br><span class="line">              command:</span><br><span class="line">                - cat</span><br><span class="line">                - &#x2F;tmp&#x2F;healthy</span><br><span class="line">            startup:</span><br><span class="line">              enabled: true</span><br><span class="line">              type: exec</span><br><span class="line">              command:</span><br><span class="line">                - cat</span><br><span class="line">                - &#x2F;tmp&#x2F;healthy</span><br><span class="line"></span><br><span class="line"># -- enable Jellyfin autodiscovery on LAN</span><br><span class="line">autodiscovery:</span><br><span class="line">  enabled: true</span><br></pre></td></tr></table></figure>
+
+<h2 id="Install-the-helm-chart-with-our-values-yaml-file"><a href="#Install-the-helm-chart-with-our-values-yaml-file" class="headerlink" title="Install the helm chart with our values.yaml file"></a>Install the helm chart with our values.yaml file</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm install jellyfin truecharts&#x2F;jellyfin --values .&#x2F;values.yaml </span><br></pre></td></tr></table></figure>
+
+<h2 id="Check-the-status-of-the-installed-application"><a href="#Check-the-status-of-the-installed-application" class="headerlink" title="Check the status of the installed application."></a>Check the status of the installed application.</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s status</span><br><span class="line">microk8s kubectl describe pods</span><br></pre></td></tr></table></figure>
+
+<h1 id="Common-Errors"><a href="#Common-Errors" class="headerlink" title="Common Errors"></a>Common Errors</h1><p>Error from server (BadRequest): container in pod is waiting to start: ContainerCreating<br>You probably need to change the permissions on the PV directory. This path is what is written in the PersistentVolume in the path variable. A quick chmod -R 777 to this path will most likely fix the issue. The conatiner should update the permissions once it runs.  </p>
+<h1 id="Service-yaml-file"><a href="#Service-yaml-file" class="headerlink" title="Service yaml file"></a>Service yaml file</h1><p>Since we are using the hostnetwork we don’t need the an additional service file to route information. </p>
+<p>More information here<br><a target="_blank" rel="noopener" href="https://medium.com/swlh/kubernetes-external-ip-service-type-5e5e9ad62fcd">https://medium.com/swlh/kubernetes-external-ip-service-type-5e5e9ad62fcd</a></p>
+<h1 id="Firewall-Rules"><a href="#Firewall-Rules" class="headerlink" title="Firewall Rules"></a>Firewall Rules</h1><p>This assumes you are using ufw.<br>ufw is bascally a wrapper for IPTABLES. If you have ever used IPTABLES before you understand why ufw exists.<br><a target="_blank" rel="noopener" href="https://docs.syncthing.net/users/firewall.html">https://docs.syncthing.net/users/firewall.html</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw default allow routed </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw allow from A.B.C.0&#x2F;24 to any port WEB_GUI_PORT proto tcp</span><br><span class="line">sudo ufw allow from A.B.C.0&#x2F;24 to any port AUTO_DISCOVER_PORT proto udp</span><br><span class="line">sudo ufw allow from A.B.C.0&#x2F;24 to any port DLNA_PORT proto udp</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw status</span><br></pre></td></tr></table></figure>
+
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/services-networking/service/">https://kubernetes.io/docs/concepts/services-networking/service/</a></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Computing/" rel="tag">Computing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/" rel="tag">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Microk8s/" rel="tag">Microk8s</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-Zigbee2Mqtt-Kubernetes-Setup-on-Ubuntu"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/08/23/Zigbee2Mqtt-Kubernetes-Setup-on-Ubuntu/">Zigbee2Mqtt Kubernetes Setup on Ubuntu</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/08/23/Zigbee2Mqtt-Kubernetes-Setup-on-Ubuntu/" class="article-date">
+	  <time datetime="2023-08-23T18:31:06.000Z" itemprop="datePublished">August 23, 2023</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Install-the-k8s-cluster-if-not-alreadly-installed"><a href="#Install-the-k8s-cluster-if-not-alreadly-installed" class="headerlink" title="Install the k8s cluster if not alreadly installed"></a>Install the k8s cluster if not alreadly installed</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s enable dns storage helm3</span><br><span class="line">microk8s status</span><br></pre></td></tr></table></figure>
+
+<h1 id="Pull-the-helm-chart"><a href="#Pull-the-helm-chart" class="headerlink" title="Pull the helm chart"></a>Pull the helm chart</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&#x2F;</span><br><span class="line">microk8s helm pull truecharts&#x2F;zigbee2mqtt --version 7.0.30</span><br></pre></td></tr></table></figure>
+
+<h1 id="Modify-the-values-yaml-file-to-set-the-configuration"><a href="#Modify-the-values-yaml-file-to-set-the-configuration" class="headerlink" title="Modify the values.yaml file to set the configuration"></a>Modify the values.yaml file to set the configuration</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf .&#x2F;zigbee2mqtt-*.tgz</span><br><span class="line">cd zigbee2mqtt</span><br><span class="line">cat values.yamls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">EXTERNAL_IP: A.B.C.D</span><br><span class="line">EXTERNAL_NETWORK: A.B.C.0</span><br><span class="line">SERVICE_PORT: Port used by the application</span><br><span class="line">ZIGBEE_ADAPTER_IP: Ip address of the zigbee adapter</span><br><span class="line">ZIGBEE_ZIGBEE_ADAPTER_PORT: Port used by the external zigbee adapter</span><br><span class="line">MQTT_PORT: PORT_C</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line">image:</span><br><span class="line">  repository: tccr.io&#x2F;truecharts&#x2F;zigbee2mqtt</span><br><span class="line">  tag: v1.32.1@sha256:f3bcf64a1a538ce5636b7359bd4f0375f593c9408d561a1add9f3d2bed843bf3</span><br><span class="line">  pullPolicy: IfNotPresent</span><br><span class="line">service:</span><br><span class="line">  main:</span><br><span class="line">    ports:</span><br><span class="line">      main:</span><br><span class="line">        port: SERVICE_PORT</span><br><span class="line">persistence:</span><br><span class="line">  data:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;data&quot;</span><br><span class="line">    targetSelectAll: true</span><br><span class="line"></span><br><span class="line">portal:</span><br><span class="line">  open:</span><br><span class="line">    enabled: true</span><br><span class="line">securityContext:</span><br><span class="line">  container:</span><br><span class="line">    runAsNonRoot: false</span><br><span class="line">    readOnlyRootFilesystem: false</span><br><span class="line">    runAsUser: 0</span><br><span class="line">    runAsGroup: 0</span><br><span class="line">workload:</span><br><span class="line">  main:</span><br><span class="line">    podSpec:</span><br><span class="line">      initContainers:</span><br><span class="line">        init-config:</span><br><span class="line">          enabled: true</span><br><span class="line">          imageSelector: image</span><br><span class="line">          type: init</span><br><span class="line">          env:</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_FRONTEND_PORT: &quot;&#123;&#123; .Values.service.main.ports.main.port &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_EXPIRIMENTAL_NEW_API: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.ZIGBEE2MQTT_CONFIG_EXPIRIMENTAL_NEW_API &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_PERMIT_JOIN: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.ZIGBEE2MQTT_CONFIG_PERMIT_JOIN &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_SERVER: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.ZIGBEE2MQTT_CONFIG_MQTT_SERVER &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_USER: &quot;&#123;&#123; .Values.secret.ZIGBEE2MQTT_CONFIG_MQTT_USER &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD: &quot;&#123;&#123; .Values.secret.ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_BASE_TOPIC: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.ZIGBEE2MQTT_CONFIG_MQTT_BASE_TOPIC &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_SERIAL_PORT: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.ZIGBEE2MQTT_CONFIG_SERIAL_PORT &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER &#125;&#125;&quot;</span><br><span class="line">            USE_CUSTOM_CONFIG_FILE: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.USE_CUSTOM_CONFIG_FILE &#125;&#125;&quot;</span><br><span class="line">          command:</span><br><span class="line">            - &#x2F;bin&#x2F;sh</span><br><span class="line">            - -c</span><br><span class="line">          args:</span><br><span class="line">            - &gt;</span><br><span class="line">              if [ -f &#x2F;data&#x2F;configuration.yaml ] || [ $&#123;USE_CUSTOM_CONFIG_FILE&#125; &#x3D;&#x3D; true ]; then</span><br><span class="line"></span><br><span class="line">                echo &quot;Initial configuration exists or User selected to use custom configuration file. Skipping...&quot;;</span><br><span class="line">              else</span><br><span class="line"></span><br><span class="line">                echo &quot;Creating initial configuration&quot;;</span><br><span class="line">                touch &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;# Configuration bellow will be always be overridden&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;# from environment settings on the Scale Apps UI.&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;# You however will not see this values change in the file.&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;# It&#39;s a generated file based on the values provided on initial install.&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;##########################################################&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;experimental:&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;  new_api: $ZIGBEE2MQTT_CONFIG_EXPIRIMENTAL_NEW_API&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;frontend:&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;  port: $ZIGBEE2MQTT_CONFIG_FRONTEND_PORT&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;permit_join: $ZIGBEE2MQTT_CONFIG_PERMIT_JOIN&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;mqtt:&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;  server: $ZIGBEE2MQTT_CONFIG_MQTT_SERVER&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;  base_topic: $ZIGBEE2MQTT_CONFIG_MQTT_BASE_TOPIC&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                if [ ! -z &quot;$ZIGBEE2MQTT_CONFIG_MQTT_USER&quot; ];</span><br><span class="line">                then</span><br><span class="line">                  echo &quot;  user: $ZIGBEE2MQTT_CONFIG_MQTT_USER&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                fi;</span><br><span class="line">                if [ ! -z &quot;$ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD&quot; ];</span><br><span class="line">                then</span><br><span class="line">                  echo &quot;  password: $ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                fi;</span><br><span class="line">                echo &quot;serial:&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;  port: $ZIGBEE2MQTT_CONFIG_SERIAL_PORT&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;  adapter: $ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;##########################################################&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &#39;Initial configuration file created at &quot;&#x2F;data&#x2F;configuration.yaml&quot;&#39;;</span><br><span class="line">              fi;</span><br><span class="line">      containers:</span><br><span class="line">        main:</span><br><span class="line">          env:</span><br><span class="line">            ZIGBEE2MQTT_DATA: &quot;&#x2F;data&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_FRONTEND_PORT: &quot;&#123;&#123; .Values.service.main.ports.main.port &#125;&#125;&quot;</span><br><span class="line">            # User defined</span><br><span class="line">            USE_CUSTOM_CONFIG_FILE: false</span><br><span class="line">            # This values are required for the autogenerated file to work.</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_EXPIRIMENTAL_NEW_API: false</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_PERMIT_JOIN: false</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_SERVER: &quot;mqtt:&#x2F;&#x2F;mosquitto:MQTT_PORT&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_BASE_TOPIC: &quot;zigbee2mqtt&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_SERIAL_PORT: &quot;tcp:&#x2F;&#x2F;ZIGBEE_ADAPTER_IP:ZIGBEE_ADAPTER_PORT&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER: &quot;auto&quot;</span><br><span class="line"></span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_USER: &quot;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD: &quot;&quot;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h1><p>zigbee2mqtt-service.yaml</p>
+<p>SERVICE_PORT: Port used to access the application<br>ZIGBEE_ADAPTER_PORT: Port used to allow access to an external zigbee controller</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: zigbee2mqtt-service</span><br><span class="line">spec:</span><br><span class="line">  type: LoadBalancer</span><br><span class="line">  selector:</span><br><span class="line">    app.kubernetes.io&#x2F;name: zigbee2mqtt</span><br><span class="line">  ports:</span><br><span class="line">    - name: http</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: SERVICE_PORT</span><br><span class="line">      targetPort: SERVICE_PORT</span><br><span class="line">    - name: adapter</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: ZIGBEE_ADAPTER_PORT</span><br><span class="line">      targetPort: ZIGBEE_ADAPTER_PORT</span><br><span class="line">  externalIPs:</span><br><span class="line">    - A.B.C.D</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Firewall"><a href="#Firewall" class="headerlink" title="Firewall"></a>Firewall</h1><p>sudo ufw allow from A.B.C.0/24 to any port ZIGBEE_ADAPTER_PORT proto tcp<br>sudo ufw allow from A.B.C.0/24 to any port SERVICE_PORT proto tcp</p>
+<h1 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h1><p><a target="_blank" rel="noopener" href="https://www.reddit.com/r/homeassistant/comments/zxee4n/zigbee2mqtt_error_failed_to_connect_to_the/">https://www.reddit.com/r/homeassistant/comments/zxee4n/zigbee2mqtt_error_failed_to_connect_to_the/</a></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Computing/" rel="tag">Computing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/" rel="tag">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Microk8s/" rel="tag">Microk8s</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-Transmission-Kubernetes-Setup-on-Ubuntu"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/08/23/Transmission-Kubernetes-Setup-on-Ubuntu/">Transmission Kubernetes Setup on Ubuntu</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/08/23/Transmission-Kubernetes-Setup-on-Ubuntu/" class="article-date">
+	  <time datetime="2023-08-23T16:28:03.000Z" itemprop="datePublished">August 23, 2023</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Install-the-k8s-cluster-if-not-alreadly-installed"><a href="#Install-the-k8s-cluster-if-not-alreadly-installed" class="headerlink" title="Install the k8s cluster if not alreadly installed"></a>Install the k8s cluster if not alreadly installed</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s enable dns storage helm3</span><br><span class="line">microk8s status</span><br></pre></td></tr></table></figure>
+
+<h1 id="Pull-the-helm-chart"><a href="#Pull-the-helm-chart" class="headerlink" title="Pull the helm chart"></a>Pull the helm chart</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&#x2F;</span><br><span class="line">microk8s helm pull truecharts&#x2F;transmission</span><br></pre></td></tr></table></figure>
+
+<h1 id="Modify-the-values-yaml-file-to-set-the-configuration"><a href="#Modify-the-values-yaml-file-to-set-the-configuration" class="headerlink" title="Modify the values.yaml file to set the configuration"></a>Modify the values.yaml file to set the configuration</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf .&#x2F;transmission-*.tgz</span><br><span class="line">cd transmission</span><br><span class="line">cat values.yamls</span><br></pre></td></tr></table></figure>
+
+<h2 id="Make-the-data-directory"><a href="#Make-the-data-directory" class="headerlink" title="Make the data directory"></a>Make the data directory</h2><p>CONTAINER_ROOT_PATH</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p CONTAINER_ROOT_PATH</span><br><span class="line">sudo chown -R 777 CONTAINER_ROOT_PATH</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="Create-Persistent-Volumes-and-Persistent-Volume-Claims"><a href="#Create-Persistent-Volumes-and-Persistent-Volume-Claims" class="headerlink" title="Create Persistent Volumes and Persistent Volume Claims"></a>Create Persistent Volumes and Persistent Volume Claims</h1><p>Transmission can think you deleted all your files if the harddisk containing your files fails to mount and the configuration files are on a different disk.</p>
+<h2 id="Persistent-Volumes"><a href="#Persistent-Volumes" class="headerlink" title="Persistent Volumes"></a>Persistent Volumes</h2><h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h3><p>transmission-config-pv.yaml</p>
+<p>HOSTNAME: Local computer hostname </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: transmission-config-pv</span><br><span class="line">spec:</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 100Gi</span><br><span class="line">  volumeMode: Filesystem</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteOnce</span><br><span class="line">  persistentVolumeReclaimPolicy: Retain</span><br><span class="line">  storageClassName: local-storage</span><br><span class="line">  local:</span><br><span class="line">    path: CONTAINER_ROOT_PATH&#x2F;config # This must exist on the host</span><br><span class="line">  nodeAffinity:</span><br><span class="line">    required:</span><br><span class="line">      nodeSelectorTerms:</span><br><span class="line">      - matchExpressions:</span><br><span class="line">        - key: kubernetes.io&#x2F;hostname</span><br><span class="line">          operator: In</span><br><span class="line">          values:</span><br><span class="line">          - HOSTNAME</span><br></pre></td></tr></table></figure>
+
+<p>microk8s kubectl apply -f transmission-config-pv</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl get pv</span><br><span class="line">NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                 STORAGECLASS        REASON   AGE</span><br><span class="line">transmission-config-pv                     100Gi      RWO            Retain           Bound    default&#x2F;transmission-config-pvc       local-storage                9m44s</span><br></pre></td></tr></table></figure>
+
+<h3 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h3><p>transmission-data-pv.yaml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: transmission-data-pv</span><br><span class="line">spec:</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 5Ti</span><br><span class="line">  volumeMode: Filesystem</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteOnce</span><br><span class="line">  persistentVolumeReclaimPolicy: Retain</span><br><span class="line">  storageClassName: local-storage</span><br><span class="line">  local:</span><br><span class="line">    path: CONTAINER_ROOT_PATH&#x2F;data # This must exist on the host</span><br><span class="line">  nodeAffinity:</span><br><span class="line">    required:</span><br><span class="line">      nodeSelectorTerms:</span><br><span class="line">      - matchExpressions:</span><br><span class="line">        - key: kubernetes.io&#x2F;hostname</span><br><span class="line">          operator: In</span><br><span class="line">          values:</span><br><span class="line">          - HOSTNAME</span><br></pre></td></tr></table></figure>
+
+<p>microk8s kubectl apply -f transmission-data-pv.yaml</p>
+<p>microk8s kubectl get pv </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                 STORAGECLASS        REASON   AGE</span><br><span class="line">transmission-config-pv                     100Gi      RWO            Retain           Bound    default&#x2F;transmission-config-pvc       local-storage                3h28m</span><br><span class="line">transmission-data-pv                       5Ti        RWO            Retain           Bound    default&#x2F;transmission-data-pvc         local-storage                19s</span><br></pre></td></tr></table></figure>
+
+<h2 id="Persistent-Volume-Claims"><a href="#Persistent-Volume-Claims" class="headerlink" title="Persistent Volume Claims"></a>Persistent Volume Claims</h2><h3 id="Config-1"><a href="#Config-1" class="headerlink" title="Config"></a>Config</h3><p>transmission-config-pvc.yaml<br>Bonds to transmission-config-pv</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: transmission-config-pvc</span><br><span class="line">spec:</span><br><span class="line">  storageClassName: local-storage # Empty string must be explicitly set otherwise default StorageClass will be set</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteOnce</span><br><span class="line">  volumeName: transmission-config-pv</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 100Gi</span><br></pre></td></tr></table></figure>
+
+<p>microk8s kubectl apply -f transmission-config-pvc.yaml</p>
+<h3 id="Data-1"><a href="#Data-1" class="headerlink" title="Data"></a>Data</h3><p>transmission-data-pvc.yaml<br>Bonds to transmission-data-pvc</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: transmission-data-pvc</span><br><span class="line">spec:</span><br><span class="line">  storageClassName: local-storage # Empty string must be explicitly set otherwise default StorageClass will be set</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteOnce</span><br><span class="line">  volumeName: transmission-data-pv</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 5Ti</span><br></pre></td></tr></table></figure>
+
+<p>microk8s kubectl apply -f transmission-data-pvc.yaml</p>
+<p>microk8s kubectl get pvc</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NAME                          STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS        AGE</span><br><span class="line">transmission-config-pvc       Bound    transmission-config-pv                     100Gi      RWO            local-storage       3h21m</span><br><span class="line">transmission-data-pvc         Bound    transmission-data-pv                       5Ti        RWO            local-storage       51s</span><br></pre></td></tr></table></figure>
+
+<h1 id="Pull-the-syncthing-helm-chart"><a href="#Pull-the-syncthing-helm-chart" class="headerlink" title="Pull the syncthing helm chart"></a>Pull the syncthing helm chart</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&#x2F;</span><br><span class="line">microk8s helm repo update</span><br><span class="line">microk8s helm pull truecharts&#x2F;transmission</span><br></pre></td></tr></table></figure>
+
+<h1 id="Modify-the-values-yaml-file-to-set-the-configuration-1"><a href="#Modify-the-values-yaml-file-to-set-the-configuration-1" class="headerlink" title="Modify the values.yaml file to set the configuration"></a>Modify the values.yaml file to set the configuration</h1><p>We’re going to set the transmission configuration within the container.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf .&#x2F;transmission-*.tgz</span><br><span class="line">cd transmission</span><br><span class="line">nano values.yamls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br></pre></td><td class="code"><pre><span class="line">image:</span><br><span class="line">  repository: tccr.io&#x2F;truecharts&#x2F;transmission</span><br><span class="line">  pullPolicy: IfNotPresent</span><br><span class="line">  tag: v4.0.3@sha256:245158e56dae5ca2da2cac5e9e85d4879685e8f302ed955ba144162d504307e4</span><br><span class="line"></span><br><span class="line">service:</span><br><span class="line">  main:</span><br><span class="line">    ports:</span><br><span class="line">      main:</span><br><span class="line">        port: WEBGUI_PORT_NUMBER</span><br><span class="line">  torrent:</span><br><span class="line">    enabled: true</span><br><span class="line">    ports:</span><br><span class="line">      torrent:</span><br><span class="line">        enabled: true</span><br><span class="line">        port: TRANSMISSION_PORT</span><br><span class="line">        protocol: tcp</span><br><span class="line">      torrentudp:</span><br><span class="line">        enabled: true</span><br><span class="line">        port: TRANSMISSION_PORT</span><br><span class="line">        protocol: udp</span><br><span class="line"></span><br><span class="line">workload:</span><br><span class="line">  main:</span><br><span class="line">    podSpec:</span><br><span class="line">      containers:</span><br><span class="line">        main:</span><br><span class="line">          probes:</span><br><span class="line">            liveness:</span><br><span class="line">              enabled: true</span><br><span class="line">              type: tcp</span><br><span class="line">            startup:</span><br><span class="line">              enabled: true</span><br><span class="line">              type: tcp</span><br><span class="line">            readiness:</span><br><span class="line">              enabled: true</span><br><span class="line">              type: tcp</span><br><span class="line">          env:</span><br><span class="line">            # PUID: 1001</span><br><span class="line">            # URL is set here so it wont be able to get overwritten by the user</span><br><span class="line">            # as this will break the probes, if the need arises we can expose it.</span><br><span class="line">            TRANSMISSION__RPC_URL: &quot;&#x2F;transmission&quot;</span><br><span class="line">            TRANSMISSION__RPC_USERNAME: &quot;USERNAME&quot;</span><br><span class="line">            TRANSMISSION__RPC_PASSWORD: &quot;RANDOM_PASSWORD&quot;</span><br><span class="line">            TRANSMISSION__RPC_AUTHENTICATION_REQUIRED: true</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_DOWN: 50</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_ENABLED: false</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_TIME_BEGIN: 540</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_TIME_DAY: 127</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_TIME_ENABLED: false</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_TIME_END: 1020</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_UP: 50</span><br><span class="line">            # TRANSMISSION__BIND_ADDRESS_IPV4: &quot;0.0.0.0&quot;</span><br><span class="line">            # TRANSMISSION__BIND_ADDRESS_IPV6: &quot;::&quot;</span><br><span class="line">            # TRANSMISSION__BLOCKLIST_ENABLED: true</span><br><span class="line">            # TRANSMISSION__BLOCKLIST_URL: &quot;https:&#x2F;&#x2F;github.com&#x2F;Naunter&#x2F;BT_BlockLists&#x2F;releases&#x2F;download&#x2F;v.1&#x2F;bt_blocklists.gz&quot;</span><br><span class="line">            TRANSMISSION__CACHE_SIZE_MB: 4</span><br><span class="line">            # TRANSMISSION__DHT_ENABLED: true</span><br><span class="line">            TRANSMISSION__DOWNLOAD_DIR: &quot;&#x2F;data&#x2F;Completed&quot; </span><br><span class="line">            # TRANSMISSION__DOWNLOAD_QUEUE_ENABLED: true</span><br><span class="line">            # TRANSMISSION__DOWNLOAD_QUEUE_SIZE: 5</span><br><span class="line">            # TRANSMISSION__ENCRYPTION: 1</span><br><span class="line">            # TRANSMISSION__IDLE_SEEDING_LIMIT: 30</span><br><span class="line">            # TRANSMISSION__IDLE_SEEDING_LIMIT_ENABLED: false</span><br><span class="line">            TRANSMISSION__INCOMPLETE_DIR: &quot;&#x2F;data&#x2F;Incomplete&quot;</span><br><span class="line">            # TRANSMISSION__INCOMPLETE_DIR_ENABLED: true</span><br><span class="line">            # TRANSMISSION__LPD_ENABLED: false</span><br><span class="line">            # TRANSMISSION__MESSAGE_LEVEL: 2</span><br><span class="line">            # TRANSMISSION__PEER_CONGESTION_ALGORITHM: &quot;&quot;</span><br><span class="line">            # TRANSMISSION__PEER_ID_TTL_HOURS: 6</span><br><span class="line">            # TRANSMISSION__PEER_LIMIT_GLOBAL: 200</span><br><span class="line">            # TRANSMISSION__PEER_LIMIT_PER_TORRENT: 50</span><br><span class="line">            TRANSMISSION__PEER_PORT: &quot;&#123;&#123; .Values.service.torrent.ports.torrent.port &#125;&#125;&quot;</span><br><span class="line">            # TRANSMISSION__PEER_PORT_RANDOM_HIGH: 65535</span><br><span class="line">            # TRANSMISSION__PEER_PORT_RANDOM_LOW: 49152</span><br><span class="line">            # TRANSMISSION__PEER_PORT_RANDOM_ON_START: false</span><br><span class="line">            # TRANSMISSION__PEER_SOCKET_TOS: default&quot;</span><br><span class="line">            # TRANSMISSION__PEX_ENABLED: true</span><br><span class="line">            # TRANSMISSION__PORT_FORWARDING_ENABLED: false</span><br><span class="line">            # TRANSMISSION__PREALLOCATION: 1</span><br><span class="line">            # TRANSMISSION__PREFETCH_ENABLED: true</span><br><span class="line">            # TRANSMISSION__QUEUE_STALLED_ENABLED: true</span><br><span class="line">            # TRANSMISSION__QUEUE_STALLED_MINUTES: 30</span><br><span class="line">            # TRANSMISSION__RATIO_LIMIT: 2</span><br><span class="line">            # TRANSMISSION__RATIO_LIMIT_ENABLED: false</span><br><span class="line">            # TRANSMISSION__RENAME_PARTIAL_FILES: true</span><br><span class="line">            # TRANSMISSION__RPC_BIND_ADDRESS: &quot;0.0.0.0&quot;</span><br><span class="line">            # TRANSMISSION__RPC_ENABLED: true</span><br><span class="line">            # TRANSMISSION__RPC_HOST_WHITELIST: &quot;&quot;</span><br><span class="line">            # TRANSMISSION__RPC_HOST_WHITELIST_ENABLED: false</span><br><span class="line">            TRANSMISSION__RPC_PORT: &quot;&#123;&#123; .Values.service.main.ports.main.port &#125;&#125;&quot;</span><br><span class="line">            # TRANSMISSION__RPC_WHITELIST: &quot;&quot;</span><br><span class="line">            # TRANSMISSION__RPC_WHITELIST_ENABLED: false</span><br><span class="line">            # TRANSMISSION__SCRAPE_PAUSED_TORRENTS_ENABLED: true</span><br><span class="line">            # TRANSMISSION__SCRIPT_TORRENT_DONE_ENABLED: false</span><br><span class="line">            # TRANSMISSION__SCRIPT_TORRENT_DONE_FILENAME: &quot;&quot;</span><br><span class="line">            # TRANSMISSION__SEED_QUEUE_ENABLED: false</span><br><span class="line">            # TRANSMISSION__SEED_QUEUE_SIZE: 10</span><br><span class="line">            # TRANSMISSION__SPEED_LIMIT_DOWN: 100</span><br><span class="line">            # TRANSMISSION__SPEED_LIMIT_DOWN_ENABLED: false</span><br><span class="line">            # TRANSMISSION__SPEED_LIMIT_UP: 100</span><br><span class="line">            # TRANSMISSION__SPEED_LIMIT_UP_ENABLED: false</span><br><span class="line">            # TRANSMISSION__START_ADDED_TORRENTS: true</span><br><span class="line">            # TRANSMISSION__TRASH_ORIGINAL_TORRENT_FILES: false</span><br><span class="line">            # TRANSMISSION__UMASK: 2</span><br><span class="line">            # TRANSMISSION__UPLOAD_SLOTS_PER_TORRENT: 14</span><br><span class="line">            # TRANSMISSION__UTP_ENABLED: true</span><br><span class="line">            # TRANSMISSION__WATCH_DIR: &quot;&#x2F;watch&quot;</span><br><span class="line">            # TRANSMISSION__WATCH_DIR_ENABLED: false</span><br><span class="line"></span><br><span class="line">persistence:</span><br><span class="line">  config:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;config&quot;</span><br><span class="line">    type: pvc</span><br><span class="line">    existingClaim: transmission-config-pvc</span><br><span class="line">  data:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;data&quot;</span><br><span class="line">    type: pvc</span><br><span class="line">    existingClaim: transmission-data-pvc</span><br><span class="line"></span><br><span class="line">portal:</span><br><span class="line">  open:</span><br><span class="line">    enabled: true</span><br><span class="line"></span><br><span class="line">manifestManager:</span><br><span class="line">  enabled: false</span><br></pre></td></tr></table></figure>
+
+<h2 id="Install-the-helm-chart-with-our-values-yaml-file"><a href="#Install-the-helm-chart-with-our-values-yaml-file" class="headerlink" title="Install the helm chart with our values.yaml file"></a>Install the helm chart with our values.yaml file</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm install syncthing-server truecharts&#x2F;syncthing --values .&#x2F;values.yaml </span><br></pre></td></tr></table></figure>
+
+<h2 id="Check-the-status-of-the-installed-application"><a href="#Check-the-status-of-the-installed-application" class="headerlink" title="Check the status of the installed application."></a>Check the status of the installed application.</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">microk8s status</span><br><span class="line">microk8s kubectl describe pods</span><br><span class="line">microk8s kubectl</span><br><span class="line">microk8s kubectl logs</span><br><span class="line">microk8s kubectl describe pods</span><br></pre></td></tr></table></figure>
+
+<h1 id="Common-Errors"><a href="#Common-Errors" class="headerlink" title="Common Errors"></a>Common Errors</h1><p>Error from server (BadRequest): container in pod is waiting to start: ContainerCreating<br>You probably need to change the permissions on the PV directory. This path is what is written in the PersistentVolume in the path variable. A quick chmod -R 777 to this path will most likely fix the issue. The conatiner should update the permissions once it runs.  </p>
+<h1 id="Service-yaml-file"><a href="#Service-yaml-file" class="headerlink" title="Service yaml file"></a>Service yaml file</h1><p>We need to expose the service to the outside world.<br>Thankfully microk8s has a built in loadbalancer called metallb</p>
+<p>WEBGUI_PORT_NUMBER: The port you wish to run the webgui on<br>TRANSMISSION_PORT: The port Transmission uses to comminicate with external parties. </p>
+<p>transmission-service.yaml </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: transmission-service</span><br><span class="line">spec:</span><br><span class="line">  type: LoadBalancer</span><br><span class="line">  selector:</span><br><span class="line">    app.kubernetes.io&#x2F;name: transmission</span><br><span class="line">  ports:</span><br><span class="line">    - name: transmission-tcp</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: TRANSMISSION_PORT</span><br><span class="line">      targetPort: TRANSMISSION_PORT</span><br><span class="line">    - name: transmission-udp</span><br><span class="line">      protocol: UDP</span><br><span class="line">      port: TRANSMISSION_PORT</span><br><span class="line">      targetPort: TRANSMISSION_PORT</span><br><span class="line">    - name: transmission-rpc-tcp</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: WEBGUI_PORT_NUMBER   # web gui port</span><br><span class="line">      targetPort: WEBGUI_PORT_NUMBER</span><br><span class="line">  externalIPs:</span><br><span class="line">    - A.B.C.D</span><br></pre></td></tr></table></figure>
+<p>More information here<br><a target="_blank" rel="noopener" href="https://medium.com/swlh/kubernetes-external-ip-service-type-5e5e9ad62fcd">https://medium.com/swlh/kubernetes-external-ip-service-type-5e5e9ad62fcd</a></p>
+<h1 id="Apply-the-service"><a href="#Apply-the-service" class="headerlink" title="Apply the service"></a>Apply the service</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl apply -f .&#x2F;transmission-service.yaml </span><br></pre></td></tr></table></figure>
+<h2 id="Confirm-the-service-is-active"><a href="#Confirm-the-service-is-active" class="headerlink" title="Confirm the service is active"></a>Confirm the service is active</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl get services transmission-service</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)                                           AGE</span><br><span class="line">transmission-service   LoadBalancer   A.B.C.D          X.Y.Z.A          TRANSMISSION_PORT:TRANSMISSION_PORT_2&#x2F;TCP,TRANSMISSION_PORT:TRANSMISSION_PORT_2 &#x2F;UDP,WEBGUI_PORT_NUMBER:31056&#x2F;TCP   9h</span><br></pre></td></tr></table></figure>
+
+<h1 id="Firewall-Rules"><a href="#Firewall-Rules" class="headerlink" title="Firewall Rules"></a>Firewall Rules</h1><p>This assumes you are using ufw.<br>ufw is bascally a wrapper for IPTABLES. If you have ever used IPTABLES before you understand why ufw exists.<br><a target="_blank" rel="noopener" href="https://docs.syncthing.net/users/firewall.html">https://docs.syncthing.net/users/firewall.html</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">sudo ufw default allow routed </span><br><span class="line"></span><br><span class="line">sudo ufw allow from A.B.C.0&#x2F;24 to any port WEBGUI_PORT_NUMBER proto tcp</span><br><span class="line">sudo ufw allow from E.F.G.H&#x2F;24 to any port TRANSMISSION_PORT proto tcp</span><br><span class="line">sudo ufw allow from E.F.G.H&#x2F;24 to any port TRANSMISSION_PORT proto udp</span><br><span class="line"></span><br><span class="line">sudo ufw status</span><br></pre></td></tr></table></figure>
+
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/services-networking/service/">https://kubernetes.io/docs/concepts/services-networking/service/</a></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Computing/" rel="tag">Computing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/" rel="tag">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Microk8s/" rel="tag">Microk8s</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
     <article id="post-MQTT-K8s-Setup-on-Ubuntu-20-04"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
     
@@ -153,9 +459,56 @@
       
         <h1 id="Install-the-k8s-cluster"><a href="#Install-the-k8s-cluster" class="headerlink" title="Install the k8s cluster"></a>Install the k8s cluster</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s enable dns storage helm3</span><br><span class="line">microk8s status</span><br></pre></td></tr></table></figure>
 
-<h1 id="Install-the-Mqtt-helm-chart"><a href="#Install-the-Mqtt-helm-chart" class="headerlink" title="Install the Mqtt helm chart"></a>Install the Mqtt helm chart</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&#x2F;</span><br><span class="line">microk8s helm pull truecharts&#x2F;mosquitto --version 8.0.11</span><br><span class="line"></span><br><span class="line">microk8s helm install my-mosquitto truecharts&#x2F;mosquitto --version 8.0.11</span><br></pre></td></tr></table></figure>
+<h1 id="Pull-the-Mqtt-helm-chart"><a href="#Pull-the-Mqtt-helm-chart" class="headerlink" title="Pull the Mqtt helm chart"></a>Pull the Mqtt helm chart</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&#x2F;</span><br><span class="line">microk8s helm pull truecharts&#x2F;mosquitto --version 8.0.11</span><br></pre></td></tr></table></figure>
+
+<h1 id="Modify-the-values-yaml-file-to-set-the-configuration"><a href="#Modify-the-values-yaml-file-to-set-the-configuration" class="headerlink" title="Modify the values.yaml file to set the configuration"></a>Modify the values.yaml file to set the configuration</h1><p>We’re going to set the mosquitto configuration within the container.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf .&#x2F;mosquitto-8.0.11.tgz</span><br><span class="line">cd mosquitto</span><br><span class="line">cat values.yamls</span><br></pre></td></tr></table></figure>
+
+<p>Bottom of values.yaml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">persistence:</span><br><span class="line">  data:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;mosquitto&#x2F;data&quot;</span><br><span class="line">  configinc:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;mosquitto&#x2F;configinc&quot;</span><br><span class="line">  mosquitto-config:</span><br><span class="line">    enabled: &quot;true&quot;</span><br><span class="line">    mountPath: &quot;&#x2F;mosquitto&#x2F;config&#x2F;mosquitto.conf&quot;</span><br><span class="line">    subPath: &quot;mosquitto.conf&quot;</span><br><span class="line">    type: &quot;custom&quot;</span><br><span class="line">    volumeSpec:</span><br><span class="line">      configMap:</span><br><span class="line">        name: &#39;&#123;&#123; template &quot;tc.common.names.fullname&quot; . &#125;&#125;-config&#39;</span><br></pre></td></tr></table></figure>
+
+<p>  mosquitto-config is a config map.<br> configinc and data are both directories on the host machine. </p>
+<h2 id="Make-the-data-directory"><a href="#Make-the-data-directory" class="headerlink" title="Make the data directory"></a>Make the data directory</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mkdir &#x2F;mnt&#x2F;Poseidon&#x2F;k8s&#x2F;mosquitto</span><br><span class="line">mkdir &#x2F;mnt&#x2F;Poseidon&#x2F;k8s&#x2F;mosquitto&#x2F;data</span><br><span class="line">mkdir &#x2F;mnt&#x2F;Poseidon&#x2F;k8s&#x2F;mosquitto&#x2F;configinc</span><br><span class="line"></span><br><span class="line">chown -R 777 &#x2F;mnt&#x2F;Poseidon&#x2F;k8s&#x2F;mosquitto</span><br></pre></td></tr></table></figure>
+
+<h1 id="Create-Persistent-Volumes-and-Persistent-Volume-Claims"><a href="#Create-Persistent-Volumes-and-Persistent-Volume-Claims" class="headerlink" title="Create Persistent Volumes and Persistent Volume Claims"></a>Create Persistent Volumes and Persistent Volume Claims</h1><h2 id="Persistent-Volumes"><a href="#Persistent-Volumes" class="headerlink" title="Persistent Volumes"></a>Persistent Volumes</h2><h3 id="configinc"><a href="#configinc" class="headerlink" title="configinc"></a>configinc</h3><p>HOSTNAME: example_host<br>FILE_PATH: /path/to/files/</p>
+<p>mosquitto-configinc-pv.yaml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: mosquitto-configinc-pv</span><br><span class="line">spec:</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 3Ti</span><br><span class="line">  volumeMode: Filesystem</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteOnce</span><br><span class="line">  persistentVolumeReclaimPolicy: Retain</span><br><span class="line">  storageClassName: local-storage</span><br><span class="line">  local:</span><br><span class="line">    path: &#x2F;path&#x2F;to&#x2F;files&#x2F;mosquitto&#x2F;configinc # This must exist on the host</span><br><span class="line">  nodeAffinity:</span><br><span class="line">    required:</span><br><span class="line">      nodeSelectorTerms:</span><br><span class="line">      - matchExpressions:</span><br><span class="line">        - key: kubernetes.io&#x2F;hostname</span><br><span class="line">          operator: In</span><br><span class="line">          values:</span><br><span class="line">          - example_host</span><br></pre></td></tr></table></figure>
+
+<p>microk8s kubectl apply -f mosquitto-configinc-pv.yaml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">persistentvolume&#x2F;mosquitto-configinc-pv created</span><br></pre></td></tr></table></figure>
+
+<h3 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h3><p>HOSTNAME: example_host</p>
+<p>mosquitto-data-pv.yaml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: mosquitto-data-pv</span><br><span class="line">spec:</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 3Ti</span><br><span class="line">  volumeMode: Filesystem</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteOnce</span><br><span class="line">  persistentVolumeReclaimPolicy: Retain</span><br><span class="line">  storageClassName: local-storage</span><br><span class="line">  local:</span><br><span class="line">    path: &#x2F;path&#x2F;to&#x2F;files&#x2F;mosquitto&#x2F;data # This must exist on the host</span><br><span class="line">  nodeAffinity:</span><br><span class="line">    required:</span><br><span class="line">      nodeSelectorTerms:</span><br><span class="line">      - matchExpressions:</span><br><span class="line">        - key: kubernetes.io&#x2F;hostname</span><br><span class="line">          operator: In</span><br><span class="line">          values:</span><br><span class="line">          - example_host</span><br></pre></td></tr></table></figure>
+
+<p>microk8s kubectl apply -f mosquitto-data-pv.yaml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">persistentvolume&#x2F;mosquitto-data-pv created</span><br></pre></td></tr></table></figure>
+
+<h4 id="Verify-PV"><a href="#Verify-PV" class="headerlink" title="Verify PV"></a>Verify PV</h4><p>microk8s kubectl get pv </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM                                 STORAGECLASS        REASON   AGE</span><br><span class="line">mosquitto-configinc-pv                     3Ti        RWO            Retain           Available                                         local-storage                97s</span><br><span class="line">mosquitto-data-pv                          3Ti        RWO            Retain           Available                                         local-storage                35s</span><br></pre></td></tr></table></figure>
+
+<h2 id="Persistent-Volume-Claims"><a href="#Persistent-Volume-Claims" class="headerlink" title="Persistent Volume Claims"></a>Persistent Volume Claims</h2><h3 id="configinc-1"><a href="#configinc-1" class="headerlink" title="configinc"></a>configinc</h3><p>mosquitto-configinc-pvc.yaml</p>
+<p>mosquitto-configinc-pvc.yaml<br>Bonds to mosquitto-configinc-pv</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: mosquitto-configinc-pvc</span><br><span class="line">spec:</span><br><span class="line">  storageClassName: local-storage # Empty string must be explicitly set otherwise default StorageClass will be set</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteOnce</span><br><span class="line">  volumeName: mosquitto-configinc-pv</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 3Ti</span><br></pre></td></tr></table></figure>
+
+<p>microk8s kubectl apply -f mosquitto-configinc-pvc.yaml</p>
+<h3 id="Data-1"><a href="#Data-1" class="headerlink" title="Data"></a>Data</h3><p>mosquitto-data-pvc.yaml<br>Bonds to mosquitto-data-pv</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: mosquitto-data-pvc</span><br><span class="line">spec:</span><br><span class="line">  storageClassName: local-storage # Empty string must be explicitly set otherwise default StorageClass will be set</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteOnce</span><br><span class="line">  volumeName: mosquitto-data-pv</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 3Ti</span><br></pre></td></tr></table></figure>
+
+<p>microk8s kubectl apply -f mosquitto-data-pvc.yaml</p>
+<h4 id="Verify-PV-1"><a href="#Verify-PV-1" class="headerlink" title="Verify PV"></a>Verify PV</h4><p>microk8s kubectl get pvc </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mosquitto-configinc-pvc       Bound    mosquitto-configinc-pv                     3Ti        RWO            local-storage       4m44s</span><br><span class="line">mosquitto-data-pvc            Bound    mosquitto-data-pv                          3Ti        RWO            local-storage       2m7s</span><br></pre></td></tr></table></figure>
+
+<h1 id="Update-the-values-file"><a href="#Update-the-values-file" class="headerlink" title="Update the values file"></a>Update the values file</h1><p>We know need to tell the helm chart to mount our directories </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nano values.yamls</span><br></pre></td></tr></table></figure>
+<p>Update the persistence section as follows</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">image:</span><br><span class="line">  repository: tccr.io&#x2F;truecharts&#x2F;eclipse-mosquitto</span><br><span class="line">  tag: 2.0.15@sha256:9e1fbb32ae27aaaf18432ff4e7e046c54fda8a630851dadf0c332a94e81fbf67</span><br><span class="line">  pullPolicy: IfNotPresent</span><br><span class="line"></span><br><span class="line">service:</span><br><span class="line">  main:</span><br><span class="line">    ports:</span><br><span class="line">      main:</span><br><span class="line">        port: 1883</span><br><span class="line">        targetPort: 1883</span><br><span class="line">  websockets:</span><br><span class="line">    enabled: true</span><br><span class="line">    ports:</span><br><span class="line">      websockets:</span><br><span class="line">        enabled: true</span><br><span class="line">        port: 9001</span><br><span class="line">        targetPort: 9001</span><br><span class="line"></span><br><span class="line">ingress:</span><br><span class="line">  websockets:</span><br><span class="line">    autoLink: true</span><br><span class="line"></span><br><span class="line">auth:</span><br><span class="line">  # -- By enabling this, &#96;allow_anonymous&#96; gets set to &#96;false&#96; in the mosquitto config.</span><br><span class="line">  enabled: false</span><br><span class="line"></span><br><span class="line">websockets:</span><br><span class="line">  # -- By enabling this, an additional listener with protocol websockets is added in the mosquitto config.</span><br><span class="line">  enabled: false</span><br><span class="line"></span><br><span class="line">configmap:</span><br><span class="line">  config:</span><br><span class="line">    enabled: true</span><br><span class="line">    data:</span><br><span class="line">      mosquitto.conf: |</span><br><span class="line">        listener &#123;&#123; .Values.service.main.ports.main.targetPort &#125;&#125;</span><br><span class="line">        &#123;&#123;- if .Values.websockets.enabled &#125;&#125;</span><br><span class="line">        listener &#123;&#123; .Values.service.websockets.ports.websockets.targetPort &#125;&#125;</span><br><span class="line">        protocol websockets</span><br><span class="line">        &#123;&#123;- end &#125;&#125;</span><br><span class="line">        &#123;&#123;- if .Values.auth.enabled &#125;&#125;</span><br><span class="line">        allow_anonymous false</span><br><span class="line">        &#123;&#123;- else &#125;&#125;</span><br><span class="line">        allow_anonymous true</span><br><span class="line">        &#123;&#123;- end &#125;&#125;</span><br><span class="line">        &#123;&#123;- if .Values.persistence.data.enabled &#125;&#125;</span><br><span class="line">        persistence true</span><br><span class="line">        persistence_location &#123;&#123; .Values.persistence.data.mountPath &#125;&#125;</span><br><span class="line">        autosave_interval 1800</span><br><span class="line">        &#123;&#123;- end &#125;&#125;</span><br><span class="line">        &#123;&#123;- if .Values.persistence.configinc.enabled &#125;&#125;</span><br><span class="line">        include_dir &#123;&#123; .Values.persistence.configinc.mountPath &#125;&#125;</span><br><span class="line">        &#123;&#123;- end &#125;&#125;</span><br><span class="line"></span><br><span class="line">persistence:</span><br><span class="line">  data:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;mosquitto&#x2F;data&quot;</span><br><span class="line">    type: pvc</span><br><span class="line">    existingClaim: mosquitto-data-pvc</span><br><span class="line">  configinc:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;mosquitto&#x2F;configinc&quot;</span><br><span class="line">    type: pvc</span><br><span class="line">    existingClaim: mosquitto-configinc-pvc</span><br><span class="line">  mosquitto-config:</span><br><span class="line">    enabled: &quot;true&quot;</span><br><span class="line">    mountPath: &quot;&#x2F;mosquitto&#x2F;config&#x2F;mosquitto.conf&quot;</span><br><span class="line">    subPath: &quot;mosquitto.conf&quot;</span><br><span class="line">    type: &quot;custom&quot;</span><br><span class="line">    volumeSpec:</span><br><span class="line">      configMap:</span><br><span class="line">        name: &#39;&#123;&#123; template &quot;tc.common.names.fullname&quot; . &#125;&#125;-config&#39;</span><br><span class="line"></span><br><span class="line">portal:</span><br><span class="line">  enabled: false</span><br></pre></td></tr></table></figure>
+
+<h1 id="Install-the-helm-chart"><a href="#Install-the-helm-chart" class="headerlink" title="Install the helm chart"></a>Install the helm chart</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm install mosquitto truecharts&#x2F;mosquitto --version 8.0.11 --values .&#x2F;values.yaml </span><br></pre></td></tr></table></figure>
 
 <h2 id="Check-the-status-of-the-installed-application"><a href="#Check-the-status-of-the-installed-application" class="headerlink" title="Check the status of the installed application."></a>Check the status of the installed application.</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">microk8s status</span><br><span class="line">microk8s kubectl show pods</span><br><span class="line">microk8s kubectl</span><br><span class="line">microk8s kubectl logs</span><br><span class="line">microk8s kubectl describe pods</span><br></pre></td></tr></table></figure>
+
+<h1 id="Common-Errors"><a href="#Common-Errors" class="headerlink" title="Common Errors"></a>Common Errors</h1><p>Error from server (BadRequest): container in pod is waiting to start: ContainerCreating<br>You probably need to change the permissions on the PV directory. This path is what is written in the PersistentVolume in the path varaibale. A quick chmod -R 777 to this path will most likely fix the issue. The conatiner should update the permissions once it runs.  </p>
 <h1 id="Service-yaml-file"><a href="#Service-yaml-file" class="headerlink" title="Service yaml file"></a>Service yaml file</h1><p>We need to expose the service to the outside world.<br>Thankfully microk8s has a built in loadbalancer called metallb</p>
 <p>Replace Y with the MQTT port number. Default 1883<br>Replace Z with the MQTT API number  Default 9001</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: mqtt-service</span><br><span class="line">spec:</span><br><span class="line">  type: LoadBalancer</span><br><span class="line">  selector:</span><br><span class="line">    app.kubernetes.io&#x2F;name: mosquitto</span><br><span class="line">  ports:</span><br><span class="line">    - name: http</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: Y</span><br><span class="line">      targetPort: Y</span><br><span class="line">    - name: https</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: Z</span><br><span class="line">      targetPort: Z</span><br><span class="line">  externalIPs:</span><br><span class="line">    - X.X.X.X</span><br><span class="line"></span><br></pre></td></tr></table></figure>
@@ -173,6 +526,9 @@
     <footer class="entry-meta entry-footer">
       
       
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Computing/" rel="tag">Computing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/" rel="tag">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Microk8s/" rel="tag">Microk8s</a></li></ul>
+
       
     </footer>
     <hr class="entry-footer-hr">
@@ -215,40 +571,37 @@
 <h2 id="User-Manual-for-the-Pi-camera-adapter"><a href="#User-Manual-for-the-Pi-camera-adapter" class="headerlink" title="User Manual for the Pi camera adapter."></a>User Manual for the Pi camera adapter.</h2><a href="/2023/02/20/Microscope-Camera/Arducam-UVC-Camera-Adapter-Board-for-12MP-IMX477-Raspberry-Pi-HQ-Camera-b0278.pdf" title="Arducam-UVC-Camera-Adapter-Board-for-12MP-IMX477-Raspberry-Pi-HQ-Camera-b0278.pdf">Arducam-UVC-Camera-Adapter-Board-for-12MP-IMX477-Raspberry-Pi-HQ-Camera-b0278.pdf</a>
 <a href="/2023/02/20/Microscope-Camera/UC-733_DIM.pdf" title="UC-733_DIM.pdf">UC-733_DIM.pdf</a>
 
-<img src="/2023/02/20/Microscope-Camera/PXL_20230223_004435934.jpg" style="width: 100%; height: 100%;"/>
+<img src="/2023/02/20/Microscope-Camera/PXL_20230223_004435934.jpg" class="">
 
 <p>Raspberrypi High Quaility Camera 12 MP C mount</p>
-<img src="/2023/02/20/Microscope-Camera/PXL_20230223_004547089.jpg" style="width: 100%; height: 100%;"/>
+<img src="/2023/02/20/Microscope-Camera/PXL_20230223_004547089.jpg" class="">
 
 <p>Components: Raspberrypi High Quaility Camera 12 MP C mount, ribbion cable, and Arducam UVC Camera Adapter Board.</p>
-<img src="/2023/02/20/Microscope-Camera/PXL_20230223_004725052.jpg" style="width: 100%; height: 100%;"/>
+<img src="/2023/02/20/Microscope-Camera/PXL_20230223_004725052.jpg" class="">
 
 <p>Connecting the Arducam UVC Camera Adapter Board to the Raspberrypi High Quaility Camera</p>
-<h1 id="Mechanical"><a href="#Mechanical" class="headerlink" title="Mechanical"></a>Mechanical</h1><h2 id="Camera-Adapter-Mount"><a href="#Camera-Adapter-Mount" class="headerlink" title="Camera Adapter Mount"></a>Camera Adapter Mount</h2><p>I orginally went with mounting the camera without any lenses. Using this Raspberry Pi HQ camera adapter 3d printed<br><a target="_blank" rel="noopener" href="https://www.printables.com/model/59927-raspberry-hq-camera-to-amscope-adapter">https://www.printables.com/model/59927-raspberry-hq-camera-to-amscope-adapter</a> </p>
-<img src="/2023/02/20/Microscope-Camera/PXL_20230225_141808927.jpg" style="width: 100%; height: 100%;"/>
+<h1 id="Mechanical"><a href="#Mechanical" class="headerlink" title="Mechanical"></a>Mechanical</h1><h2 id="Camera-Adapter-Mount"><a href="#Camera-Adapter-Mount" class="headerlink" title="Camera Adapter Mount"></a>Camera Adapter Mount</h2><p>I originally went with mounting the camera without any lenses. Using this Raspberry Pi HQ camera adapter 3d printed<br><a target="_blank" rel="noopener" href="https://www.printables.com/model/59927-raspberry-hq-camera-to-amscope-adapter">https://www.printables.com/model/59927-raspberry-hq-camera-to-amscope-adapter</a> </p>
+<img src="/2023/02/20/Microscope-Camera/PXL_20230225_141808927.jpg" class="">
 
 <p>The adapter mounted to the camera port of my AmScope T720B Scope</p>
-<img src="/2023/02/20/Microscope-Camera/PXL_20230225_141813448.jpg" style="width: 100%; height: 100%;"/>
+<img src="/2023/02/20/Microscope-Camera/PXL_20230225_141813448.jpg" class="">
 
 <p>Front-Side</p>
-<img src="/2023/02/20/Microscope-Camera/PXL_20230225_141817710.jpg" style="width: 100%; height: 100%;"/>
+<img src="/2023/02/20/Microscope-Camera/PXL_20230225_141817710.jpg" class="">
 
 <p>Side</p>
-<img src="/2023/02/20/Microscope-Camera/Plant_Leaf.png" style="width: 100%; height: 100%;"/>
-Using the above setup I was able to take this image with the camera.
-This is a plant leaf from the [Codiaeum variegatum](https://en.wikipedia.org/wiki/Codiaeum_variegatum) at ~40x
-
+<img src="/2023/02/20/Microscope-Camera/Plant_Leaf.png" class="">
+<p>Using the above setup I was able to take this image with the camera.<br>This is a plant leaf from the <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Codiaeum_variegatum">Codiaeum variegatum</a> at ~40x</p>
 <h2 id="Camera-Issues"><a href="#Camera-Issues" class="headerlink" title="Camera Issues"></a>Camera Issues</h2><p>The camera sensor size causes an inherent magnification effect called crop factor. The field of view becomes reduced due to the this magnification effect. You can see this in the image above.<br>More information here<br><a target="_blank" rel="noopener" href="https://learn.adafruit.com/raspberry-pi-hq-camera-lenses/crop-factor">https://learn.adafruit.com/raspberry-pi-hq-camera-lenses/crop-factor</a><br><a target="_blank" rel="noopener" href="https://www.microscopeworld.com/p-3341-microscope-c-mount-field-of-view.aspx">https://www.microscopeworld.com/p-3341-microscope-c-mount-field-of-view.aspx</a><br><a target="_blank" rel="noopener" href="https://www.microscopeworld.com/t-microscope_c-mounts.aspx">https://www.microscopeworld.com/t-microscope_c-mounts.aspx</a></p>
 <p>In order to correct for the inherent magnification effect an adapter was purchased.<br>From these sources I was able to find that 0.3x to 0.5x is about correct for my sensor size</p>
 <h2 id="Adapter-lens-selection"><a href="#Adapter-lens-selection" class="headerlink" title="Adapter lens selection"></a>Adapter lens selection</h2><p>AmScope RU050 0.5X Reduction Lens for C-mount Cameras FMA050 Cmount to 23mm adapter. This fits my AmScope T720B Scope</p>
-<img src="/2023/02/20/Microscope-Camera/C_MOUNT_05X.jpg" style="width: 100%; height: 100%;"/>
+<img src="/2023/02/20/Microscope-Camera/C_MOUNT_05X.jpg" class="">
 
-<img src="/2023/02/20/Microscope-Camera/C_MOUNT_05X_2.jpg" style="width: 100%; height: 100%;"/>
+<img src="/2023/02/20/Microscope-Camera/C_MOUNT_05X_2.jpg" class="">
 
 <p><a target="_blank" rel="noopener" href="https://www.ebay.com/itm/141950389592">https://www.ebay.com/itm/141950389592</a></p>
-<img src="/2023/02/20/Microscope-Camera/Dust.png" style="width: 100%; height: 100%;"/>
-Picture of dust taken with the 0.5x adapter. It's hard to tell from the images above but the field of view is noticably larger. 
-
+<img src="/2023/02/20/Microscope-Camera/Dust.png" class="">
+<p>Picture of dust taken with the 0.5x adapter. It’s hard to tell from the images above but the field of view is noticably larger. </p>
 <h2 id="Enclosure"><a href="#Enclosure" class="headerlink" title="Enclosure"></a>Enclosure</h2><p> To protect the hardware I designed an enclouse </p>
 <a href="/2023/02/20/Microscope-Camera/Microscope_Camera_Enclosure-Lid.stl" title="Microscope_Camera_Enclosure-Lid.stl">Microscope_Camera_Enclosure-Lid.stl</a>
 
@@ -261,7 +614,7 @@ Picture of dust taken with the 0.5x adapter. It's hard to tell from the images a
 <h1 id="Software"><a href="#Software" class="headerlink" title="Software"></a>Software</h1><p>I had problems with Cheese constantly changing the exposure. Thankfully many have suffered from this issue before. I found this link that is specific to the raspberry pi but useful. <a target="_blank" rel="noopener" href="https://hackernoon.com/polising-raspberry-pi-high-quality-camera-3z113u18">https://hackernoon.com/polising-raspberry-pi-high-quality-camera-3z113u18</a><br>I had to use a more advanced pieace of software called qv4l2</p>
 <p>To install on debian linux</p>
 <p>sudo apt-get install qv4l2</p>
-<img src="/2023/02/20/Microscope-Camera/V4L2.png" style="width: 100%; height: 100%;"/>
+<img src="/2023/02/20/Microscope-Camera/V4L2.png" class="">
 
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p><a target="_blank" rel="noopener" href="https://www.edmundoptics.com/knowledge-center/application-notes/microscopy/understanding-microscopes-and-objectives/">https://www.edmundoptics.com/knowledge-center/application-notes/microscopy/understanding-microscopes-and-objectives/</a><br><a target="_blank" rel="noopener" href="https://www.microscopeworld.com/p-3341-microscope-c-mount-field-of-view.aspx">https://www.microscopeworld.com/p-3341-microscope-c-mount-field-of-view.aspx</a><br><a target="_blank" rel="noopener" href="https://www.microscopeworld.com/t-microscope_c-mounts.aspx">https://www.microscopeworld.com/t-microscope_c-mounts.aspx</a><br><a target="_blank" rel="noopener" href="https://www.briandorey.com/post/raspberry-pi-high-quality-camera-on-the-microscope">https://www.briandorey.com/post/raspberry-pi-high-quality-camera-on-the-microscope</a></p>
 
@@ -361,32 +714,33 @@ Picture of dust taken with the 0.5x adapter. It's hard to tell from the images a
     <div class="article-entry" itemprop="articleBody">
       
         <p>While traveling in India I came across these nice looking tin lamps. </p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp.jpg" class="">
 
 <p>It is sometimes called a Degchi lamp. Since I am not a fan of open flames so leds will have to fill in the role of a candle. This build will be a bit rough. I will refine the lamp in later posts.</p>
-<h1 id="Parts"><a href="#Parts" class="headerlink" title="Parts"></a>Parts</h1><h3 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h3><h3 id="ESP8266"><a href="#ESP8266" class="headerlink" title="ESP8266"></a>ESP8266</h3><img src="/2022/08/17/WLED-Degchi-Lamp/ESP8266.jpg" style="width: 90%;"/>
+<h1 id="Parts"><a href="#Parts" class="headerlink" title="Parts"></a>Parts</h1><h3 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h3><h3 id="ESP8266"><a href="#ESP8266" class="headerlink" title="ESP8266"></a>ESP8266</h3><img src="/2022/08/17/WLED-Degchi-Lamp/ESP8266.jpg" class="">
 
 <p><a target="_blank" rel="noopener" href="https://www.adafruit.com/product/2471">Esp8266 Huzzah</a></p>
 <p><a target="_blank" rel="noopener" href="https://learn.adafruit.com/adafruit-huzzah-esp8266-breakout">Esp8266 Huzzah documentation</a></p>
-<h3 id="Level-shifter"><a href="#Level-shifter" class="headerlink" title="Level shifter"></a>Level shifter</h3><img src="/2022/08/17/WLED-Degchi-Lamp/TXS0108E.jpg" style="width: 90%;"/>
+<h3 id="Level-shifter"><a href="#Level-shifter" class="headerlink" title="Level shifter"></a>Level shifter</h3><img src="/2022/08/17/WLED-Degchi-Lamp/TXS0108E.jpg" class="">
 
 <p><a target="_blank" rel="noopener" href="https://www.amazon.com/gp/product/B088LMJR5K/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1">GeeekPi 6Pack TXS0108E 8 Channel Logic Level Converter Bi-Directional High Speed Full Duplex Shifter 3.3V 5V for Arduino Raspberry Pi</a></p>
-<h3 id="LED-Strip"><a href="#LED-Strip" class="headerlink" title="LED Strip"></a>LED Strip</h3><img src="/2022/08/17/WLED-Degchi-Lamp/sk6812.jpg" style="width: 90%;"/>
+<h3 id="LED-Strip"><a href="#LED-Strip" class="headerlink" title="LED Strip"></a>LED Strip</h3><img src="/2022/08/17/WLED-Degchi-Lamp/sk6812.jpg" class="">
 
 <p><a target="_blank" rel="noopener" href="https://smile.amazon.com/BTF-LIGHTING-Individually-Addressable-Flexible-Non-waterproof/dp/B01N0MA729/ref=sr_1_2?keywords=sk6812+led&qid=1659749420&sr=8-2">Led Strip</a></p>
-<h3 id="Power-supply"><a href="#Power-supply" class="headerlink" title="Power supply"></a>Power supply</h3><img src="/2022/08/17/WLED-Degchi-Lamp/Power_Supply_5V_10A.jpg" style="width: 90%;"/>
+<h3 id="Power-supply"><a href="#Power-supply" class="headerlink" title="Power supply"></a>Power supply</h3><img src="/2022/08/17/WLED-Degchi-Lamp/Power_Supply_5V_10A.jpg" class="">
 
 <p><a target="_blank" rel="noopener" href="https://www.amazon.com/gp/product/B01M0KLECZ/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1">5v 10 amp power upply with barrel plug</a></p>
-<h3 id="Plug"><a href="#Plug" class="headerlink" title="Plug"></a>Plug</h3><img src="/2022/08/17/WLED-Degchi-Lamp/Barrel_Plug.jpg" style="width: 90%;"/>
+<h3 id="Plug"><a href="#Plug" class="headerlink" title="Plug"></a>Plug</h3><img src="/2022/08/17/WLED-Degchi-Lamp/Barrel_Plug.jpg" class="">
 
 <p><a target="_blank" rel="noopener" href="https://www.amazon.com/Power-Connector-Female-Adapter-Camera/dp/B07C61434H/ref=sr_1_3?crid=1C8THCD6688TZ&keywords=barrel+plugs&qid=1659770244&sprefix=barel+plugs,aps,92&sr=8-3">Barrel plug</a></p>
 <h1 id="Software"><a href="#Software" class="headerlink" title="Software"></a>Software</h1><h2 id="WLED"><a href="#WLED" class="headerlink" title="WLED"></a>WLED</h2><p><a target="_blank" rel="noopener" href="https://github.com/Aircoookie/WLED">wled</a></p>
 <h3 id="Binary"><a href="#Binary" class="headerlink" title="Binary"></a>Binary</h3><p><a target="_blank" rel="noopener" href="https://github.com/Aircoookie/WLED/releases/download/v0.13.1/WLED_0.13.1_ESP8266.bin">Wled binary</a></p>
 <h1 id="Flashing"><a href="#Flashing" class="headerlink" title="Flashing"></a>Flashing</h1><p>You will need a 3.3v usb to serial adapter. An FTDI based usb to serial adapteris perfered. </p>
 <p><a target="_blank" rel="noopener" href="https://docs.espressif.com/projects/esptool/en/latest/esp32/">https://docs.espressif.com/projects/esptool/en/latest/esp32/</a><br>Method 2 <a target="_blank" rel="noopener" href="https://kno.wled.ge/basics/install-binary/">https://kno.wled.ge/basics/install-binary/</a> </p>
-<h2 id="Connections"><a href="#Connections" class="headerlink" title="Connections"></a>Connections</h2><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041807877.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041838804.jpg" style="width: 90%;"/>
+<h2 id="Connections"><a href="#Connections" class="headerlink" title="Connections"></a>Connections</h2><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041807877.jpg" class="">
+
+
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041838804.jpg" class="">
 
 <p>Connection between the usb to serial adapter and the ESP8266.</p>
 <ul>
@@ -400,62 +754,67 @@ Picture of dust taken with the 0.5x adapter. It's hard to tell from the images a
 <h2 id="Operating-system-permission-workarounds"><a href="#Operating-system-permission-workarounds" class="headerlink" title="Operating system permission workarounds"></a>Operating system permission workarounds</h2><p>In order to write data to ttyUSB or other serieal ports you must be a member of the dialout group. </p>
 <pre><code>sudo usermod -a -G dialout your_user_name
 
-Log out log in
+Log out log in</code></pre>
+<h1 id="Flash-WLED-onto-the-ESP"><a href="#Flash-WLED-onto-the-ESP" class="headerlink" title="Flash WLED onto the ESP"></a>Flash WLED onto the ESP</h1><pre><code>sudo python3 ./esptool.py -p /dev/ttyUSB0 write_flash 0x0 ./WLED_0.13.1_ESP8266.bin</code></pre>
+<h1 id="Electronics"><a href="#Electronics" class="headerlink" title="Electronics"></a>Electronics</h1><h2 id="Schematic"><a href="#Schematic" class="headerlink" title="Schematic"></a>Schematic</h2><img src="/2022/08/17/WLED-Degchi-Lamp/Degchi-Lamp-Electronics.png" class="">
 
-sudo esptool.py -p ttyUSB0sudo esptool.py -p ttyUSB0 write_flash 0x0 ./WLED_0.13.1_ESP8266.bin</code></pre>
-<h1 id="Electronics"><a href="#Electronics" class="headerlink" title="Electronics"></a>Electronics</h1><h2 id="Schematic"><a href="#Schematic" class="headerlink" title="Schematic"></a>Schematic</h2><p><br></br><br><img src="/2022/08/17/WLED-Degchi-Lamp/Degchi-Lamp-Electronics.png" style="width: 90%;"/><br><br></br></p>
+
 <h2 id="Electronics-Rough-Fit"><a href="#Electronics-Rough-Fit" class="headerlink" title="Electronics Rough Fit"></a>Electronics Rough Fit</h2><p>Playing around with the electronics to confirm that the design works as expected.</p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030411413.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030424508.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030434512.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030451769.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030411413.jpg" class="">
+<p><br></br></p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030424508.jpg" class="">
+<p><br></br></p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030434512.jpg" class="">
+<p><br></br></p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030451769.jpg" class="">
 
 <p>Everything is hooked up but the lights are not working. </p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030508542.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030508542.jpg" class="">
 
 <p>Discovered that the OE pin on the TXS0108E needs to be pulled high to VA (ESP Logic Level High 3.3V)</p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041756325.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_212503830.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041756325.jpg" class="">
+
+
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_212503830.jpg" class="">
 
 
 <h1 id="Physical-Construction"><a href="#Physical-Construction" class="headerlink" title="Physical Construction"></a>Physical Construction</h1><h2 id="Lamp"><a href="#Lamp" class="headerlink" title="Lamp"></a>Lamp</h2><h2 id="Test-Fit"><a href="#Test-Fit" class="headerlink" title="Test Fit"></a>Test Fit</h2><p>Lets see how everything could fit inside the lamp. Who cares how it looks at the moment. We will polish it later. </p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005652066.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005656922.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005704671.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_224801450.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005652066.jpg" class="">
+
+
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005656922.jpg" class="">
+
+
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005704671.jpg" class="">
+
+
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_224801450.jpg" class="">
 
 <h2 id="Electronics-Enclosure"><a href="#Electronics-Enclosure" class="headerlink" title="Electronics Enclosure"></a>Electronics Enclosure</h2><h3 id="FreeCad-Model"><a href="#FreeCad-Model" class="headerlink" title="FreeCad Model"></a>FreeCad Model</h3><a href="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp_Enclosure.FCStd" title="Degchi_Lamp_Enclosure.FCStd">Degchi_Lamp_Enclosure.FCStd</a>
 
-<img src="/2022/08/17/WLED-Degchi-Lamp/FreeCad.png" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/FreeCad.png" class="">
 
 <p>First atttempt to create a quick enclosure. </p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp.png" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp.png" class="">
 
 <p>View of the enclosure lid.</p>
 <h3 id="Enclosure-STLs"><a href="#Enclosure-STLs" class="headerlink" title="Enclosure STLs"></a>Enclosure STLs</h3><a href="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Enclosure.stl" title="Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Enclosure.stl">Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Enclosure.stl</a>
 <p>Enclosure Main Body</p>
 <a href="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Cover.stl" title="Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Cover.stl">Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Cover.stl</a>
 <p>Enclosure Main Body</p>
-<h3 id="Enclosure-Assembly"><a href="#Enclosure-Assembly" class="headerlink" title="Enclosure Assembly"></a>Enclosure Assembly</h3><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193334453.jpg" style="width: 90%;"/>
+<h3 id="Enclosure-Assembly"><a href="#Enclosure-Assembly" class="headerlink" title="Enclosure Assembly"></a>Enclosure Assembly</h3><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193334453.jpg" class="">
 
 <p>1 amp Fuse</p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193337120.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193337120.jpg" class="">
 
 <p>All the electronics seem to fit. A more professional version will be created when I get the parts.</p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193339631.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193339631.jpg" class="">
 
 <p>Forcing all the electronics into the enclosure.</p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193658141.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193658141.jpg" class="">
 
 <p>Everything is coming together.</p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193854465.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193854465.jpg" class="">
 
 <p>Power on testing</p>
 <h2 id="Led-Mounts"><a href="#Led-Mounts" class="headerlink" title="Led Mounts"></a>Led Mounts</h2><p>The inside of the lamp is coated in a thick non conductive coating. For the time being the led strip is just placed inside the lamp body.</p>
@@ -470,14 +829,14 @@ sudo esptool.py -p ttyUSB0sudo esptool.py -p ttyUSB0 write_flash 0x0 ./WLED_0.13
 <li><p>Add the same static ip in wled wifi settings </p>
 </li>
 </ul>
-<h1 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h1><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_195121212.jpg" style="width: 90%;"/>
+<h1 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h1><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_195121212.jpg" class="">
 
 <p>I am not a fan of this very large black power cable. I will replace the power cord with USB-C.<br>After measuring the power usage of the lamp at peak load it looks like USB-C is a good option. Peak load 0.6 Amps<br>This will be covered in a follow up article. </p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025451240.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025516535.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025517876.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025451240.jpg" class="">
+<p><br></br></p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025516535.jpg" class="">
+<p><br></br></p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025517876.jpg" class="">
       
     </div>
     <footer class="entry-meta entry-footer">
@@ -647,339 +1006,11 @@ sudo modprobe 88x2bu</code></pre>
 <!-- Table of Contents -->
 
   
-    <article id="post-CNC-Enclosure-Door"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2019/12/26/CNC-Enclosure-Door/">CNC Enclosure Door</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2019/12/26/CNC-Enclosure-Door/" class="article-date">
-	  <time datetime="2019-12-26T23:50:50.000Z" itemprop="datePublished">December 26, 2019</time>
-	</a>
-
-       
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Parts"><a href="#Parts" class="headerlink" title="Parts"></a>Parts</h1><h2 id="Magnetic-Door-LAtch"><a href="#Magnetic-Door-LAtch" class="headerlink" title="Magnetic Door LAtch"></a>Magnetic Door LAtch</h2><a href="/2019/12/26/CNC-Enclosure-Door/DoorMagnetLatchMount.scad" title="DoorMagnetLatchMount.scad">DoorMagnetLatchMount.scad</a>
-<a href="/2019/12/26/CNC-Enclosure-Door/DoorMagnetLatchMount.stl" title="DoorMagnetLatchMount.stl">DoorMagnetLatchMount.stl</a>
-
-<h2 id="Handle"><a href="#Handle" class="headerlink" title="Handle"></a>Handle</h2><a href="/2019/12/26/CNC-Enclosure-Door/ENCLOSURE_HANDLE.zip" title="ENCLOSURE_HANDLE.zip">ENCLOSURE_HANDLE.zip</a>
-<a href="/2019/12/26/CNC-Enclosure-Door/MU_HANDLE.3mf" title="MU_HANDLE.3mf">MU_HANDLE.3mf</a>
-
-<h2 id="Hinges"><a href="#Hinges" class="headerlink" title="Hinges"></a>Hinges</h2><a href="/2019/12/26/CNC-Enclosure-Door/parametric_butt_hinge_3.7.scad" title="parametric_butt_hinge_3.7.scad">parametric_butt_hinge_3.7.scad</a>
-<a href="/2019/12/26/CNC-Enclosure-Door/parametric_butt_hinge_7.stl" title="parametric_butt_hinge_7.stl">parametric_butt_hinge_7.stl</a>
-
-<h1 id="Mounting-the-Door"><a href="#Mounting-the-Door" class="headerlink" title="Mounting the Door"></a>Mounting the Door</h1><img src="/2019/12/26/CNC-Enclosure-Door/20200110_145308.jpg" style="width: 60%;"/>
-<img src="/2019/12/26/CNC-Enclosure-Door/20200110_145251.jpg" style="width: 60%;"/>
-<img src="/2019/12/26/CNC-Enclosure-Door/20200110_145254.jpg" style="width: 60%;"/>
-3d Printed Magnetic Latch mount
-
-<img src="/2019/12/26/CNC-Enclosure-Door/20191226_203758.jpg" style="width: 60%;"/>
-3d Printed Hinges
-
-<img src="/2019/12/26/CNC-Enclosure-Door/20200111_140324.jpg" style="width: 60%;"/>
-<img src="/2019/12/26/CNC-Enclosure-Door/20200111_140316.jpg" style="width: 60%;"/>
-<img src="/2019/12/26/CNC-Enclosure-Door/20200111_140331.jpg" style="width: 60%;"/>
-Determining the correct drilling points with a punch
-
-<img src="/2019/12/26/CNC-Enclosure-Door/20191226_185050.jpg" style="width: 60%;"/>
-Drilling Hinge Mounting Holes
-
-<img src="/2019/12/26/CNC-Enclosure-Door/20200111_150517.jpg" style="width: 60%;"/>
-<img src="/2019/12/26/CNC-Enclosure-Door/20200111_150509.jpg" style="width: 60%;"/>
-Mounting the door with the hinges
-
-<img src="/2019/12/26/CNC-Enclosure-Door/20200111_150458.jpg" style="width: 60%;"/>
-Door Mounted to Hinges
-
-
-
-
-
-
-
-
-
-
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CNC/" rel="tag">CNC</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-Grub-Boot-Loader-Not-Found"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2019/12/23/Grub-Boot-Loader-Not-Found/">Grub Boot Loader Not Found</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2019/12/23/Grub-Boot-Loader-Not-Found/" class="article-date">
-	  <time datetime="2019-12-23T19:41:32.000Z" itemprop="datePublished">December 23, 2019</time>
-	</a>
-
-       
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Insert Grub console picture here </p>
-<p>run the following commands </p>
-<ul>
-<li>ls</li>
-</ul>
-<p>Will show you all the drive parations </p>
-<p>(hd0,gpt1)</p>
-<ul>
-<li>ls (hdo,gpt1)/</li>
-</ul>
-<p>Will give you a listing of all the files on the dive</p>
-<ul>
-<li>Find the drive that contains /boot</li>
-</ul>
-<p>(hd0,gpt1)/boot</p>
-<ul>
-<li>locate the grub.cfg</li>
-</ul>
-<p>configfile /PathToFile/grub.cfg</p>
-<p>configfile (hd0,gpt1)/boot/grub/grub.cfg</p>
-<ul>
-<li><p>Grub boot menu should start.</p>
-</li>
-<li><p>Kernel is now running</p>
-</li>
-<li><p>Fix any broken packages<br>dpkg –configure -a</p>
-</li>
-<li><p>Check systemctl</p>
-</li>
-<li><p>Look for any errors that may have occured.</p>
-</li>
-<li><p>Fix any filesystem errors that may have occures</p>
-</li>
-<li><p>look in /dev/disk/by-uuid</p>
-</li>
-<li><p>Perform fsck on any drives that require a repair.<br>fsck /dev/disk/by-uuid/abc456</p>
-</li>
-<li><p>Often the grub loader cannot find the efi file</p>
-</li>
-<li><p>sudo apt install grub-efi-amd64</p>
-</li>
-</ul>
-
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fixes/" rel="tag">Fixes</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-Numpy-LeNet-5-with-ADAM"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2019/05/10/Numpy-LeNet-5-with-ADAM/">Numpy LeNet 5 with ADAM</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2019/05/10/Numpy-LeNet-5-with-ADAM/" class="article-date">
-	  <time datetime="2019-05-10T14:15:12.000Z" itemprop="datePublished">May 10, 2019</time>
-	</a>
-
-       
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>John W Grun</p>
-<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image3.png" class="">
-
-<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>In this paper, a manually implemented LeNet-5 convolutional NN with an Adam optimizer written in Numpy will be presented. This paper will also cover a description of the data used to train and test the network,technical details of the implementation, the methodology of training the network and determining hyper parameters, and present the results of the effort.</p>
-<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>LeNet-5 was created by Yuan Lecun and described  in the paper “Gradient-Based Learning Applied To Document Recognition” . LeNet-5 was one of the first convolutional neural networks used on a large scale to automatically classify hand-written digits on bank checks in the United States. Prior to LeNet, most character recognition was done by using feature engineering by hand, followed by a simple machine learning model like K nearest neighbors (KNN) or Support Vector Machines (SVM). LeNet made hand engineering features redundant, because the network learns the best internal representation from training images automatically.</p>
-<p>This paper will cover some of the technical details of a manual Numpy implementation of LeNet-5 convolutional Neural Network including the details about the  training set, structure of the lenet-5 CNN, weights and biases initialization, optimizer, gradient descent, the loss function, and speed enhancements. The paper will also cover the methodology used during training and selecting hyperparameters as well as the performance on the test dataset.</p>
-<h1 id="Related-work"><a href="#Related-work" class="headerlink" title="Related work"></a>Related work</h1><p>There are numerous examples of numpy implementations of LeNet 5 found across the internet but, none with more significance than any other. Lenet-5 is now a common architecture used to teach new students fundamental concepts of convolutional neural network</p>
-<h1 id="Data-Description"><a href="#Data-Description" class="headerlink" title="Data Description"></a>Data Description</h1><img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image2.png" class="">
-<p>The MNIST database of handwritten digits, contains a training set of 60,000 examples, and a test set of 10,000 examples. Each example is a 28 x 28 pixel grayscale image.<br>All training and test examples of the MNIST  were converted from gray scale images to bilevel representation to simplify the function the CNN needed to learn. Only pixel positional information is required to correctly classify digits, while grayscale offers no useful additional information and only aids in increasing complexity. The labels of both the test and training examples were converted to one hot vectors to make them compatible with the softmax output and cross entropy loss function.  Both indexes of the training and test sets were further randomized to ensure each batch was a random distribution of all 10 classes.</p>
-<h1 id="Model-Description"><a href="#Model-Description" class="headerlink" title="Model Description"></a>Model Description</h1><h2 id="Structure"><a href="#Structure" class="headerlink" title="Structure"></a>Structure</h2><img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image3.png" class="">
-<p>The model is  a implementation of LeNet 5 with the following structure:</p>
-<ul>
-<li>Input 28 x 28</li>
-<li>Convolutional layer (Pad =  2 , Stride = 1, Activation = ReLu, Filters = 6, Size = 5)</li>
-<li>Max Pool (Filter = 2, Stride = 2)</li>
-<li>Convolutional layer  (Pad =  0 , Stride = 1, Activation = ReLu, Filters = 16 )</li>
-<li>Max Pool (Filter = 2, Stride = 2)</li>
-<li>Convolutional layer  (Pad =  0 , Stride = 1, Activation = ReLu, Filters = 120)</li>
-<li>Fully Connected ( Size = 120, Activation = ReLu)</li>
-<li>Fully Connected (Size = 84, Activation = ReLu)</li>
-<li>Soft Max (  10 Classes )</li>
-</ul>
-<h2 id="Weight-and-bias-initialization"><a href="#Weight-and-bias-initialization" class="headerlink" title="Weight and bias initialization"></a>Weight and bias initialization</h2><p>Since the  original lenet-5 predates many of the more optimal weight initialization schemes such as Xavier or HE initialization, the weights were initialized with numpy random.randn while biases were zero filled with numpy zeros.</p>
-<h2 id="Optimizer"><a href="#Optimizer" class="headerlink" title="Optimizer"></a>Optimizer</h2><p>At first a constant learning  rate optimizer was used for this network but, stable convergence required a very small learning rate. This small learning rate required a very long training time to achieve a reasonable accuracy on the test set. The constant learning rate optimizer was replaced with a numpy implementation of the ADAM optimizer. ADAM allowed for the use of higher learning rate that resulted in quicker and smoother convergence. The formulas that describe ADAM are shown below:</p>
-<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image8.png" class="">
-<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image1.png" class="">
-<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image4.png" class="">
-<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image11.png" class="">
-<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image9.png" class="">
-
-<h1 id="Gradient-Descent"><a href="#Gradient-Descent" class="headerlink" title="Gradient Descent"></a>Gradient Descent</h1><p>This implementation of LeNet-5 uses Mini-batch gradient descent. Mini-batch gradient descent is a trade-off between stochastic gradient descent (training on 1 sample at a time) and gradient descent (training on the entire training set).  In mini-batch gradient descent, the cost function (and therefore gradient) is averaged over a small number of samples. Mini batch gradient descent was selected due to its increased convergence rate and the ability to escape local minimum.</p>
-<h2 id="Loss-function"><a href="#Loss-function" class="headerlink" title="Loss function"></a>Loss function</h2><p>LeNet 5 produces a 10 class categorical output representing the numbers 0 to 9.  The original LeNEt-5 used Maximum a posteriori (MAP) as the loss loss function. Cross-entropy was chosen as the loss function in this implementation instead of MAP since cross entropy appears to be the dominant loss function for similar classification problems and source code was available to check against. The formula for cross entropy loss is given below:</p>
-<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image10.png" class="">
-
-<h2 id="Speed-Enhancements"><a href="#Speed-Enhancements" class="headerlink" title="Speed Enhancements"></a>Speed Enhancements</h2><p>To train the CNN in a reasonable amount of time several performance enhancements had to be made.</p>
-<img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image7.png" class="">
-<p>The python profiler was used to identify locations in the code that would have the largest effect on performance. The convolutional and max pooling layers consumed the majority of the running time. The running time  of the convolutional and max pool layers was decreased by first converting the single threaded functions into multithreaded functions. Processing was divided up equally across the number of threads. Once threading was confirmed to be working properly, the Numba Just in Time compiler (JIT) was employed to convert python functions into native code. Numba JIT was then liberally applied throughout the code.  These enhancements reduced the training time from over 1 day to a few hours, constituting a 6-8x speed up on average.</p>
-<h1 id="Method-Description-And-Experimental-Procedure"><a href="#Method-Description-And-Experimental-Procedure" class="headerlink" title="Method Description And Experimental Procedure"></a>Method Description And Experimental Procedure</h1><p>The LeNet 5 model implementation  was trained on the MNIST dataset. After each training, the training loss versus epoch was plotted. The learning rate was decreased until the training loss vs epochs was a monotonically decreasing function. The number of epochs was selected to minimize the training loss while the training loss continued to decrease with every training epoch. Adjustments to the epochs sometimes also required adjustments to the learning rate to keep the training loss vs epoch a monotonically decreasing function.<br>In addition to the training loss, the prediction accuracy was computed. The accuracy was computed by the following method:<br>The input images were forward propagated through the network with the weights and biases learned during training. The class with the largest magnitude was selected as the prediction. The predicted class was compared to the label for a given input image. The percentage of correct predictions was computed across all  input images forward propagated through the network.<br>The prediction accuracy was computed for both the  training and testing sets . In a well trained network (one not underfitting or overfitting ) the test prediction accuracy should be close to the training prediction accuracy. If the training prediction accuracy is far greater than the test prediction accuracy  it is a sign the network is overfitting on the training data and failing to generalize well.<br>The batch size was selected primary upon the cache limitations of the processor. A batch size of around 32 was determined to be small enough to fit in cache while also large enough to reduce overhead from thread context switching.</p>
-<h1 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h1><h2 id="Hyper-parameters"><a href="#Hyper-parameters" class="headerlink" title="Hyper parameters"></a>Hyper parameters</h2><p>The hyper parameters for this numpy implementation of LeNet 5 are as follows:</p>
-<ul>
-<li>Epochs = 20</li>
-<li>Learning rate = 0.0002</li>
-<li>Batch = 32</li>
-</ul>
-<h2 id="Training-time"><a href="#Training-time" class="headerlink" title="Training time"></a>Training time</h2><p>The total training time was brought down from 26 hours to train on the entire training set of 60000 examples to only 2.75 hours after applying speed enhancements.</p>
-<h2 id="Training-loss"><a href="#Training-loss" class="headerlink" title="Training loss"></a>Training loss</h2><img src="/2019/05/10/Numpy-LeNet-5-with-ADAM/image12.png" class="">
-
-<p>The training loss of LeNet-5 as plotted over 20 epochs. The training loss is monotonically decreasing indicating the network is effectively learning to differentiate between the ten classes in the MNIST dataset.</p>
-<h2 id="Accuracy"><a href="#Accuracy" class="headerlink" title="Accuracy"></a>Accuracy</h2><p>Accuracy on test set = 95.07%<br>Accuracy on Train set = 94.90%<br>The Lenet-5 implementation achieved a high accuracy on the test and train sets without a significant difference in prediction accuracy between the train and test sets which would be an indication of overfitting.</p>
-<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>A Lenet 5 Convolutional Neural Network has been implemented only using Numpy that yields prediction accuracies over 95% on the test set. The network was trained on all 60000 examples found in the MNIST dataset and tested against the 10000 examples in the MNIST test set. The network used the standard LeNet Architecture with modifications where required. To decrease convergence time, a numpy ADAM optimizer was written. Several speed enhancements such as multi threading and just in time compilation were employed to decrease training time to a reasonable period.</p>
-<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p>[1] Lavorini, Vincenzo. “Speeding up Your Code (4): in-Time Compilation with Numba.” <em>Medium</em>, Medium, 6 Mar. 2018, medium.com/@vincenzo.lavorini/speeding-up-your-code-4-in-time-compilation-with-numba-177d6849820e.<br>[2] “Convolutional Neural Networks.” <em>Coursera</em>, <a target="_blank" rel="noopener" href="http://www.coursera.org/learn/convolutional-neural-networks">www.coursera.org/learn/convolutional-neural-networks</a>.<br>[3] LeCun, Yann. <em>MNIST Demos on Yann LeCun’s Website</em>, yann.lecun.com/exdb/lenet/.<br>[4] Lecun, Y., Bottou, L., Bengio, Y., &amp; Haffner, P. (1998). <em>Gradient-based learning applied to document recognition. Proceedings of the IEEE, 86(11), 2278–2324.</em> doi:10.1109/5.726791<br>[5]  “MNIST Database.” Wikipedia, Wikimedia Foundation, 11 Apr. 2019, en.wikipedia.org/wiki/MNIST_database.<br>[6] “Cross Entropy.” Wikipedia, Wikimedia Foundation, 8 May 2019, en.wikipedia.org/wiki/Cross_entropy.<br>[7] “Stochastic Gradient Descent.” Wikipedia, Wikimedia Foundation, 29 Mar. 2019, en.wikipedia.org/wiki/Stochastic_gradient_descent.</p>
-
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Computing/" rel="tag">Computing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Research/" rel="tag">Research</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-QuadCopterBumbleBee"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2019/01/20/QuadCopterBumbleBee/">QuadCopterBumbleBee</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2019/01/20/QuadCopterBumbleBee/" class="article-date">
-	  <time datetime="2019-01-20T16:08:15.000Z" itemprop="datePublished">January 20, 2019</time>
-	</a>
-
-       
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="BumbleBee-Quad-Copter"><a href="#BumbleBee-Quad-Copter" class="headerlink" title="BumbleBee Quad Copter"></a>BumbleBee Quad Copter</h1><h2 id="Frame"><a href="#Frame" class="headerlink" title="Frame"></a>Frame</h2><h3 id="BumbleBee"><a href="#BumbleBee" class="headerlink" title="BumbleBee"></a>BumbleBee</h3><h3 id="Frame-Configuration"><a href="#Frame-Configuration" class="headerlink" title="Frame Configuration"></a>Frame Configuration</h3><p>Quad X </p>
-<img src="/2019/01/20/QuadCopterBumbleBee/MOTORS_QuadX_QuadPlus.jpg" class="">
-
-<h2 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h2><h3 id="Readytosky-Pixhawk-PX4-Flight-Controller-Autopilot-PIX-2-4-8-32-Bit-Flight-Control-Board-Safety-Switch-Buzzer-I2C-Splitter-Expand-Module-16GB-SD-Card"><a href="#Readytosky-Pixhawk-PX4-Flight-Controller-Autopilot-PIX-2-4-8-32-Bit-Flight-Control-Board-Safety-Switch-Buzzer-I2C-Splitter-Expand-Module-16GB-SD-Card" class="headerlink" title="Readytosky Pixhawk PX4 Flight Controller Autopilot PIX 2.4.8 32 Bit Flight Control Board+Safety Switch+Buzzer+I2C Splitter Expand Module+16GB SD Card"></a>Readytosky Pixhawk PX4 Flight Controller Autopilot PIX 2.4.8 32 Bit Flight Control Board+Safety Switch+Buzzer+I2C Splitter Expand Module+16GB SD Card</h3><img src="/2019/01/20/QuadCopterBumbleBee/Controller1.jpg" class="">
-
-<h2 id="Navigation"><a href="#Navigation" class="headerlink" title="Navigation"></a>Navigation</h2><h3 id="Readytosky-M8N-GPS-Module-Built-in-Compass-Protective-Case-with-GPS-Antenna-Mount-for-Standard-Pixhawk-2-4-6-2-4-8-Flight-Controller"><a href="#Readytosky-M8N-GPS-Module-Built-in-Compass-Protective-Case-with-GPS-Antenna-Mount-for-Standard-Pixhawk-2-4-6-2-4-8-Flight-Controller" class="headerlink" title="Readytosky M8N GPS Module Built-in Compass Protective Case with GPS Antenna Mount for Standard Pixhawk 2.4.6 2.4.8 Flight Controller"></a>Readytosky M8N GPS Module Built-in Compass Protective Case with GPS Antenna Mount for Standard Pixhawk 2.4.6 2.4.8 Flight Controller</h3><img src="/2019/01/20/QuadCopterBumbleBee/GPS4.jpg" class="">
-
-<h2 id="Remote-Control"><a href="#Remote-Control" class="headerlink" title="Remote Control"></a>Remote Control</h2><h3 id="Turnigy-TGY-I6"><a href="#Turnigy-TGY-I6" class="headerlink" title="Turnigy TGY-I6"></a>Turnigy TGY-I6</h3><h2 id="PWM-To-PPM-Conversion"><a href="#PWM-To-PPM-Conversion" class="headerlink" title="PWM To PPM Conversion"></a>PWM To PPM Conversion</h2><h3 id="usmile-PPM-Encoder-With-10pin-Input-amp-4pin-Output-Cable-For-Pixhawk-PPZ-MK-MWC-Pirate-Flight-Control"><a href="#usmile-PPM-Encoder-With-10pin-Input-amp-4pin-Output-Cable-For-Pixhawk-PPZ-MK-MWC-Pirate-Flight-Control" class="headerlink" title="usmile PPM Encoder With 10pin Input &amp; 4pin Output Cable For Pixhawk/PPZ/MK/MWC/Pirate Flight Control"></a>usmile PPM Encoder With 10pin Input &amp; 4pin Output Cable For Pixhawk/PPZ/MK/MWC/Pirate Flight Control</h3><img src="/2019/01/20/QuadCopterBumbleBee/PPM_Encoder7.jpg" class="">
-
-<h2 id="Motor-Controllers"><a href="#Motor-Controllers" class="headerlink" title="Motor Controllers"></a>Motor Controllers</h2><h3 id="Turnigy-MultiStar-V-20"><a href="#Turnigy-MultiStar-V-20" class="headerlink" title="Turnigy MultiStar V.20"></a>Turnigy MultiStar V.20</h3><p>Internal BEC provides 5V to the rest of the system<br>WARNING: If using ESC BECs to power your system you may need to disconnect all but one of the 5 volt connections from the ESC BEC. Only 1 power source! </p>
-<h2 id="Power"><a href="#Power" class="headerlink" title="Power"></a>Power</h2><p>3300 mAH Battery </p>
-<h2 id="Software"><a href="#Software" class="headerlink" title="Software"></a>Software</h2><h2 id="Firmware"><a href="#Firmware" class="headerlink" title="Firmware"></a>Firmware</h2><h3 id="Ardupilot"><a href="#Ardupilot" class="headerlink" title="Ardupilot"></a>Ardupilot</h3><p><a target="_blank" rel="noopener" href="http://ardupilot.org/">http://ardupilot.org/</a></p>
-<h2 id="Mission-Planner-Ground-Control"><a href="#Mission-Planner-Ground-Control" class="headerlink" title="Mission Planner ( Ground Control )"></a>Mission Planner ( Ground Control )</h2><h3 id="APM-Planner-V2-0"><a href="#APM-Planner-V2-0" class="headerlink" title="APM Planner V2.0"></a>APM Planner V2.0</h3><p><a target="_blank" rel="noopener" href="http://ardupilot.org/planner2/">http://ardupilot.org/planner2/</a></p>
-<h2 id="Pictures"><a href="#Pictures" class="headerlink" title="Pictures"></a>Pictures</h2><h2 id="Frame-1"><a href="#Frame-1" class="headerlink" title="Frame"></a>Frame</h2><h3 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h3><img src="/2019/01/20/QuadCopterBumbleBee/20190119_164818.jpg" class="">
-
-<h2 id="Motor-Connections"><a href="#Motor-Connections" class="headerlink" title="Motor Connections"></a>Motor Connections</h2><h3 id="Front-Left"><a href="#Front-Left" class="headerlink" title="Front Left"></a>Front Left</h3><img src="/2019/01/20/QuadCopterBumbleBee/20190119_164831.jpg" class="">
-
-<h3 id="Front-Right"><a href="#Front-Right" class="headerlink" title="Front Right"></a>Front Right</h3><img src="/2019/01/20/QuadCopterBumbleBee/20190119_164842.jpg" class="">
-
-<h3 id="Rear-Left"><a href="#Rear-Left" class="headerlink" title="Rear Left"></a>Rear Left</h3><img src="/2019/01/20/QuadCopterBumbleBee/20190119_164852.jpg" class="">
-
-<h3 id="Rear-Right"><a href="#Rear-Right" class="headerlink" title="Rear Right"></a>Rear Right</h3><img src="/2019/01/20/QuadCopterBumbleBee/20190119_164848.jpg" class="">
-
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-      
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
 
 
   <nav id="page-nav">
     
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next</a>
   </nav>
 
 </section>
@@ -1072,6 +1103,54 @@ Door Mounted to Hinges
               <div class="widget-entry-summary" style="margin: 0;">
             
 
+              <h6 style="margin: 0;"><a href="/2023/10/03/Home-Assistant-Setup-on-Kubernetes/">Home Assistant Setup on Kubernetes</a></h6>
+              <span>October 3, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/08/30/Jellyfin-Media-Server-Setup-on-Kubernetes/">Jellyfin Media Server Setup on Kubernetes</a></h6>
+              <span>August 30, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/08/23/Zigbee2Mqtt-Kubernetes-Setup-on-Ubuntu/">Zigbee2Mqtt Kubernetes Setup on Ubuntu</a></h6>
+              <span>August 23, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/08/23/Transmission-Kubernetes-Setup-on-Ubuntu/">Transmission Kubernetes Setup on Ubuntu</a></h6>
+              <span>August 23, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
               <h6 style="margin: 0;"><a href="/2023/04/16/MQTT-K8s-Setup-on-Ubuntu-20-04/">MQTT K8s Setup on Ubuntu 20.04</a></h6>
               <span>April 16, 2023</span>
             </div>
@@ -1090,54 +1169,6 @@ Door Mounted to Hinges
 
           </li>
         
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2023/02/20/Microscope-Selection/">Microscope Selection</a></h6>
-              <span>February 20, 2023</span>
-            </div>
-
-          </li>
-        
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2022/08/17/WLED-Degchi-Lamp/">WLED Degchi Lamp</a></h6>
-              <span>August 17, 2022</span>
-            </div>
-
-          </li>
-        
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2021/03/11/TP-Link-U3T-Ubuntu/">TP Link U3T Ubuntu</a></h6>
-              <span>March 11, 2021</span>
-            </div>
-
-          </li>
-        
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2020/10/18/Rigol-DS1052E-Oscilloscope-Encoder-Repair/">Rigol DS1052E Oscilloscope Encoder Repair</a></h6>
-              <span>October 18, 2020</span>
-            </div>
-
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1150,7 +1181,7 @@ Door Mounted to Hinges
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C++</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CNC/" rel="tag">CNC</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Computing/" rel="tag">Computing</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Distributed-Computing/" rel="tag">Distributed Computing</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Electrical/" rel="tag">Electrical</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Electronics/" rel="tag">Electronics</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fixes/" rel="tag">Fixes</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hyperion/" rel="tag">Hyperion</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kalman/" rel="tag">Kalman</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LED/" rel="tag">LED</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mechanical/" rel="tag">Mechanical</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NodeJs/" rel="tag">NodeJs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenScad/" rel="tag">OpenScad</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React-Native/" rel="tag">React Native</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Research/" rel="tag">Research</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RestAPI/" rel="tag">RestAPI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ubuntu/" rel="tag">Ubuntu</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WLED/" rel="tag">WLED</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C++</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CNC/" rel="tag">CNC</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Computing/" rel="tag">Computing</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Distributed-Computing/" rel="tag">Distributed Computing</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Electrical/" rel="tag">Electrical</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Electronics/" rel="tag">Electronics</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fixes/" rel="tag">Fixes</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hyperion/" rel="tag">Hyperion</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kalman/" rel="tag">Kalman</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kubernetes/" rel="tag">Kubernetes</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LED/" rel="tag">LED</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mechanical/" rel="tag">Mechanical</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Microk8s/" rel="tag">Microk8s</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NodeJs/" rel="tag">NodeJs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenScad/" rel="tag">OpenScad</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React-Native/" rel="tag">React Native</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Research/" rel="tag">Research</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RestAPI/" rel="tag">RestAPI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ubuntu/" rel="tag">Ubuntu</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WLED/" rel="tag">WLED</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1160,7 +1191,7 @@ Door Mounted to Hinges
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CNC/" style="font-size: 15px;">CNC</a> <a href="/tags/Computing/" style="font-size: 17.5px;">Computing</a> <a href="/tags/Distributed-Computing/" style="font-size: 10px;">Distributed Computing</a> <a href="/tags/Electrical/" style="font-size: 12.5px;">Electrical</a> <a href="/tags/Electronics/" style="font-size: 10px;">Electronics</a> <a href="/tags/Fixes/" style="font-size: 20px;">Fixes</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Hyperion/" style="font-size: 10px;">Hyperion</a> <a href="/tags/Kalman/" style="font-size: 10px;">Kalman</a> <a href="/tags/LED/" style="font-size: 10px;">LED</a> <a href="/tags/Machine-Learning/" style="font-size: 10px;">Machine Learning</a> <a href="/tags/Mechanical/" style="font-size: 10px;">Mechanical</a> <a href="/tags/NodeJs/" style="font-size: 10px;">NodeJs</a> <a href="/tags/OpenScad/" style="font-size: 10px;">OpenScad</a> <a href="/tags/React-Native/" style="font-size: 10px;">React Native</a> <a href="/tags/Research/" style="font-size: 17.5px;">Research</a> <a href="/tags/RestAPI/" style="font-size: 10px;">RestAPI</a> <a href="/tags/Ubuntu/" style="font-size: 10px;">Ubuntu</a> <a href="/tags/WLED/" style="font-size: 10px;">WLED</a>
+      <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CNC/" style="font-size: 14px;">CNC</a> <a href="/tags/Computing/" style="font-size: 20px;">Computing</a> <a href="/tags/Distributed-Computing/" style="font-size: 10px;">Distributed Computing</a> <a href="/tags/Electrical/" style="font-size: 12px;">Electrical</a> <a href="/tags/Electronics/" style="font-size: 10px;">Electronics</a> <a href="/tags/Fixes/" style="font-size: 18px;">Fixes</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Hyperion/" style="font-size: 10px;">Hyperion</a> <a href="/tags/Kalman/" style="font-size: 10px;">Kalman</a> <a href="/tags/Kubernetes/" style="font-size: 16px;">Kubernetes</a> <a href="/tags/LED/" style="font-size: 10px;">LED</a> <a href="/tags/Machine-Learning/" style="font-size: 10px;">Machine Learning</a> <a href="/tags/Mechanical/" style="font-size: 10px;">Mechanical</a> <a href="/tags/Microk8s/" style="font-size: 16px;">Microk8s</a> <a href="/tags/NodeJs/" style="font-size: 10px;">NodeJs</a> <a href="/tags/OpenScad/" style="font-size: 10px;">OpenScad</a> <a href="/tags/React-Native/" style="font-size: 10px;">React Native</a> <a href="/tags/Research/" style="font-size: 16px;">Research</a> <a href="/tags/RestAPI/" style="font-size: 10px;">RestAPI</a> <a href="/tags/Ubuntu/" style="font-size: 10px;">Ubuntu</a> <a href="/tags/WLED/" style="font-size: 10px;">WLED</a>
     </div>
   </div>
 
@@ -1170,7 +1201,7 @@ Door Mounted to Hinges
     <h3 class="widget-title">Archives</h3>
 
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">April 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">February 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/08/">August 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">August 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">April 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">February 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/08/">August 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1195,7 +1226,7 @@ Door Mounted to Hinges
 
   <div class="clearfix container">
       <div class="site-info">
-	      &copy; 2023 Questionable Engineering All Rights Reserved.
+	      &copy; 2024 Questionable Engineering All Rights Reserved.
         
       </div>
       <div class="site-credit">
@@ -1216,9 +1247,6 @@ Door Mounted to Hinges
 
 
     <!-- headerblur min height -->
-    
-      var headerblur = document.getElementById("header-blur");
-      headerblur.style.minHeight = window.getComputedStyle(document.getElementById("allheader"), null).height;
     
     
 </script>

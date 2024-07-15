@@ -11,12 +11,12 @@
   
   
   
-  <meta name="description" content="MotivationThe Kalman filter finds applications in extracting useful data from inherently noisy sources. One common application is smoothing sensor data. In order for most sensor data to be eff">
+  <meta name="description" content="MotivationThe Kalman filter finds applications in extracting useful data from inherently noisy sources. One common application is smoothing sensor data. In order for most sensor data to be ef">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Analysis of the Kalman Filter Algorithm">
 <meta property="og:url" content="http://questionableengineering.com/2017/07/07/Report/index.html">
 <meta property="og:site_name" content="Questionable Engineering">
-<meta property="og:description" content="MotivationThe Kalman filter finds applications in extracting useful data from inherently noisy sources. One common application is smoothing sensor data. In order for most sensor data to be eff">
+<meta property="og:description" content="MotivationThe Kalman filter finds applications in extracting useful data from inherently noisy sources. One common application is smoothing sensor data. In order for most sensor data to be ef">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/image_0.png">
 <meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/image_1.png">
@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/KALMAN_vs_Raw_graph.png">
 <meta property="og:image" content="http://questionableengineering.com/2017/07/07/Report/Running_Time_of_Kalman_Filter_vs_input_size.png">
 <meta property="article:published_time" content="2017-07-07T21:46:15.000Z">
-<meta property="article:modified_time" content="2022-08-18T16:03:18.323Z">
+<meta property="article:modified_time" content="2023-09-04T23:05:28.409Z">
 <meta property="article:author" content="John Grun">
 <meta property="article:tag" content="Computing">
 <meta property="article:tag" content="Research">
@@ -77,32 +77,10 @@
 
 
   
-  
-  <div class="site-header-image">
-    <img id="originBg" width="100%" alt="Hike News" src="">
-  </div>
-
-  <div id="header-blur" class="site-header-image blur" style="position: absolute; top:0; height: 207px; min-height: 207px; min-width: 100%;">
-    <img id="blurBg" width="100%" style="top: 96%" alt="Hike News" src="">
-  </div>
-
-  <script>
-        var imgUrls = "css/images/pose01.jpg,https://source.unsplash.com/collection/954550/1920x1080,https://source.unsplash.com/collection/954550/1920x1081".split(",");
-        var random = Math.floor((Math.random() * imgUrls.length ));
-        if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
-          document.getElementById("originBg").src=imgUrls[random];
-          document.getElementById("blurBg").src=imgUrls[random];
-        } else {
-          document.getElementById("originBg").src='/' + imgUrls[random];
-          document.getElementById("blurBg").src='/' + imgUrls[random];
-        }
-    </script>
-
-
 
 
 <header id="allheader" class="site-header" role="banner" 
-   style="width: 100%; position: absolute; top:0; background: rgba(255,255,255,.8);"  >
+   >
   <div class="clearfix container">
       <div class="site-branding">
 
@@ -168,11 +146,12 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id=""><a href="#" class="headerlink" title=""></a><img src="/2017/07/07/Report/image_0.png"  style="width: 90%;"/></h1><table>
+        <p><img src="image_0.png"></p>
+<table>
 <thead>
 <tr>
-<th><img src="/2017/07/07/Report/image_1.png"  style="width: 80%"/></th>
-<th><img src="/2017/07/07/Report/image_2.jpg" alt="image2" style="width: 80%"/></th>
+<th><img src="image_1.png"></th>
+<th><img src="image_2.jpg"></th>
 </tr>
 </thead>
 </table>
@@ -182,8 +161,8 @@
 <table>
 <thead>
 <tr>
-<th><img src="/2017/07/07/Report/image_3.png" alt="image_3.png" style="width: 90%;"/></th>
-<th><img src="/2017/07/07/Report/image_4.png" alt="image_4.png" style="width: 90%;"/></th>
+<th><img src="image_3.png"></th>
+<th><img src="image_4.png"></th>
 </tr>
 </thead>
 <tbody><tr>
@@ -194,9 +173,12 @@
 <p>In the predictive step the Kalman filter relies upon a function model of the system/signal in order to calculate the predicted current state (Xk) from the last state (Xk-1) and any relevant input signals. The system/signal predicted variance is also calculated in this step. </p>
 <p>In the update step, the next estimated output signal is produced from a gain weighted sum of the estimated current state and the new input signal sample. In the case of a temperature sensor, the Kalman filter would produce a new estimated temperature for the output from the gain weighted sum of previous temperature samples and the new temperature sample. The gain is calculated based upon the variance observed between the predicted variance and the variance of the new sample. The filter is tuned to give a higher weight to samples with lower error. </p>
 <h2 id="Explain-why-the-chosen-algorithms-are-employed-for-the-problem"><a href="#Explain-why-the-chosen-algorithms-are-employed-for-the-problem" class="headerlink" title="Explain why the chosen algorithms are employed for the problem."></a>Explain why the chosen algorithms are employed for the problem.</h2><p>The algorithm has found employment as a solution to many common engineering problems such as processing inputs into control systems and for fusing sensor data from multiple sources. The algorithm is popular as a solution to these problems due to its low memory and processing footprint, constant running time, and comparatively simple design as compared to other solutions. The Kalman filter reduces the amount of working memory required by encoding past history of the inputs into a single current state variable (Xk). This encoding reduces the amount of memory consumed by the algorithm as past information does not need to be retained. Additionally, the amount of data processing per signal sample is reduced as only the current state variable and new sample are processed. These reductions in processing and memory are advantages in resource constrained environments, such as embedded systems or hardware implementations. The Kalman filter algorithm also lends itself well to “real time” systems such as robotic control where a predictable delay and constant runtime is required.The Kalman filter algorithm has a O(1) processing complexity and a O(1) memory space complexity. The Kalman filter can also be extended to combine inputs from multiple sources to further reduce signal sample variance. This    property lends itself well to  applications employing sensor fusion such as inertial navigation units (INUs) </p>
-<h2 id="Experimental-configuration-and-details"><a href="#Experimental-configuration-and-details" class="headerlink" title="Experimental configuration and details."></a>Experimental configuration and details.</h2><p>The experiment consists of a force sensitive resistor sensor sampled once every 100 mSec by an Arduino compatible microcontroller(ESP8266). The microcontroller sends the raw sensor samples to the computer over a serial connection. The computer then writes the raw samples to a file on the hard disk (Data.txt). Once a large number of samples have been collected, the raw samples are passed into the Kalman filter(KalmanFilterWrapper.exe).  KalmanFilterWrapper.exe produces two output files KALMAN_INPUT_VS_OUTPUT.csv and KALMAN_FILTER_RUNNING_TIME_VS_INPUT_SIZE.csv that contain the raw samples vs the Kalman filtered samples and the running time vs input size respectively.  Kalman filters will often have many sensor inputs , process time variant signals, and must account for control inputs. With the addition of more inputs a gain matrix must be maintained that relates each input to each other input in addition to the gain between current Xk and last state Xk-1. These factors quickly drive a simple algorithm into such a complex system that it is used routinely in PHD. thesi.  For these reasons, a simple implementation of the Kalman was chosen. Finally, a simpler implementation will clearly show the algorithm operation. The implemented Kalman filter is processing a single variable, static , time invariant signal(Voltage proportional to the weight of Expo marker) In this implementation, the function model of the system/signal is Current state = last state  I.e Xk = Xk-n. The test should clearly show noise in raw samples and the resulting filtered output of the Kalman filter.<br><img src="/2017/07/07/Report/Test_setup.png"  style="width: 90%;"/><br><img src="/2017/07/07/Report/20170427_214518.jpg" style="width: 90%;"/></p>
+<h2 id="Experimental-configuration-and-details"><a href="#Experimental-configuration-and-details" class="headerlink" title="Experimental configuration and details."></a>Experimental configuration and details.</h2><p>The experiment consists of a force sensitive resistor sensor sampled once every 100 mSec by an Arduino compatible microcontroller(ESP8266). The microcontroller sends the raw sensor samples to the computer over a serial connection. The computer then writes the raw samples to a file on the hard disk (Data.txt). Once a large number of samples have been collected, the raw samples are passed into the Kalman filter(KalmanFilterWrapper.exe).  KalmanFilterWrapper.exe produces two output files KALMAN_INPUT_VS_OUTPUT.csv and KALMAN_FILTER_RUNNING_TIME_VS_INPUT_SIZE.csv that contain the raw samples vs the Kalman filtered samples and the running time vs input size respectively.  Kalman filters will often have many sensor inputs , process time variant signals, and must account for control inputs. With the addition of more inputs a gain matrix must be maintained that relates each input to each other input in addition to the gain between current Xk and last state Xk-1. These factors quickly drive a simple algorithm into such a complex system that it is used routinely in PHD. thesi.  For these reasons, a simple implementation of the Kalman was chosen. Finally, a simpler implementation will clearly show the algorithm operation. The implemented Kalman filter is processing a single variable, static , time invariant signal(Voltage proportional to the weight of Expo marker) In this implementation, the function model of the system/signal is Current state = last state  I.e Xk = Xk-n. The test should clearly show noise in raw samples and the resulting filtered output of the Kalman filter.  </p>
+<img src="/2017/07/07/Report/Test_setup.png" class="">
+<img src="/2017/07/07/Report/20170427_214518.jpg" class="">
+
 <p>Figure 2: Experimental setup to collect sensor data. EXPO marker used to provide static weight greater than baseline. </p>
-<img src="/2017/07/07/Report/Kalman_sensor_collection_schematic.png" style="width: 90%;"/>
+<img src="/2017/07/07/Report/Kalman_sensor_collection_schematic.png" class="">
 
 <p>Figure 3. Schematic of the circuit used to collect data and send information the the computer.</p>
 <h3 id="Source-code-and-related-information-to-reproduce-experiment"><a href="#Source-code-and-related-information-to-reproduce-experiment" class="headerlink" title="Source code and related information to reproduce experiment"></a>Source code and related information to reproduce experiment</h3><ul>
@@ -222,11 +204,11 @@
 <h3 id="Sources-of-Variance-in-the-experiment"><a href="#Sources-of-Variance-in-the-experiment" class="headerlink" title="Sources of Variance in the experiment"></a>Sources of Variance in the experiment</h3><h4 id="Raw-measurement-sources-of-known-variance"><a href="#Raw-measurement-sources-of-known-variance" class="headerlink" title="Raw measurement sources of known variance"></a>Raw measurement sources of known variance</h4><p>The sensor employed(FSR406) has tolerance of 2% at constant temperature as called out in the data sheet Datasheets_FSR.pdf. At a supply voltage of 3.3v, 2% is ~0.066 Volts of error due to the FSR sensor.See references for link to data sheet. </p>
 <p>The Esp8266 ADC has a resolution of 12 bits or 4096 divisions. With a  Vcc = 3.3V; 4096 = 3.3 Volts, 0 = 0 Volts. A change of 1 in a measurement corresponds to 3.3/4096 = 0.00080566406 Volts. Compared the 0.066 Volts of error introduced by the FSR sensor the ADC resolution is not seen to be significant and, can thus be neglected in calculations.</p>
 <h4 id="Running-time-sources-of-known-variance"><a href="#Running-time-sources-of-known-variance" class="headerlink" title="Running time sources of known variance"></a>Running time sources of known variance</h4><p>The running time of the algorithm may be influenced by external factors such as file system assess, resource allocations, paging, or process scheduling. To compensate for the  aforementioned sources of external variances many samples have to be taken.</p>
-<h2 id="Results-and-Analysis"><a href="#Results-and-Analysis" class="headerlink" title="Results and Analysis"></a>Results and Analysis</h2><img src="/2017/07/07/Report/KALMAN_vs_Raw_graph.png"  style="width: 90%;"/>
+<h2 id="Results-and-Analysis"><a href="#Results-and-Analysis" class="headerlink" title="Results and Analysis"></a>Results and Analysis</h2><img src="/2017/07/07/Report/KALMAN_vs_Raw_graph.png" class="">
 
 <p>Figure 4. Sensor samples of proportional voltage to weight of EXPO marker. Raw samples from FSR sensor (Blue). Kalman filtered data of samples (Orange).</p>
 <p>As can be seen in Figure 4, the raw samples contain a large amount of noise. The standard deviation of the raw samples was 1478.01. A static, time invariant signal( Voltage proportional to the weight of Expo marker) with such a high standard deviation is unusable in real world applications. Once the signal is processed by the Kalman filter, and significant time has passed, the signal become far less variable. The standard deviation of Kalman filtered signal was 98.07, a full order of magnitude less than the raw input signal. Additionally, the filtered signal reached a stable output with low variance as would be expected with a static input signal (Voltage proportional to the weight of Expo marker). </p>
-<img src="/2017/07/07/Report/Running_Time_of_Kalman_Filter_vs_input_size.png"  style="width: 90%;"/>
+<img src="/2017/07/07/Report/Running_Time_of_Kalman_Filter_vs_input_size.png" class="">
 
 <p>Figure 5. Running Time vs Input size. Running time (Blue) of each call to the Kalman filter algorithm using same data in Figure 4. </p>
 <p>The second graph Figure 5. depicts the running time of the Kalman filter vs the number of samples processed. As expected, the running time is O(1). The Kalman filter only processes one measurement at a time. The output estimation is a weighted sum the past state( all previous samples) and the current measurement state and is updated once per function call. Only for 2 data points out of 5121 samples did the running time change significantly. These 2 data points are likely due to other factors not related to the Kalman filter, such as process scheduling or file system assesses on the host computer.  </p>
@@ -309,7 +291,7 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">Contents</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Motivation"><span class="nav-number">2.</span> <span class="nav-text">Motivation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Describe-Algorithm-details"><span class="nav-number">2.1.</span> <span class="nav-text">Describe Algorithm details</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Explain-why-the-chosen-algorithms-are-employed-for-the-problem"><span class="nav-number">2.2.</span> <span class="nav-text">Explain why the chosen algorithms are employed for the problem.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Experimental-configuration-and-details"><span class="nav-number">2.3.</span> <span class="nav-text">Experimental configuration and details.</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Source-code-and-related-information-to-reproduce-experiment"><span class="nav-number">2.3.1.</span> <span class="nav-text">Source code and related information to reproduce experiment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sources-of-Variance-in-the-experiment"><span class="nav-number">2.3.2.</span> <span class="nav-text">Sources of Variance in the experiment</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Raw-measurement-sources-of-known-variance"><span class="nav-number">2.3.2.1.</span> <span class="nav-text">Raw measurement sources of known variance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Running-time-sources-of-known-variance"><span class="nav-number">2.3.2.2.</span> <span class="nav-text">Running time sources of known variance</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Results-and-Analysis"><span class="nav-number">2.4.</span> <span class="nav-text">Results and Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Discussion"><span class="nav-number">2.5.</span> <span class="nav-text">Discussion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">2.6.</span> <span class="nav-text">References</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Motivation"><span class="nav-number">1.</span> <span class="nav-text">Motivation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Describe-Algorithm-details"><span class="nav-number">1.1.</span> <span class="nav-text">Describe Algorithm details</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Explain-why-the-chosen-algorithms-are-employed-for-the-problem"><span class="nav-number">1.2.</span> <span class="nav-text">Explain why the chosen algorithms are employed for the problem.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Experimental-configuration-and-details"><span class="nav-number">1.3.</span> <span class="nav-text">Experimental configuration and details.</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Source-code-and-related-information-to-reproduce-experiment"><span class="nav-number">1.3.1.</span> <span class="nav-text">Source code and related information to reproduce experiment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sources-of-Variance-in-the-experiment"><span class="nav-number">1.3.2.</span> <span class="nav-text">Sources of Variance in the experiment</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Raw-measurement-sources-of-known-variance"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">Raw measurement sources of known variance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Running-time-sources-of-known-variance"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">Running time sources of known variance</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Results-and-Analysis"><span class="nav-number">1.4.</span> <span class="nav-text">Results and Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Discussion"><span class="nav-number">1.5.</span> <span class="nav-text">Discussion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">1.6.</span> <span class="nav-text">References</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -332,7 +314,7 @@
 
   <div class="clearfix container">
       <div class="site-info">
-	      &copy; 2023 Questionable Engineering All Rights Reserved.
+	      &copy; 2024 Questionable Engineering All Rights Reserved.
         
       </div>
       <div class="site-credit">
@@ -353,9 +335,6 @@
 
 
     <!-- headerblur min height -->
-    
-      var headerblur = document.getElementById("header-blur");
-      headerblur.style.minHeight = window.getComputedStyle(document.getElementById("allheader"), null).height;
     
     
 </script>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Zigbee2Mqtt Kubernetes Setup on Ubuntu | Questionable Engineering</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="KubernetesComputingMicrok8s" />
+  
+  
+  
+  
+  <meta name="description" content="Install the k8s cluster if not alreadly installed12microk8s enable dns storage helm3microk8s status  Pull the helm chart12microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&amp;#x2F">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zigbee2Mqtt Kubernetes Setup on Ubuntu">
+<meta property="og:url" content="http://questionableengineering.com/2023/08/23/Zigbee2Mqtt-Kubernetes-Setup-on-Ubuntu/index.html">
+<meta property="og:site_name" content="Questionable Engineering">
+<meta property="og:description" content="Install the k8s cluster if not alreadly installed12microk8s enable dns storage helm3microk8s status  Pull the helm chart12microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&amp;#x2F">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-08-23T18:31:06.000Z">
+<meta property="article:modified_time" content="2024-07-15T00:24:08.849Z">
+<meta property="article:author" content="John Grun">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="Computing">
+<meta property="article:tag" content="Microk8s">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Questionable Engineering" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="Questionable Engineering" rel="home"> Questionable Engineering </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">A collection of pointless, random, and probaly bad ideas</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">Home</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">Archives</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">About</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Zigbee2Mqtt-Kubernetes-Setup-on-Ubuntu" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Zigbee2Mqtt Kubernetes Setup on Ubuntu
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/08/23/Zigbee2Mqtt-Kubernetes-Setup-on-Ubuntu/" class="article-date">
+	  <time datetime="2023-08-23T18:31:06.000Z" itemprop="datePublished">August 23, 2023</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Install-the-k8s-cluster-if-not-alreadly-installed"><a href="#Install-the-k8s-cluster-if-not-alreadly-installed" class="headerlink" title="Install the k8s cluster if not alreadly installed"></a>Install the k8s cluster if not alreadly installed</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s enable dns storage helm3</span><br><span class="line">microk8s status</span><br></pre></td></tr></table></figure>
+
+<h1 id="Pull-the-helm-chart"><a href="#Pull-the-helm-chart" class="headerlink" title="Pull the helm chart"></a>Pull the helm chart</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&#x2F;</span><br><span class="line">microk8s helm pull truecharts&#x2F;zigbee2mqtt --version 7.0.30</span><br></pre></td></tr></table></figure>
+
+<h1 id="Modify-the-values-yaml-file-to-set-the-configuration"><a href="#Modify-the-values-yaml-file-to-set-the-configuration" class="headerlink" title="Modify the values.yaml file to set the configuration"></a>Modify the values.yaml file to set the configuration</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf .&#x2F;zigbee2mqtt-*.tgz</span><br><span class="line">cd zigbee2mqtt</span><br><span class="line">cat values.yamls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">EXTERNAL_IP: A.B.C.D</span><br><span class="line">EXTERNAL_NETWORK: A.B.C.0</span><br><span class="line">SERVICE_PORT: Port used by the application</span><br><span class="line">ZIGBEE_ADAPTER_IP: Ip address of the zigbee adapter</span><br><span class="line">ZIGBEE_ZIGBEE_ADAPTER_PORT: Port used by the external zigbee adapter</span><br><span class="line">MQTT_PORT: PORT_C</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line">image:</span><br><span class="line">  repository: tccr.io&#x2F;truecharts&#x2F;zigbee2mqtt</span><br><span class="line">  tag: v1.32.1@sha256:f3bcf64a1a538ce5636b7359bd4f0375f593c9408d561a1add9f3d2bed843bf3</span><br><span class="line">  pullPolicy: IfNotPresent</span><br><span class="line">service:</span><br><span class="line">  main:</span><br><span class="line">    ports:</span><br><span class="line">      main:</span><br><span class="line">        port: SERVICE_PORT</span><br><span class="line">persistence:</span><br><span class="line">  data:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;data&quot;</span><br><span class="line">    targetSelectAll: true</span><br><span class="line"></span><br><span class="line">portal:</span><br><span class="line">  open:</span><br><span class="line">    enabled: true</span><br><span class="line">securityContext:</span><br><span class="line">  container:</span><br><span class="line">    runAsNonRoot: false</span><br><span class="line">    readOnlyRootFilesystem: false</span><br><span class="line">    runAsUser: 0</span><br><span class="line">    runAsGroup: 0</span><br><span class="line">workload:</span><br><span class="line">  main:</span><br><span class="line">    podSpec:</span><br><span class="line">      initContainers:</span><br><span class="line">        init-config:</span><br><span class="line">          enabled: true</span><br><span class="line">          imageSelector: image</span><br><span class="line">          type: init</span><br><span class="line">          env:</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_FRONTEND_PORT: &quot;&#123;&#123; .Values.service.main.ports.main.port &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_EXPIRIMENTAL_NEW_API: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.ZIGBEE2MQTT_CONFIG_EXPIRIMENTAL_NEW_API &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_PERMIT_JOIN: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.ZIGBEE2MQTT_CONFIG_PERMIT_JOIN &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_SERVER: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.ZIGBEE2MQTT_CONFIG_MQTT_SERVER &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_USER: &quot;&#123;&#123; .Values.secret.ZIGBEE2MQTT_CONFIG_MQTT_USER &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD: &quot;&#123;&#123; .Values.secret.ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_BASE_TOPIC: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.ZIGBEE2MQTT_CONFIG_MQTT_BASE_TOPIC &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_SERIAL_PORT: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.ZIGBEE2MQTT_CONFIG_SERIAL_PORT &#125;&#125;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER &#125;&#125;&quot;</span><br><span class="line">            USE_CUSTOM_CONFIG_FILE: &quot;&#123;&#123; .Values.workload.main.podSpec.containers.main.env.USE_CUSTOM_CONFIG_FILE &#125;&#125;&quot;</span><br><span class="line">          command:</span><br><span class="line">            - &#x2F;bin&#x2F;sh</span><br><span class="line">            - -c</span><br><span class="line">          args:</span><br><span class="line">            - &gt;</span><br><span class="line">              if [ -f &#x2F;data&#x2F;configuration.yaml ] || [ $&#123;USE_CUSTOM_CONFIG_FILE&#125; &#x3D;&#x3D; true ]; then</span><br><span class="line"></span><br><span class="line">                echo &quot;Initial configuration exists or User selected to use custom configuration file. Skipping...&quot;;</span><br><span class="line">              else</span><br><span class="line"></span><br><span class="line">                echo &quot;Creating initial configuration&quot;;</span><br><span class="line">                touch &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;# Configuration bellow will be always be overridden&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;# from environment settings on the Scale Apps UI.&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;# You however will not see this values change in the file.&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;# It&#39;s a generated file based on the values provided on initial install.&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;##########################################################&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;experimental:&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;  new_api: $ZIGBEE2MQTT_CONFIG_EXPIRIMENTAL_NEW_API&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;frontend:&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;  port: $ZIGBEE2MQTT_CONFIG_FRONTEND_PORT&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;permit_join: $ZIGBEE2MQTT_CONFIG_PERMIT_JOIN&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;mqtt:&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;  server: $ZIGBEE2MQTT_CONFIG_MQTT_SERVER&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;  base_topic: $ZIGBEE2MQTT_CONFIG_MQTT_BASE_TOPIC&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                if [ ! -z &quot;$ZIGBEE2MQTT_CONFIG_MQTT_USER&quot; ];</span><br><span class="line">                then</span><br><span class="line">                  echo &quot;  user: $ZIGBEE2MQTT_CONFIG_MQTT_USER&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                fi;</span><br><span class="line">                if [ ! -z &quot;$ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD&quot; ];</span><br><span class="line">                then</span><br><span class="line">                  echo &quot;  password: $ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                fi;</span><br><span class="line">                echo &quot;serial:&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;  port: $ZIGBEE2MQTT_CONFIG_SERIAL_PORT&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;  adapter: $ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &quot;##########################################################&quot; &gt;&gt; &#x2F;data&#x2F;configuration.yaml;</span><br><span class="line">                echo &#39;Initial configuration file created at &quot;&#x2F;data&#x2F;configuration.yaml&quot;&#39;;</span><br><span class="line">              fi;</span><br><span class="line">      containers:</span><br><span class="line">        main:</span><br><span class="line">          env:</span><br><span class="line">            ZIGBEE2MQTT_DATA: &quot;&#x2F;data&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_FRONTEND_PORT: &quot;&#123;&#123; .Values.service.main.ports.main.port &#125;&#125;&quot;</span><br><span class="line">            # User defined</span><br><span class="line">            USE_CUSTOM_CONFIG_FILE: false</span><br><span class="line">            # This values are required for the autogenerated file to work.</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_EXPIRIMENTAL_NEW_API: false</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_PERMIT_JOIN: false</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_SERVER: &quot;mqtt:&#x2F;&#x2F;mosquitto:MQTT_PORT&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_BASE_TOPIC: &quot;zigbee2mqtt&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_SERIAL_PORT: &quot;tcp:&#x2F;&#x2F;ZIGBEE_ADAPTER_IP:ZIGBEE_ADAPTER_PORT&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER: &quot;auto&quot;</span><br><span class="line"></span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_USER: &quot;&quot;</span><br><span class="line">            ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD: &quot;&quot;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h1><p>zigbee2mqtt-service.yaml</p>
+<p>SERVICE_PORT: Port used to access the application<br>ZIGBEE_ADAPTER_PORT: Port used to allow access to an external zigbee controller</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: zigbee2mqtt-service</span><br><span class="line">spec:</span><br><span class="line">  type: LoadBalancer</span><br><span class="line">  selector:</span><br><span class="line">    app.kubernetes.io&#x2F;name: zigbee2mqtt</span><br><span class="line">  ports:</span><br><span class="line">    - name: http</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: SERVICE_PORT</span><br><span class="line">      targetPort: SERVICE_PORT</span><br><span class="line">    - name: adapter</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: ZIGBEE_ADAPTER_PORT</span><br><span class="line">      targetPort: ZIGBEE_ADAPTER_PORT</span><br><span class="line">  externalIPs:</span><br><span class="line">    - A.B.C.D</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Firewall"><a href="#Firewall" class="headerlink" title="Firewall"></a>Firewall</h1><p>sudo ufw allow from A.B.C.0/24 to any port ZIGBEE_ADAPTER_PORT proto tcp<br>sudo ufw allow from A.B.C.0/24 to any port SERVICE_PORT proto tcp</p>
+<h1 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h1><p><a target="_blank" rel="noopener" href="https://www.reddit.com/r/homeassistant/comments/zxee4n/zigbee2mqtt_error_failed_to_connect_to_the/">https://www.reddit.com/r/homeassistant/comments/zxee4n/zigbee2mqtt_error_failed_to_connect_to_the/</a></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Computing/" rel="tag">Computing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/" rel="tag">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Microk8s/" rel="tag">Microk8s</a></li></ul>
+
+      
+        
+	<section id="comments" class="comment">
+	  <div id="disqus_thread">
+	  <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	  </div>
+	</section>
+
+	<script type="text/javascript">
+	var disqus_shortname = 'questionableengineering.disqus.com';
+	(function(){
+	  var dsq = document.createElement('script');
+	  dsq.type = 'text/javascript';
+	  dsq.async = true;
+	  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	}());
+	(function(){
+	  var dsq = document.createElement('script');
+	  dsq.type = 'text/javascript';
+	  dsq.async = true;
+	  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+	  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	}());
+	</script>
+
+
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/08/30/Jellyfin-Media-Server-Setup-on-Kubernetes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Jellyfin Media Server Setup on Kubernetes
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/08/23/Transmission-Kubernetes-Setup-on-Ubuntu/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Transmission Kubernetes Setup on Ubuntu</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Install-the-k8s-cluster-if-not-alreadly-installed"><span class="nav-number">1.</span> <span class="nav-text">Install the k8s cluster if not alreadly installed</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Pull-the-helm-chart"><span class="nav-number">2.</span> <span class="nav-text">Pull the helm chart</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Modify-the-values-yaml-file-to-set-the-configuration"><span class="nav-number">3.</span> <span class="nav-text">Modify the values.yaml file to set the configuration</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Service"><span class="nav-number">4.</span> <span class="nav-text">Service</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Firewall"><span class="nav-number">5.</span> <span class="nav-text">Firewall</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Configuration"><span class="nav-number">6.</span> <span class="nav-text">Configuration</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2024 Questionable Engineering All Rights Reserved.
+        
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

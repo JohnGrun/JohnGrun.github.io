@@ -50,7 +50,7 @@
 <meta property="og:image" content="http://questionableengineering.com/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025516535.jpg">
 <meta property="og:image" content="http://questionableengineering.com/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025517876.jpg">
 <meta property="article:published_time" content="2022-08-17T20:16:59.000Z">
-<meta property="article:modified_time" content="2022-08-18T19:07:43.945Z">
+<meta property="article:modified_time" content="2023-09-03T12:43:01.366Z">
 <meta property="article:author" content="John Grun">
 <meta property="article:tag" content="Electronics">
 <meta property="article:tag" content="LED">
@@ -99,32 +99,10 @@
 
 
   
-  
-  <div class="site-header-image">
-    <img id="originBg" width="100%" alt="Hike News" src="">
-  </div>
-
-  <div id="header-blur" class="site-header-image blur" style="position: absolute; top:0; height: 207px; min-height: 207px; min-width: 100%;">
-    <img id="blurBg" width="100%" style="top: 96%" alt="Hike News" src="">
-  </div>
-
-  <script>
-        var imgUrls = "css/images/pose01.jpg,https://source.unsplash.com/collection/954550/1920x1080,https://source.unsplash.com/collection/954550/1920x1081".split(",");
-        var random = Math.floor((Math.random() * imgUrls.length ));
-        if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
-          document.getElementById("originBg").src=imgUrls[random];
-          document.getElementById("blurBg").src=imgUrls[random];
-        } else {
-          document.getElementById("originBg").src='/' + imgUrls[random];
-          document.getElementById("blurBg").src='/' + imgUrls[random];
-        }
-    </script>
-
-
 
 
 <header id="allheader" class="site-header" role="banner" 
-   style="width: 100%; position: absolute; top:0; background: rgba(255,255,255,.8);"  >
+   >
   <div class="clearfix container">
       <div class="site-branding">
 
@@ -191,32 +169,33 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>While traveling in India I came across these nice looking tin lamps. </p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp.jpg" class="">
 
 <p>It is sometimes called a Degchi lamp. Since I am not a fan of open flames so leds will have to fill in the role of a candle. This build will be a bit rough. I will refine the lamp in later posts.</p>
-<h1 id="Parts"><a href="#Parts" class="headerlink" title="Parts"></a>Parts</h1><h3 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h3><h3 id="ESP8266"><a href="#ESP8266" class="headerlink" title="ESP8266"></a>ESP8266</h3><img src="/2022/08/17/WLED-Degchi-Lamp/ESP8266.jpg" style="width: 90%;"/>
+<h1 id="Parts"><a href="#Parts" class="headerlink" title="Parts"></a>Parts</h1><h3 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h3><h3 id="ESP8266"><a href="#ESP8266" class="headerlink" title="ESP8266"></a>ESP8266</h3><img src="/2022/08/17/WLED-Degchi-Lamp/ESP8266.jpg" class="">
 
 <p><a target="_blank" rel="noopener" href="https://www.adafruit.com/product/2471">Esp8266 Huzzah</a></p>
 <p><a target="_blank" rel="noopener" href="https://learn.adafruit.com/adafruit-huzzah-esp8266-breakout">Esp8266 Huzzah documentation</a></p>
-<h3 id="Level-shifter"><a href="#Level-shifter" class="headerlink" title="Level shifter"></a>Level shifter</h3><img src="/2022/08/17/WLED-Degchi-Lamp/TXS0108E.jpg" style="width: 90%;"/>
+<h3 id="Level-shifter"><a href="#Level-shifter" class="headerlink" title="Level shifter"></a>Level shifter</h3><img src="/2022/08/17/WLED-Degchi-Lamp/TXS0108E.jpg" class="">
 
 <p><a target="_blank" rel="noopener" href="https://www.amazon.com/gp/product/B088LMJR5K/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1">GeeekPi 6Pack TXS0108E 8 Channel Logic Level Converter Bi-Directional High Speed Full Duplex Shifter 3.3V 5V for Arduino Raspberry Pi</a></p>
-<h3 id="LED-Strip"><a href="#LED-Strip" class="headerlink" title="LED Strip"></a>LED Strip</h3><img src="/2022/08/17/WLED-Degchi-Lamp/sk6812.jpg" style="width: 90%;"/>
+<h3 id="LED-Strip"><a href="#LED-Strip" class="headerlink" title="LED Strip"></a>LED Strip</h3><img src="/2022/08/17/WLED-Degchi-Lamp/sk6812.jpg" class="">
 
 <p><a target="_blank" rel="noopener" href="https://smile.amazon.com/BTF-LIGHTING-Individually-Addressable-Flexible-Non-waterproof/dp/B01N0MA729/ref=sr_1_2?keywords=sk6812+led&qid=1659749420&sr=8-2">Led Strip</a></p>
-<h3 id="Power-supply"><a href="#Power-supply" class="headerlink" title="Power supply"></a>Power supply</h3><img src="/2022/08/17/WLED-Degchi-Lamp/Power_Supply_5V_10A.jpg" style="width: 90%;"/>
+<h3 id="Power-supply"><a href="#Power-supply" class="headerlink" title="Power supply"></a>Power supply</h3><img src="/2022/08/17/WLED-Degchi-Lamp/Power_Supply_5V_10A.jpg" class="">
 
 <p><a target="_blank" rel="noopener" href="https://www.amazon.com/gp/product/B01M0KLECZ/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1">5v 10 amp power upply with barrel plug</a></p>
-<h3 id="Plug"><a href="#Plug" class="headerlink" title="Plug"></a>Plug</h3><img src="/2022/08/17/WLED-Degchi-Lamp/Barrel_Plug.jpg" style="width: 90%;"/>
+<h3 id="Plug"><a href="#Plug" class="headerlink" title="Plug"></a>Plug</h3><img src="/2022/08/17/WLED-Degchi-Lamp/Barrel_Plug.jpg" class="">
 
 <p><a target="_blank" rel="noopener" href="https://www.amazon.com/Power-Connector-Female-Adapter-Camera/dp/B07C61434H/ref=sr_1_3?crid=1C8THCD6688TZ&keywords=barrel+plugs&qid=1659770244&sprefix=barel+plugs,aps,92&sr=8-3">Barrel plug</a></p>
 <h1 id="Software"><a href="#Software" class="headerlink" title="Software"></a>Software</h1><h2 id="WLED"><a href="#WLED" class="headerlink" title="WLED"></a>WLED</h2><p><a target="_blank" rel="noopener" href="https://github.com/Aircoookie/WLED">wled</a></p>
 <h3 id="Binary"><a href="#Binary" class="headerlink" title="Binary"></a>Binary</h3><p><a target="_blank" rel="noopener" href="https://github.com/Aircoookie/WLED/releases/download/v0.13.1/WLED_0.13.1_ESP8266.bin">Wled binary</a></p>
 <h1 id="Flashing"><a href="#Flashing" class="headerlink" title="Flashing"></a>Flashing</h1><p>You will need a 3.3v usb to serial adapter. An FTDI based usb to serial adapteris perfered. </p>
 <p><a target="_blank" rel="noopener" href="https://docs.espressif.com/projects/esptool/en/latest/esp32/">https://docs.espressif.com/projects/esptool/en/latest/esp32/</a><br>Method 2 <a target="_blank" rel="noopener" href="https://kno.wled.ge/basics/install-binary/">https://kno.wled.ge/basics/install-binary/</a> </p>
-<h2 id="Connections"><a href="#Connections" class="headerlink" title="Connections"></a>Connections</h2><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041807877.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041838804.jpg" style="width: 90%;"/>
+<h2 id="Connections"><a href="#Connections" class="headerlink" title="Connections"></a>Connections</h2><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041807877.jpg" class="">
+
+
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041838804.jpg" class="">
 
 <p>Connection between the usb to serial adapter and the ESP8266.</p>
 <ul>
@@ -230,62 +209,67 @@
 <h2 id="Operating-system-permission-workarounds"><a href="#Operating-system-permission-workarounds" class="headerlink" title="Operating system permission workarounds"></a>Operating system permission workarounds</h2><p>In order to write data to ttyUSB or other serieal ports you must be a member of the dialout group. </p>
 <pre><code>sudo usermod -a -G dialout your_user_name
 
-Log out log in
+Log out log in</code></pre>
+<h1 id="Flash-WLED-onto-the-ESP"><a href="#Flash-WLED-onto-the-ESP" class="headerlink" title="Flash WLED onto the ESP"></a>Flash WLED onto the ESP</h1><pre><code>sudo python3 ./esptool.py -p /dev/ttyUSB0 write_flash 0x0 ./WLED_0.13.1_ESP8266.bin</code></pre>
+<h1 id="Electronics"><a href="#Electronics" class="headerlink" title="Electronics"></a>Electronics</h1><h2 id="Schematic"><a href="#Schematic" class="headerlink" title="Schematic"></a>Schematic</h2><img src="/2022/08/17/WLED-Degchi-Lamp/Degchi-Lamp-Electronics.png" class="">
 
-sudo esptool.py -p ttyUSB0sudo esptool.py -p ttyUSB0 write_flash 0x0 ./WLED_0.13.1_ESP8266.bin</code></pre>
-<h1 id="Electronics"><a href="#Electronics" class="headerlink" title="Electronics"></a>Electronics</h1><h2 id="Schematic"><a href="#Schematic" class="headerlink" title="Schematic"></a>Schematic</h2><p><br></br><br><img src="/2022/08/17/WLED-Degchi-Lamp/Degchi-Lamp-Electronics.png" style="width: 90%;"/><br><br></br></p>
+
 <h2 id="Electronics-Rough-Fit"><a href="#Electronics-Rough-Fit" class="headerlink" title="Electronics Rough Fit"></a>Electronics Rough Fit</h2><p>Playing around with the electronics to confirm that the design works as expected.</p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030411413.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030424508.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030434512.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030451769.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030411413.jpg" class="">
+<p><br></br></p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030424508.jpg" class="">
+<p><br></br></p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030434512.jpg" class="">
+<p><br></br></p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030451769.jpg" class="">
 
 <p>Everything is hooked up but the lights are not working. </p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030508542.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_030508542.jpg" class="">
 
 <p>Discovered that the OE pin on the TXS0108E needs to be pulled high to VA (ESP Logic Level High 3.3V)</p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041756325.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_212503830.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_041756325.jpg" class="">
+
+
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_212503830.jpg" class="">
 
 
 <h1 id="Physical-Construction"><a href="#Physical-Construction" class="headerlink" title="Physical Construction"></a>Physical Construction</h1><h2 id="Lamp"><a href="#Lamp" class="headerlink" title="Lamp"></a>Lamp</h2><h2 id="Test-Fit"><a href="#Test-Fit" class="headerlink" title="Test Fit"></a>Test Fit</h2><p>Lets see how everything could fit inside the lamp. Who cares how it looks at the moment. We will polish it later. </p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005652066.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005656922.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005704671.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_224801450.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005652066.jpg" class="">
+
+
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005656922.jpg" class="">
+
+
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220730_005704671.jpg" class="">
+
+
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220729_224801450.jpg" class="">
 
 <h2 id="Electronics-Enclosure"><a href="#Electronics-Enclosure" class="headerlink" title="Electronics Enclosure"></a>Electronics Enclosure</h2><h3 id="FreeCad-Model"><a href="#FreeCad-Model" class="headerlink" title="FreeCad Model"></a>FreeCad Model</h3><a href="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp_Enclosure.FCStd" title="Degchi_Lamp_Enclosure.FCStd">Degchi_Lamp_Enclosure.FCStd</a>
 
-<img src="/2022/08/17/WLED-Degchi-Lamp/FreeCad.png" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/FreeCad.png" class="">
 
 <p>First atttempt to create a quick enclosure. </p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp.png" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp.png" class="">
 
 <p>View of the enclosure lid.</p>
 <h3 id="Enclosure-STLs"><a href="#Enclosure-STLs" class="headerlink" title="Enclosure STLs"></a>Enclosure STLs</h3><a href="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Enclosure.stl" title="Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Enclosure.stl">Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Enclosure.stl</a>
 <p>Enclosure Main Body</p>
 <a href="/2022/08/17/WLED-Degchi-Lamp/Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Cover.stl" title="Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Cover.stl">Degchi_Lamp_Enclosure-Degchi_Lamp_Electronics_Cover.stl</a>
 <p>Enclosure Main Body</p>
-<h3 id="Enclosure-Assembly"><a href="#Enclosure-Assembly" class="headerlink" title="Enclosure Assembly"></a>Enclosure Assembly</h3><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193334453.jpg" style="width: 90%;"/>
+<h3 id="Enclosure-Assembly"><a href="#Enclosure-Assembly" class="headerlink" title="Enclosure Assembly"></a>Enclosure Assembly</h3><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193334453.jpg" class="">
 
 <p>1 amp Fuse</p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193337120.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193337120.jpg" class="">
 
 <p>All the electronics seem to fit. A more professional version will be created when I get the parts.</p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193339631.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193339631.jpg" class="">
 
 <p>Forcing all the electronics into the enclosure.</p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193658141.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193658141.jpg" class="">
 
 <p>Everything is coming together.</p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193854465.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_193854465.jpg" class="">
 
 <p>Power on testing</p>
 <h2 id="Led-Mounts"><a href="#Led-Mounts" class="headerlink" title="Led Mounts"></a>Led Mounts</h2><p>The inside of the lamp is coated in a thick non conductive coating. For the time being the led strip is just placed inside the lamp body.</p>
@@ -300,14 +284,14 @@ sudo esptool.py -p ttyUSB0sudo esptool.py -p ttyUSB0 write_flash 0x0 ./WLED_0.13
 <li><p>Add the same static ip in wled wifi settings </p>
 </li>
 </ul>
-<h1 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h1><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_195121212.jpg" style="width: 90%;"/>
+<h1 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h1><img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220809_195121212.jpg" class="">
 
 <p>I am not a fan of this very large black power cable. I will replace the power cord with USB-C.<br>After measuring the power usage of the lamp at peak load it looks like USB-C is a good option. Peak load 0.6 Amps<br>This will be covered in a follow up article. </p>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025451240.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025516535.jpg" style="width: 90%;"/>
-<br></br>
-<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025517876.jpg" style="width: 90%;"/>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025451240.jpg" class="">
+<p><br></br></p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025516535.jpg" class="">
+<p><br></br></p>
+<img src="/2022/08/17/WLED-Degchi-Lamp/PXL_20220811_025517876.jpg" class="">
       
     </div>
     <footer class="entry-meta entry-footer">
@@ -378,7 +362,7 @@ sudo esptool.py -p ttyUSB0sudo esptool.py -p ttyUSB0 write_flash 0x0 ./WLED_0.13
     <div id="toc" class="toc-article">
     <strong class="toc-title">Contents</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Parts"><span class="nav-number">1.</span> <span class="nav-text">Parts</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Controller"><span class="nav-number">1.0.1.</span> <span class="nav-text">Controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ESP8266"><span class="nav-number">1.0.2.</span> <span class="nav-text">ESP8266</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Level-shifter"><span class="nav-number">1.0.3.</span> <span class="nav-text">Level shifter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LED-Strip"><span class="nav-number">1.0.4.</span> <span class="nav-text">LED Strip</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Power-supply"><span class="nav-number">1.0.5.</span> <span class="nav-text">Power supply</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Plug"><span class="nav-number">1.0.6.</span> <span class="nav-text">Plug</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Software"><span class="nav-number">2.</span> <span class="nav-text">Software</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WLED"><span class="nav-number">2.1.</span> <span class="nav-text">WLED</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Binary"><span class="nav-number">2.1.1.</span> <span class="nav-text">Binary</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Flashing"><span class="nav-number">3.</span> <span class="nav-text">Flashing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Connections"><span class="nav-number">3.1.</span> <span class="nav-text">Connections</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Operating-system-permission-workarounds"><span class="nav-number">3.2.</span> <span class="nav-text">Operating system permission workarounds</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Electronics"><span class="nav-number">4.</span> <span class="nav-text">Electronics</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Schematic"><span class="nav-number">4.1.</span> <span class="nav-text">Schematic</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Electronics-Rough-Fit"><span class="nav-number">4.2.</span> <span class="nav-text">Electronics Rough Fit</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Physical-Construction"><span class="nav-number">5.</span> <span class="nav-text">Physical Construction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lamp"><span class="nav-number">5.1.</span> <span class="nav-text">Lamp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Test-Fit"><span class="nav-number">5.2.</span> <span class="nav-text">Test Fit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Electronics-Enclosure"><span class="nav-number">5.3.</span> <span class="nav-text">Electronics Enclosure</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FreeCad-Model"><span class="nav-number">5.3.1.</span> <span class="nav-text">FreeCad Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Enclosure-STLs"><span class="nav-number">5.3.2.</span> <span class="nav-text">Enclosure STLs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Enclosure-Assembly"><span class="nav-number">5.3.3.</span> <span class="nav-text">Enclosure Assembly</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Led-Mounts"><span class="nav-number">5.4.</span> <span class="nav-text">Led Mounts</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Connecting-to-WIFI"><span class="nav-number">6.</span> <span class="nav-text">Connecting to WIFI</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Results"><span class="nav-number">7.</span> <span class="nav-text">Results</span></a></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Parts"><span class="nav-number">1.</span> <span class="nav-text">Parts</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Controller"><span class="nav-number">1.0.1.</span> <span class="nav-text">Controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ESP8266"><span class="nav-number">1.0.2.</span> <span class="nav-text">ESP8266</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Level-shifter"><span class="nav-number">1.0.3.</span> <span class="nav-text">Level shifter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LED-Strip"><span class="nav-number">1.0.4.</span> <span class="nav-text">LED Strip</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Power-supply"><span class="nav-number">1.0.5.</span> <span class="nav-text">Power supply</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Plug"><span class="nav-number">1.0.6.</span> <span class="nav-text">Plug</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Software"><span class="nav-number">2.</span> <span class="nav-text">Software</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WLED"><span class="nav-number">2.1.</span> <span class="nav-text">WLED</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Binary"><span class="nav-number">2.1.1.</span> <span class="nav-text">Binary</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Flashing"><span class="nav-number">3.</span> <span class="nav-text">Flashing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Connections"><span class="nav-number">3.1.</span> <span class="nav-text">Connections</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Operating-system-permission-workarounds"><span class="nav-number">3.2.</span> <span class="nav-text">Operating system permission workarounds</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Flash-WLED-onto-the-ESP"><span class="nav-number">4.</span> <span class="nav-text">Flash WLED onto the ESP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Electronics"><span class="nav-number">5.</span> <span class="nav-text">Electronics</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Schematic"><span class="nav-number">5.1.</span> <span class="nav-text">Schematic</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Electronics-Rough-Fit"><span class="nav-number">5.2.</span> <span class="nav-text">Electronics Rough Fit</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Physical-Construction"><span class="nav-number">6.</span> <span class="nav-text">Physical Construction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lamp"><span class="nav-number">6.1.</span> <span class="nav-text">Lamp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Test-Fit"><span class="nav-number">6.2.</span> <span class="nav-text">Test Fit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Electronics-Enclosure"><span class="nav-number">6.3.</span> <span class="nav-text">Electronics Enclosure</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FreeCad-Model"><span class="nav-number">6.3.1.</span> <span class="nav-text">FreeCad Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Enclosure-STLs"><span class="nav-number">6.3.2.</span> <span class="nav-text">Enclosure STLs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Enclosure-Assembly"><span class="nav-number">6.3.3.</span> <span class="nav-text">Enclosure Assembly</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Led-Mounts"><span class="nav-number">6.4.</span> <span class="nav-text">Led Mounts</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Connecting-to-WIFI"><span class="nav-number">7.</span> <span class="nav-text">Connecting to WIFI</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Results"><span class="nav-number">8.</span> <span class="nav-text">Results</span></a></li></ol>
     
     </div>
   </aside>
@@ -401,7 +385,7 @@ sudo esptool.py -p ttyUSB0sudo esptool.py -p ttyUSB0 write_flash 0x0 ./WLED_0.13
 
   <div class="clearfix container">
       <div class="site-info">
-	      &copy; 2023 Questionable Engineering All Rights Reserved.
+	      &copy; 2024 Questionable Engineering All Rights Reserved.
         
       </div>
       <div class="site-credit">
@@ -422,9 +406,6 @@ sudo esptool.py -p ttyUSB0sudo esptool.py -p ttyUSB0 write_flash 0x0 ./WLED_0.13
 
 
     <!-- headerblur min height -->
-    
-      var headerblur = document.getElementById("header-blur");
-      headerblur.style.minHeight = window.getComputedStyle(document.getElementById("allheader"), null).height;
     
     
 </script>

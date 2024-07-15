@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Page 3 | Questionable Engineering</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+  
+  <meta name="description" content="A collection of pointless, random, and probaly bad ideas">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Questionable Engineering">
+<meta property="og:url" content="http://questionableengineering.com/page/3/index.html">
+<meta property="og:site_name" content="Questionable Engineering">
+<meta property="og:description" content="A collection of pointless, random, and probaly bad ideas">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="John Grun">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Questionable Engineering" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+
+  <body>
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="Questionable Engineering" rel="home"> Questionable Engineering </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">A collection of pointless, random, and probaly bad ideas</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">Home</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">Archives</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">About</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main">
+  
+    <article id="post-Report"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2017/07/07/Report/">Analysis of the Kalman Filter Algorithm</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2017/07/07/Report/" class="article-date">
+	  <time datetime="2017-07-07T21:46:15.000Z" itemprop="datePublished">July 7, 2017</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+
+          
+          <div class="entry-summary">
+          
+
+
+
+
+
+
+
+
+MotivationThe Kalman filter finds applications in extracting useful data from inherently noisy sources. One common application is smoothing sensor data. In order for most sensor data to be effectively employed in applications like control loops or navigation systems it must first be filtered in a manner that removes noise but, does not introduce an unacceptable amount of additional error or increases processing and memory load on the system. In this regard the Kalman filter excels. The Kalman filter can also be extended to combine data from multiple input sources to further reduce the error in a signal or sample. This property has many applications in the area of sensor fusion. Kalman filter sensor fusion is commonly used in robotic control systems. A common use case is autonomous vehicle navigation and control eg. Quadcopters or spacecraft. Additionally, the Kalman filter is often used in analog and digital signal processing. The Kalman filter algorithm enjoys implementations in both software and hardware. 
+
+        
+          <p class="article-more-link">
+            <a href="/2017/07/07/Report/#more">Continue Reading →</a>
+          </p>
+        </div>
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Computing/" rel="tag">Computing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kalman/" rel="tag">Kalman</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Research/" rel="tag">Research</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-CNC-Conversion-MARS"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2014/10/29/CNC-Conversion-MARS/">CNC Conversion Mechanical</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2014/10/29/CNC-Conversion-MARS/" class="article-date">
+	  <time datetime="2014-10-29T18:49:34.000Z" itemprop="datePublished">October 29, 2014</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Mini-Mill"><a href="#Mini-Mill" class="headerlink" title="Mini Mill"></a>Mini Mill</h1><p><a target="_blank" rel="noopener" href="https://littlemachineshop.com/products/product_view.php?ProductID=3990&category=1387807683">Hi Torque Mini Mill.</a></p>
+<img src="/2014/10/29/CNC-Conversion-MARS/3990.480.jpg" class="">
+
+<h1 id="Unboxing-the-kit"><a href="#Unboxing-the-kit" class="headerlink" title="Unboxing the kit."></a>Unboxing the kit.</h1><p>CNC FUSION KIT</p>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20140110_223518.jpg" class="">
+<p>Unfortunately, this company is no longer around. Thankfully, there are other kits available to perform this conversion.</p>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141029_183154.jpg" class="">
+
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141029_183428.jpg" class="">
+
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141029_183444.jpg" class="">
+
+<ul>
+<li>Solid Column upgrade<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141029_183226.jpg" class="">
+The original hi torque mini mill from Little Machine Shop had a gimmicky tilting column. While it was nice to be able to tilt the mill head it was impossible to tram the mill. This solid column is complete replacement for the tilting column. <h1 id="Disassembly"><a href="#Disassembly" class="headerlink" title="Disassembly"></a>Disassembly</h1></li>
+</ul>
+
+
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141029_183021.jpg" class="">
+<p>X/y stage separated from the rest of the mill. The tilting column version only required removing one large bolt on the back of the mill. </p>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141029_184618.jpg" class="">
+<p>Tilting column with z axis </p>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141102_223439.jpg" class="">
+<p>Front of the tilting column with the mill head removed.</p>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141102_223448.jpg" class="">
+
+<h1 id="X-and-Y-axis"><a href="#X-and-Y-axis" class="headerlink" title="X and Y axis"></a>X and Y axis</h1><ul>
+<li><p>The ballscrew is slightly too long. So we will have to do a little metal removal. </p>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141105_140253.jpg" class="">
+</li>
+<li><p>The ballscrew hits the other side of the casting</p>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141105_140302.jpg" class="">
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141105_140306.jpg" class="">
+</li>
+<li><p>Grinding out a small pocket to fit the ballscrew end. This was done with a rotary tool and a mini end mill. </p>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141106_161809.jpg" class="">
+
+</li>
+</ul>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141106_161820.jpg" class="">
+
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141106_181515.jpg" class="">
+
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141106_202831.jpg" class="">
+<p>Mounting the x ballscrew to the bottom of the x. I believe this mounted using the existing tapped holes.</p>
+<ul>
+<li>Assembled X and Y table<img src="/2014/10/29/CNC-Conversion-MARS/20141211_200438.jpg" class="">
+
+</li>
+</ul>
+<h1 id="Z-axis"><a href="#Z-axis" class="headerlink" title="Z axis"></a>Z axis</h1><ul>
+<li>Tapping the mounting holes for the z axis ballscrew mount<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141103_201724.jpg" class="">
+The z axis ballscrew is positioned off to the side of the main column. We have to attach a metal plate to the top of the column in order to mount the ballscrew. This requires locating the mounting plate. Using center taps to locate the mounting holes. Drilling the mounting holes. Tapping the mounting holes.<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141103_201732.jpg" class="">
+
+</li>
+</ul>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141204_182959.jpg" class="">
+<p>Z axis ballscrew mounted on the main column. Metal mounting plate attached to the top of the column. Ballscrew nut attached to the mill head via two mounting holes. </p>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141204_183006.jpg" class="">
+<p>Another view of the z axis. </p>
+<h1 id="Electronics"><a href="#Electronics" class="headerlink" title="Electronics"></a>Electronics</h1><h2 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h2><ul>
+<li>Beagle Bone Black<img src="/2014/10/29/CNC-Conversion-MARS/Beagle_Bone_Black.jpg" class="">
+
+</li>
+</ul>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141029_184635.jpg" class="">
+
+<h2 id="Interface-card"><a href="#Interface-card" class="headerlink" title="Interface card"></a>Interface card</h2><p>C10- PARALLEL PORT INTERFACE CARD</p>
+
+
+<h2 id="Motor-Controllers"><a href="#Motor-Controllers" class="headerlink" title="Motor Controllers"></a>Motor Controllers</h2><p>M880A</p>
+<a href="/2014/10/29/CNC-Conversion-MARS/M880Am.pdf" title="M880Am.pdf">M880Am.pdf</a>
+
+<h2 id="Control-Board"><a href="#Control-Board" class="headerlink" title="Control Board"></a>Control Board</h2><img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141124_054550.jpg" class="">
+
+<img src="/2014/10/29/CNC-Conversion-MARS/20150325_235954.jpg" class="">
+<p>View of the inside of the electronics enclosure. This is a NEMA 4 enclosure the minimum you need when dealing with possible over spray. </p>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141029_184023.jpg" class="">
+<p>Electronics mounted in the enclosure. Top left parallel port interface card mounted on standoffs above the beagle bone black. Top right the CNC electronics from the original hi torque mini mill. Left middle - A DC to DC power supply to produce 5v for all 5 volt components including the beagle bone black and parallel port card. Center middle - Stepper motor controllers. Right middle 36 v power supply. Bottom Din rail mounted terminal strip. </p>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20141029_184056.jpg" class="">
+
+<h2 id="Spindle-Control"><a href="#Spindle-Control" class="headerlink" title="Spindle Control"></a>Spindle Control</h2><p>The original mill only had a simple pot to turn for spindle control. This will not work for a CNC that needs to vary the spindle control throughout a job. To correct this short coming we’re going to replace the original spindle control with a 0-10 volt control. This will allow the beagle bone black him costume the books speed and direction via then parallel port adapter.</p>
+<p><a target="_blank" rel="noopener" href="https://littlemachineshop.com/products/product_view.php?ProductID=4213">CNC Spindle Control Upgrade Kit, Mini Lathe and Mini Mill</a></p>
+<a href="/2014/10/29/CNC-Conversion-MARS/4213CNCSpindleControlUpgradeKit.pdf" title="4213CNCSpindleControlUpgradeKit.pdf">4213CNCSpindleControlUpgradeKit.pdf</a>
+
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20111121_235136.jpg" class="">
+
+<img src="/2014/10/29/CNC-Conversion-MARS/20150418_100057.jpg" class="">
+
+<p>Mounting the spindle control </p>
+<img src="/2014/10/29/CNC-Conversion-MARS/20141208_192455.jpg" class="">
+
+<p>Wiring the spindle control to the CNC controller board. This is a direct replacement available for this mill from Little Machine Shop.</p>
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20111121_235504.jpg" class="">
+
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20111121_235510.jpg" class="">
+
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20111121_235456.jpg" class="">
+
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20111121_235211.jpg" class="">
+
+<img src="/2014/10/29/CNC-Conversion-MARS/IMG_20111121_235147.jpg" class="">
+<p>Cnc control board as seen mounted on the enclosure. </p>
+<h1 id="Electronics-Enclosure"><a href="#Electronics-Enclosure" class="headerlink" title="Electronics Enclosure"></a>Electronics Enclosure</h1><img src="/2014/10/29/CNC-Conversion-MARS/20141211_200408.jpg" class="">
+<p>Mounting the read of the main column </p>
+<img src="/2014/10/29/CNC-Conversion-MARS/20141211_200426.jpg" class="">
+
+<img src="/2014/10/29/CNC-Conversion-MARS/20150425_234534.jpg" class="">
+<p>View of the connections to the motors and end stops. I also added HDMI, USB, and Ethernet pass throughs to allow connection to the beagle bone. </p>
+<h1 id="Complete"><a href="#Complete" class="headerlink" title="Complete"></a>Complete</h1><img src="/2014/10/29/CNC-Conversion-MARS/20150326_212850.jpg" class="">
+<p>View of machine kit (Linux cnc) running on the beagle bone black.</p>
+<img src="/2014/10/29/CNC-Conversion-MARS/20150326_212820.jpg" class="">
+<p>Completed CNC machine </p>
+<img src="/2014/10/29/CNC-Conversion-MARS/20150427_175709.jpg" class="">
+<p>Cnc up and running with monitor mounted on side. </p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CNC/" rel="tag">CNC</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-Large-CNC"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2011/12/04/Large-CNC/">Large CNC</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2011/12/04/Large-CNC/" class="article-date">
+	  <time datetime="2011-12-04T19:40:20.000Z" itemprop="datePublished">December 4, 2011</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <img src="/2011/12/04/Large-CNC/IMG_20111204_200636.jpg" class="">
+
+<img src="/2011/12/04/Large-CNC/IMG_20111204_200644.jpg" class="">
+
+<img src="/2011/12/04/Large-CNC/IMG_20111204_231234.jpg" class="">
+
+<img src="/2011/12/04/Large-CNC/IMG_20111204_232254.jpg" class="">
+
+
+
+<img src="/2011/12/04/Large-CNC/IMG_20111204_232417.jpg" class="">
+
+<img src="/2011/12/04/Large-CNC/IMG_20111204_232431.jpg" class="">
+
+<img src="/2011/12/04/Large-CNC/IMG_20111212_233628.jpg" class="">
+
+<img src="/2011/12/04/Large-CNC/IMG_20111214_235816.jpg" class="">
+
+<img src="/2011/12/04/Large-CNC/IMG_20111214_235831.jpg" class="">
+
+<img src="/2011/12/04/Large-CNC/IMG_20111214_235904.jpg" class="">
+
+<img src="/2011/12/04/Large-CNC/IMG_20111214_235934.jpg" class="">
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CNC/" rel="tag">CNC</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/2/">Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+  </nav>
+
+</section>
+          <aside id="sidebar">
+  
+    <div style="margin: 20px 0;">
+	<div id="search-form-wrap">
+
+    <form class="search-form">
+        <label style="width: 72%;">
+            <span class="screen-reader-text">Search for:</span>
+            <input type="search" class="search-field" style="height: 36px; width: 100%;" placeholder=" Search…" value="" name="s" title="Search for:">
+        </label>
+        <input type="submit" class="search-form-submit" value="Search">
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..."/>
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+</div>
+</div>
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Connect With Us</h3>
+    <div class="widget widget_athemes_social_icons">
+
+    	<ul class="clearfix widget-social-icons">   
+    	
+   			<li><a target="_blank" rel="noopener" href="https://github.com/JohnGrun" title="Github"><i class="fa fa-github" aria-hidden="true"></i></a></li> 
+
+   		
+   		</ul>
+
+
+   		<!--
+   		<ul class="clearfix widget-social-icons">   		
+   		<li class="widget-si-twitter"><a target="_blank" rel="noopener" href="http://twitter.com" title="Twitter"><i class="ico-twitter"></i></a></li> 
+		<li class="widget-si-facebook"><a target="_blank" rel="noopener" href="http://facebook.com" title="Facebook"><i class="ico-facebook"></i></a></li>
+			<li class="widget-si-gplus"><a target="_blank" rel="noopener" href="http://plus.google.com" title="Google+"><i class="ico-gplus"></i></a></li>
+			<li class="widget-si-pinterest"><a target="_blank" rel="noopener" href="http://pinterest.com" title="Pinterest"><i class="ico-pinterest"></i></a></li>
+			<li class="widget-si-flickr"><a target="_blank" rel="noopener" href="http://flickr.com" title="Flickr"><i class="ico-flickr"></i></a></li>
+			<li class="widget-si-instagram"><a target="_blank" rel="noopener" href="http://instagram.com" title="Instagram"><i class="ico-instagram"></i></a></li>
+		</ul> -->
+
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget_athemes_tabs">
+    <ul id="widget-tab" class="clearfix widget-tab-nav">
+      <li class="active"><a>Recent Posts</a></li>
+    </ul>
+    <div class="widget">
+      <ul>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/10/03/Home-Assistant-Setup-on-Kubernetes/">Home Assistant Setup on Kubernetes</a></h6>
+              <span>October 3, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/08/30/Jellyfin-Media-Server-Setup-on-Kubernetes/">Jellyfin Media Server Setup on Kubernetes</a></h6>
+              <span>August 30, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/08/23/Zigbee2Mqtt-Kubernetes-Setup-on-Ubuntu/">Zigbee2Mqtt Kubernetes Setup on Ubuntu</a></h6>
+              <span>August 23, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/08/23/Transmission-Kubernetes-Setup-on-Ubuntu/">Transmission Kubernetes Setup on Ubuntu</a></h6>
+              <span>August 23, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/04/16/MQTT-K8s-Setup-on-Ubuntu-20-04/">MQTT K8s Setup on Ubuntu 20.04</a></h6>
+              <span>April 16, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/02/20/Microscope-Camera/">Microscope Camera</a></h6>
+              <span>February 20, 2023</span>
+            </div>
+
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/C/" rel="tag">C++</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CNC/" rel="tag">CNC</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Computing/" rel="tag">Computing</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Distributed-Computing/" rel="tag">Distributed Computing</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Electrical/" rel="tag">Electrical</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Electronics/" rel="tag">Electronics</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fixes/" rel="tag">Fixes</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hyperion/" rel="tag">Hyperion</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kalman/" rel="tag">Kalman</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kubernetes/" rel="tag">Kubernetes</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LED/" rel="tag">LED</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mechanical/" rel="tag">Mechanical</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Microk8s/" rel="tag">Microk8s</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NodeJs/" rel="tag">NodeJs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenScad/" rel="tag">OpenScad</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React-Native/" rel="tag">React Native</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Research/" rel="tag">Research</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RestAPI/" rel="tag">RestAPI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ubuntu/" rel="tag">Ubuntu</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WLED/" rel="tag">WLED</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CNC/" style="font-size: 14px;">CNC</a> <a href="/tags/Computing/" style="font-size: 20px;">Computing</a> <a href="/tags/Distributed-Computing/" style="font-size: 10px;">Distributed Computing</a> <a href="/tags/Electrical/" style="font-size: 12px;">Electrical</a> <a href="/tags/Electronics/" style="font-size: 10px;">Electronics</a> <a href="/tags/Fixes/" style="font-size: 18px;">Fixes</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Hyperion/" style="font-size: 10px;">Hyperion</a> <a href="/tags/Kalman/" style="font-size: 10px;">Kalman</a> <a href="/tags/Kubernetes/" style="font-size: 16px;">Kubernetes</a> <a href="/tags/LED/" style="font-size: 10px;">LED</a> <a href="/tags/Machine-Learning/" style="font-size: 10px;">Machine Learning</a> <a href="/tags/Mechanical/" style="font-size: 10px;">Mechanical</a> <a href="/tags/Microk8s/" style="font-size: 16px;">Microk8s</a> <a href="/tags/NodeJs/" style="font-size: 10px;">NodeJs</a> <a href="/tags/OpenScad/" style="font-size: 10px;">OpenScad</a> <a href="/tags/React-Native/" style="font-size: 10px;">React Native</a> <a href="/tags/Research/" style="font-size: 16px;">Research</a> <a href="/tags/RestAPI/" style="font-size: 10px;">RestAPI</a> <a href="/tags/Ubuntu/" style="font-size: 10px;">Ubuntu</a> <a href="/tags/WLED/" style="font-size: 10px;">WLED</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">August 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">April 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">February 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/08/">August 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">September 2017</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/10/">October 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/12/">December 2011</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+  
+</aside>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2024 Questionable Engineering All Rights Reserved.
+        
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

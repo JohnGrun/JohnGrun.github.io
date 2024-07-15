@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Transmission Kubernetes Setup on Ubuntu | Questionable Engineering</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="KubernetesComputingMicrok8s" />
+  
+  
+  
+  
+  <meta name="description" content="Install the k8s cluster if not alreadly installed12microk8s enable dns storage helm3microk8s status  Pull the helm chart12microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&amp;#x2F">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Transmission Kubernetes Setup on Ubuntu">
+<meta property="og:url" content="http://questionableengineering.com/2023/08/23/Transmission-Kubernetes-Setup-on-Ubuntu/index.html">
+<meta property="og:site_name" content="Questionable Engineering">
+<meta property="og:description" content="Install the k8s cluster if not alreadly installed12microk8s enable dns storage helm3microk8s status  Pull the helm chart12microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&amp;#x2F">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-08-23T16:28:03.000Z">
+<meta property="article:modified_time" content="2024-07-15T00:17:54.922Z">
+<meta property="article:author" content="John Grun">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="Computing">
+<meta property="article:tag" content="Microk8s">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Questionable Engineering" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/favicon.ico">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" title="Questionable Engineering" rel="home"> Questionable Engineering </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">A collection of pointless, random, and probaly bad ideas</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/">Home</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/archives">Archives</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663"> <a class="" href="/about">About</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Transmission-Kubernetes-Setup-on-Ubuntu" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Transmission Kubernetes Setup on Ubuntu
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/08/23/Transmission-Kubernetes-Setup-on-Ubuntu/" class="article-date">
+	  <time datetime="2023-08-23T16:28:03.000Z" itemprop="datePublished">August 23, 2023</time>
+	</a>
+
+       
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Install-the-k8s-cluster-if-not-alreadly-installed"><a href="#Install-the-k8s-cluster-if-not-alreadly-installed" class="headerlink" title="Install the k8s cluster if not alreadly installed"></a>Install the k8s cluster if not alreadly installed</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s enable dns storage helm3</span><br><span class="line">microk8s status</span><br></pre></td></tr></table></figure>
+
+<h1 id="Pull-the-helm-chart"><a href="#Pull-the-helm-chart" class="headerlink" title="Pull the helm chart"></a>Pull the helm chart</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&#x2F;</span><br><span class="line">microk8s helm pull truecharts&#x2F;transmission</span><br></pre></td></tr></table></figure>
+
+<h1 id="Modify-the-values-yaml-file-to-set-the-configuration"><a href="#Modify-the-values-yaml-file-to-set-the-configuration" class="headerlink" title="Modify the values.yaml file to set the configuration"></a>Modify the values.yaml file to set the configuration</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf .&#x2F;transmission-*.tgz</span><br><span class="line">cd transmission</span><br><span class="line">cat values.yamls</span><br></pre></td></tr></table></figure>
+
+<h2 id="Make-the-data-directory"><a href="#Make-the-data-directory" class="headerlink" title="Make the data directory"></a>Make the data directory</h2><p>CONTAINER_ROOT_PATH</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p CONTAINER_ROOT_PATH</span><br><span class="line">sudo chown -R 777 CONTAINER_ROOT_PATH</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="Create-Persistent-Volumes-and-Persistent-Volume-Claims"><a href="#Create-Persistent-Volumes-and-Persistent-Volume-Claims" class="headerlink" title="Create Persistent Volumes and Persistent Volume Claims"></a>Create Persistent Volumes and Persistent Volume Claims</h1><p>Transmission can think you deleted all your files if the harddisk containing your files fails to mount and the configuration files are on a different disk.</p>
+<h2 id="Persistent-Volumes"><a href="#Persistent-Volumes" class="headerlink" title="Persistent Volumes"></a>Persistent Volumes</h2><h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h3><p>transmission-config-pv.yaml</p>
+<p>HOSTNAME: Local computer hostname </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: transmission-config-pv</span><br><span class="line">spec:</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 100Gi</span><br><span class="line">  volumeMode: Filesystem</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteOnce</span><br><span class="line">  persistentVolumeReclaimPolicy: Retain</span><br><span class="line">  storageClassName: local-storage</span><br><span class="line">  local:</span><br><span class="line">    path: CONTAINER_ROOT_PATH&#x2F;config # This must exist on the host</span><br><span class="line">  nodeAffinity:</span><br><span class="line">    required:</span><br><span class="line">      nodeSelectorTerms:</span><br><span class="line">      - matchExpressions:</span><br><span class="line">        - key: kubernetes.io&#x2F;hostname</span><br><span class="line">          operator: In</span><br><span class="line">          values:</span><br><span class="line">          - HOSTNAME</span><br></pre></td></tr></table></figure>
+
+<p>microk8s kubectl apply -f transmission-config-pv</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl get pv</span><br><span class="line">NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                 STORAGECLASS        REASON   AGE</span><br><span class="line">transmission-config-pv                     100Gi      RWO            Retain           Bound    default&#x2F;transmission-config-pvc       local-storage                9m44s</span><br></pre></td></tr></table></figure>
+
+<h3 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h3><p>transmission-data-pv.yaml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: transmission-data-pv</span><br><span class="line">spec:</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 5Ti</span><br><span class="line">  volumeMode: Filesystem</span><br><span class="line">  accessModes:</span><br><span class="line">  - ReadWriteOnce</span><br><span class="line">  persistentVolumeReclaimPolicy: Retain</span><br><span class="line">  storageClassName: local-storage</span><br><span class="line">  local:</span><br><span class="line">    path: CONTAINER_ROOT_PATH&#x2F;data # This must exist on the host</span><br><span class="line">  nodeAffinity:</span><br><span class="line">    required:</span><br><span class="line">      nodeSelectorTerms:</span><br><span class="line">      - matchExpressions:</span><br><span class="line">        - key: kubernetes.io&#x2F;hostname</span><br><span class="line">          operator: In</span><br><span class="line">          values:</span><br><span class="line">          - HOSTNAME</span><br></pre></td></tr></table></figure>
+
+<p>microk8s kubectl apply -f transmission-data-pv.yaml</p>
+<p>microk8s kubectl get pv </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                 STORAGECLASS        REASON   AGE</span><br><span class="line">transmission-config-pv                     100Gi      RWO            Retain           Bound    default&#x2F;transmission-config-pvc       local-storage                3h28m</span><br><span class="line">transmission-data-pv                       5Ti        RWO            Retain           Bound    default&#x2F;transmission-data-pvc         local-storage                19s</span><br></pre></td></tr></table></figure>
+
+<h2 id="Persistent-Volume-Claims"><a href="#Persistent-Volume-Claims" class="headerlink" title="Persistent Volume Claims"></a>Persistent Volume Claims</h2><h3 id="Config-1"><a href="#Config-1" class="headerlink" title="Config"></a>Config</h3><p>transmission-config-pvc.yaml<br>Bonds to transmission-config-pv</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: transmission-config-pvc</span><br><span class="line">spec:</span><br><span class="line">  storageClassName: local-storage # Empty string must be explicitly set otherwise default StorageClass will be set</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteOnce</span><br><span class="line">  volumeName: transmission-config-pv</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 100Gi</span><br></pre></td></tr></table></figure>
+
+<p>microk8s kubectl apply -f transmission-config-pvc.yaml</p>
+<h3 id="Data-1"><a href="#Data-1" class="headerlink" title="Data"></a>Data</h3><p>transmission-data-pvc.yaml<br>Bonds to transmission-data-pvc</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">metadata:</span><br><span class="line">  name: transmission-data-pvc</span><br><span class="line">spec:</span><br><span class="line">  storageClassName: local-storage # Empty string must be explicitly set otherwise default StorageClass will be set</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteOnce</span><br><span class="line">  volumeName: transmission-data-pv</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 5Ti</span><br></pre></td></tr></table></figure>
+
+<p>microk8s kubectl apply -f transmission-data-pvc.yaml</p>
+<p>microk8s kubectl get pvc</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NAME                          STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS        AGE</span><br><span class="line">transmission-config-pvc       Bound    transmission-config-pv                     100Gi      RWO            local-storage       3h21m</span><br><span class="line">transmission-data-pvc         Bound    transmission-data-pv                       5Ti        RWO            local-storage       51s</span><br></pre></td></tr></table></figure>
+
+<h1 id="Pull-the-syncthing-helm-chart"><a href="#Pull-the-syncthing-helm-chart" class="headerlink" title="Pull the syncthing helm chart"></a>Pull the syncthing helm chart</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm repo add truecharts https:&#x2F;&#x2F;charts.truecharts.org&#x2F;</span><br><span class="line">microk8s helm repo update</span><br><span class="line">microk8s helm pull truecharts&#x2F;transmission</span><br></pre></td></tr></table></figure>
+
+<h1 id="Modify-the-values-yaml-file-to-set-the-configuration-1"><a href="#Modify-the-values-yaml-file-to-set-the-configuration-1" class="headerlink" title="Modify the values.yaml file to set the configuration"></a>Modify the values.yaml file to set the configuration</h1><p>We’re going to set the transmission configuration within the container.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf .&#x2F;transmission-*.tgz</span><br><span class="line">cd transmission</span><br><span class="line">nano values.yamls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br></pre></td><td class="code"><pre><span class="line">image:</span><br><span class="line">  repository: tccr.io&#x2F;truecharts&#x2F;transmission</span><br><span class="line">  pullPolicy: IfNotPresent</span><br><span class="line">  tag: v4.0.3@sha256:245158e56dae5ca2da2cac5e9e85d4879685e8f302ed955ba144162d504307e4</span><br><span class="line"></span><br><span class="line">service:</span><br><span class="line">  main:</span><br><span class="line">    ports:</span><br><span class="line">      main:</span><br><span class="line">        port: WEBGUI_PORT_NUMBER</span><br><span class="line">  torrent:</span><br><span class="line">    enabled: true</span><br><span class="line">    ports:</span><br><span class="line">      torrent:</span><br><span class="line">        enabled: true</span><br><span class="line">        port: TRANSMISSION_PORT</span><br><span class="line">        protocol: tcp</span><br><span class="line">      torrentudp:</span><br><span class="line">        enabled: true</span><br><span class="line">        port: TRANSMISSION_PORT</span><br><span class="line">        protocol: udp</span><br><span class="line"></span><br><span class="line">workload:</span><br><span class="line">  main:</span><br><span class="line">    podSpec:</span><br><span class="line">      containers:</span><br><span class="line">        main:</span><br><span class="line">          probes:</span><br><span class="line">            liveness:</span><br><span class="line">              enabled: true</span><br><span class="line">              type: tcp</span><br><span class="line">            startup:</span><br><span class="line">              enabled: true</span><br><span class="line">              type: tcp</span><br><span class="line">            readiness:</span><br><span class="line">              enabled: true</span><br><span class="line">              type: tcp</span><br><span class="line">          env:</span><br><span class="line">            # PUID: 1001</span><br><span class="line">            # URL is set here so it wont be able to get overwritten by the user</span><br><span class="line">            # as this will break the probes, if the need arises we can expose it.</span><br><span class="line">            TRANSMISSION__RPC_URL: &quot;&#x2F;transmission&quot;</span><br><span class="line">            TRANSMISSION__RPC_USERNAME: &quot;USERNAME&quot;</span><br><span class="line">            TRANSMISSION__RPC_PASSWORD: &quot;RANDOM_PASSWORD&quot;</span><br><span class="line">            TRANSMISSION__RPC_AUTHENTICATION_REQUIRED: true</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_DOWN: 50</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_ENABLED: false</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_TIME_BEGIN: 540</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_TIME_DAY: 127</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_TIME_ENABLED: false</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_TIME_END: 1020</span><br><span class="line">            # TRANSMISSION__ALT_SPEED_UP: 50</span><br><span class="line">            # TRANSMISSION__BIND_ADDRESS_IPV4: &quot;0.0.0.0&quot;</span><br><span class="line">            # TRANSMISSION__BIND_ADDRESS_IPV6: &quot;::&quot;</span><br><span class="line">            # TRANSMISSION__BLOCKLIST_ENABLED: true</span><br><span class="line">            # TRANSMISSION__BLOCKLIST_URL: &quot;https:&#x2F;&#x2F;github.com&#x2F;Naunter&#x2F;BT_BlockLists&#x2F;releases&#x2F;download&#x2F;v.1&#x2F;bt_blocklists.gz&quot;</span><br><span class="line">            TRANSMISSION__CACHE_SIZE_MB: 4</span><br><span class="line">            # TRANSMISSION__DHT_ENABLED: true</span><br><span class="line">            TRANSMISSION__DOWNLOAD_DIR: &quot;&#x2F;data&#x2F;Completed&quot; </span><br><span class="line">            # TRANSMISSION__DOWNLOAD_QUEUE_ENABLED: true</span><br><span class="line">            # TRANSMISSION__DOWNLOAD_QUEUE_SIZE: 5</span><br><span class="line">            # TRANSMISSION__ENCRYPTION: 1</span><br><span class="line">            # TRANSMISSION__IDLE_SEEDING_LIMIT: 30</span><br><span class="line">            # TRANSMISSION__IDLE_SEEDING_LIMIT_ENABLED: false</span><br><span class="line">            TRANSMISSION__INCOMPLETE_DIR: &quot;&#x2F;data&#x2F;Incomplete&quot;</span><br><span class="line">            # TRANSMISSION__INCOMPLETE_DIR_ENABLED: true</span><br><span class="line">            # TRANSMISSION__LPD_ENABLED: false</span><br><span class="line">            # TRANSMISSION__MESSAGE_LEVEL: 2</span><br><span class="line">            # TRANSMISSION__PEER_CONGESTION_ALGORITHM: &quot;&quot;</span><br><span class="line">            # TRANSMISSION__PEER_ID_TTL_HOURS: 6</span><br><span class="line">            # TRANSMISSION__PEER_LIMIT_GLOBAL: 200</span><br><span class="line">            # TRANSMISSION__PEER_LIMIT_PER_TORRENT: 50</span><br><span class="line">            TRANSMISSION__PEER_PORT: &quot;&#123;&#123; .Values.service.torrent.ports.torrent.port &#125;&#125;&quot;</span><br><span class="line">            # TRANSMISSION__PEER_PORT_RANDOM_HIGH: 65535</span><br><span class="line">            # TRANSMISSION__PEER_PORT_RANDOM_LOW: 49152</span><br><span class="line">            # TRANSMISSION__PEER_PORT_RANDOM_ON_START: false</span><br><span class="line">            # TRANSMISSION__PEER_SOCKET_TOS: default&quot;</span><br><span class="line">            # TRANSMISSION__PEX_ENABLED: true</span><br><span class="line">            # TRANSMISSION__PORT_FORWARDING_ENABLED: false</span><br><span class="line">            # TRANSMISSION__PREALLOCATION: 1</span><br><span class="line">            # TRANSMISSION__PREFETCH_ENABLED: true</span><br><span class="line">            # TRANSMISSION__QUEUE_STALLED_ENABLED: true</span><br><span class="line">            # TRANSMISSION__QUEUE_STALLED_MINUTES: 30</span><br><span class="line">            # TRANSMISSION__RATIO_LIMIT: 2</span><br><span class="line">            # TRANSMISSION__RATIO_LIMIT_ENABLED: false</span><br><span class="line">            # TRANSMISSION__RENAME_PARTIAL_FILES: true</span><br><span class="line">            # TRANSMISSION__RPC_BIND_ADDRESS: &quot;0.0.0.0&quot;</span><br><span class="line">            # TRANSMISSION__RPC_ENABLED: true</span><br><span class="line">            # TRANSMISSION__RPC_HOST_WHITELIST: &quot;&quot;</span><br><span class="line">            # TRANSMISSION__RPC_HOST_WHITELIST_ENABLED: false</span><br><span class="line">            TRANSMISSION__RPC_PORT: &quot;&#123;&#123; .Values.service.main.ports.main.port &#125;&#125;&quot;</span><br><span class="line">            # TRANSMISSION__RPC_WHITELIST: &quot;&quot;</span><br><span class="line">            # TRANSMISSION__RPC_WHITELIST_ENABLED: false</span><br><span class="line">            # TRANSMISSION__SCRAPE_PAUSED_TORRENTS_ENABLED: true</span><br><span class="line">            # TRANSMISSION__SCRIPT_TORRENT_DONE_ENABLED: false</span><br><span class="line">            # TRANSMISSION__SCRIPT_TORRENT_DONE_FILENAME: &quot;&quot;</span><br><span class="line">            # TRANSMISSION__SEED_QUEUE_ENABLED: false</span><br><span class="line">            # TRANSMISSION__SEED_QUEUE_SIZE: 10</span><br><span class="line">            # TRANSMISSION__SPEED_LIMIT_DOWN: 100</span><br><span class="line">            # TRANSMISSION__SPEED_LIMIT_DOWN_ENABLED: false</span><br><span class="line">            # TRANSMISSION__SPEED_LIMIT_UP: 100</span><br><span class="line">            # TRANSMISSION__SPEED_LIMIT_UP_ENABLED: false</span><br><span class="line">            # TRANSMISSION__START_ADDED_TORRENTS: true</span><br><span class="line">            # TRANSMISSION__TRASH_ORIGINAL_TORRENT_FILES: false</span><br><span class="line">            # TRANSMISSION__UMASK: 2</span><br><span class="line">            # TRANSMISSION__UPLOAD_SLOTS_PER_TORRENT: 14</span><br><span class="line">            # TRANSMISSION__UTP_ENABLED: true</span><br><span class="line">            # TRANSMISSION__WATCH_DIR: &quot;&#x2F;watch&quot;</span><br><span class="line">            # TRANSMISSION__WATCH_DIR_ENABLED: false</span><br><span class="line"></span><br><span class="line">persistence:</span><br><span class="line">  config:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;config&quot;</span><br><span class="line">    type: pvc</span><br><span class="line">    existingClaim: transmission-config-pvc</span><br><span class="line">  data:</span><br><span class="line">    enabled: true</span><br><span class="line">    mountPath: &quot;&#x2F;data&quot;</span><br><span class="line">    type: pvc</span><br><span class="line">    existingClaim: transmission-data-pvc</span><br><span class="line"></span><br><span class="line">portal:</span><br><span class="line">  open:</span><br><span class="line">    enabled: true</span><br><span class="line"></span><br><span class="line">manifestManager:</span><br><span class="line">  enabled: false</span><br></pre></td></tr></table></figure>
+
+<h2 id="Install-the-helm-chart-with-our-values-yaml-file"><a href="#Install-the-helm-chart-with-our-values-yaml-file" class="headerlink" title="Install the helm chart with our values.yaml file"></a>Install the helm chart with our values.yaml file</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s helm install syncthing-server truecharts&#x2F;syncthing --values .&#x2F;values.yaml </span><br></pre></td></tr></table></figure>
+
+<h2 id="Check-the-status-of-the-installed-application"><a href="#Check-the-status-of-the-installed-application" class="headerlink" title="Check the status of the installed application."></a>Check the status of the installed application.</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">microk8s status</span><br><span class="line">microk8s kubectl describe pods</span><br><span class="line">microk8s kubectl</span><br><span class="line">microk8s kubectl logs</span><br><span class="line">microk8s kubectl describe pods</span><br></pre></td></tr></table></figure>
+
+<h1 id="Common-Errors"><a href="#Common-Errors" class="headerlink" title="Common Errors"></a>Common Errors</h1><p>Error from server (BadRequest): container in pod is waiting to start: ContainerCreating<br>You probably need to change the permissions on the PV directory. This path is what is written in the PersistentVolume in the path variable. A quick chmod -R 777 to this path will most likely fix the issue. The conatiner should update the permissions once it runs.  </p>
+<h1 id="Service-yaml-file"><a href="#Service-yaml-file" class="headerlink" title="Service yaml file"></a>Service yaml file</h1><p>We need to expose the service to the outside world.<br>Thankfully microk8s has a built in loadbalancer called metallb</p>
+<p>WEBGUI_PORT_NUMBER: The port you wish to run the webgui on<br>TRANSMISSION_PORT: The port Transmission uses to comminicate with external parties. </p>
+<p>transmission-service.yaml </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: transmission-service</span><br><span class="line">spec:</span><br><span class="line">  type: LoadBalancer</span><br><span class="line">  selector:</span><br><span class="line">    app.kubernetes.io&#x2F;name: transmission</span><br><span class="line">  ports:</span><br><span class="line">    - name: transmission-tcp</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: TRANSMISSION_PORT</span><br><span class="line">      targetPort: TRANSMISSION_PORT</span><br><span class="line">    - name: transmission-udp</span><br><span class="line">      protocol: UDP</span><br><span class="line">      port: TRANSMISSION_PORT</span><br><span class="line">      targetPort: TRANSMISSION_PORT</span><br><span class="line">    - name: transmission-rpc-tcp</span><br><span class="line">      protocol: TCP</span><br><span class="line">      port: WEBGUI_PORT_NUMBER   # web gui port</span><br><span class="line">      targetPort: WEBGUI_PORT_NUMBER</span><br><span class="line">  externalIPs:</span><br><span class="line">    - A.B.C.D</span><br></pre></td></tr></table></figure>
+<p>More information here<br><a target="_blank" rel="noopener" href="https://medium.com/swlh/kubernetes-external-ip-service-type-5e5e9ad62fcd">https://medium.com/swlh/kubernetes-external-ip-service-type-5e5e9ad62fcd</a></p>
+<h1 id="Apply-the-service"><a href="#Apply-the-service" class="headerlink" title="Apply the service"></a>Apply the service</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl apply -f .&#x2F;transmission-service.yaml </span><br></pre></td></tr></table></figure>
+<h2 id="Confirm-the-service-is-active"><a href="#Confirm-the-service-is-active" class="headerlink" title="Confirm the service is active"></a>Confirm the service is active</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">microk8s kubectl get services transmission-service</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)                                           AGE</span><br><span class="line">transmission-service   LoadBalancer   A.B.C.D          X.Y.Z.A          TRANSMISSION_PORT:TRANSMISSION_PORT_2&#x2F;TCP,TRANSMISSION_PORT:TRANSMISSION_PORT_2 &#x2F;UDP,WEBGUI_PORT_NUMBER:31056&#x2F;TCP   9h</span><br></pre></td></tr></table></figure>
+
+<h1 id="Firewall-Rules"><a href="#Firewall-Rules" class="headerlink" title="Firewall Rules"></a>Firewall Rules</h1><p>This assumes you are using ufw.<br>ufw is bascally a wrapper for IPTABLES. If you have ever used IPTABLES before you understand why ufw exists.<br><a target="_blank" rel="noopener" href="https://docs.syncthing.net/users/firewall.html">https://docs.syncthing.net/users/firewall.html</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">sudo ufw default allow routed </span><br><span class="line"></span><br><span class="line">sudo ufw allow from A.B.C.0&#x2F;24 to any port WEBGUI_PORT_NUMBER proto tcp</span><br><span class="line">sudo ufw allow from E.F.G.H&#x2F;24 to any port TRANSMISSION_PORT proto tcp</span><br><span class="line">sudo ufw allow from E.F.G.H&#x2F;24 to any port TRANSMISSION_PORT proto udp</span><br><span class="line"></span><br><span class="line">sudo ufw status</span><br></pre></td></tr></table></figure>
+
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/services-networking/service/">https://kubernetes.io/docs/concepts/services-networking/service/</a></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Computing/" rel="tag">Computing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kubernetes/" rel="tag">Kubernetes</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Microk8s/" rel="tag">Microk8s</a></li></ul>
+
+      
+        
+	<section id="comments" class="comment">
+	  <div id="disqus_thread">
+	  <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	  </div>
+	</section>
+
+	<script type="text/javascript">
+	var disqus_shortname = 'questionableengineering.disqus.com';
+	(function(){
+	  var dsq = document.createElement('script');
+	  dsq.type = 'text/javascript';
+	  dsq.async = true;
+	  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	}());
+	(function(){
+	  var dsq = document.createElement('script');
+	  dsq.type = 'text/javascript';
+	  dsq.async = true;
+	  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+	  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	}());
+	</script>
+
+
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2023/08/23/Zigbee2Mqtt-Kubernetes-Setup-on-Ubuntu/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Zigbee2Mqtt Kubernetes Setup on Ubuntu
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/04/16/MQTT-K8s-Setup-on-Ubuntu-20-04/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">MQTT K8s Setup on Ubuntu 20.04</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Install-the-k8s-cluster-if-not-alreadly-installed"><span class="nav-number">1.</span> <span class="nav-text">Install the k8s cluster if not alreadly installed</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Pull-the-helm-chart"><span class="nav-number">2.</span> <span class="nav-text">Pull the helm chart</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Modify-the-values-yaml-file-to-set-the-configuration"><span class="nav-number">3.</span> <span class="nav-text">Modify the values.yaml file to set the configuration</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Make-the-data-directory"><span class="nav-number">3.1.</span> <span class="nav-text">Make the data directory</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Create-Persistent-Volumes-and-Persistent-Volume-Claims"><span class="nav-number">4.</span> <span class="nav-text">Create Persistent Volumes and Persistent Volume Claims</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Persistent-Volumes"><span class="nav-number">4.1.</span> <span class="nav-text">Persistent Volumes</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Config"><span class="nav-number">4.1.1.</span> <span class="nav-text">Config</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data"><span class="nav-number">4.1.2.</span> <span class="nav-text">Data</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Persistent-Volume-Claims"><span class="nav-number">4.2.</span> <span class="nav-text">Persistent Volume Claims</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Config-1"><span class="nav-number">4.2.1.</span> <span class="nav-text">Config</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-1"><span class="nav-number">4.2.2.</span> <span class="nav-text">Data</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Pull-the-syncthing-helm-chart"><span class="nav-number">5.</span> <span class="nav-text">Pull the syncthing helm chart</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Modify-the-values-yaml-file-to-set-the-configuration-1"><span class="nav-number">6.</span> <span class="nav-text">Modify the values.yaml file to set the configuration</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Install-the-helm-chart-with-our-values-yaml-file"><span class="nav-number">6.1.</span> <span class="nav-text">Install the helm chart with our values.yaml file</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Check-the-status-of-the-installed-application"><span class="nav-number">6.2.</span> <span class="nav-text">Check the status of the installed application.</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Common-Errors"><span class="nav-number">7.</span> <span class="nav-text">Common Errors</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Service-yaml-file"><span class="nav-number">8.</span> <span class="nav-text">Service yaml file</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Apply-the-service"><span class="nav-number">9.</span> <span class="nav-text">Apply the service</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Confirm-the-service-is-active"><span class="nav-number">9.1.</span> <span class="nav-text">Confirm the service is active</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Firewall-Rules"><span class="nav-number">10.</span> <span class="nav-text">Firewall Rules</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">11.</span> <span class="nav-text">References</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2024 Questionable Engineering All Rights Reserved.
+        
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>
