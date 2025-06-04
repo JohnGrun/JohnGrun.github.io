@@ -6,7 +6,7 @@
   <title>Peer to Peer Domain Name System (P2PN-DNS) | Questionable Engineering</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="ComputingResearchDistributed Computing" />
+  <meta name="keywords" content="ResearchComputingDistributed Computing" />
   
   
   
@@ -26,10 +26,10 @@
 <meta property="og:image" content="http://questionableengineering.com/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure6.png">
 <meta property="og:image" content="http://questionableengineering.com/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure7.png">
 <meta property="article:published_time" content="2017-12-29T19:49:34.000Z">
-<meta property="article:modified_time" content="2023-08-30T03:51:31.191Z">
+<meta property="article:modified_time" content="2025-03-09T03:47:41.915Z">
 <meta property="article:author" content="John Grun">
-<meta property="article:tag" content="Computing">
 <meta property="article:tag" content="Research">
+<meta property="article:tag" content="Computing">
 <meta property="article:tag" content="Distributed Computing">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://questionableengineering.com/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure1.png">
@@ -73,10 +73,32 @@
 
 
   
+  
+  <div class="site-header-image">
+    <img id="originBg" width="100%" alt="Hike News" src="">
+  </div>
+
+  <div id="header-blur" class="site-header-image blur" style="position: absolute; top:0; height: 207px; min-height: 207px; min-width: 100%;">
+    <img id="blurBg" width="100%" style="top: 96%" alt="Hike News" src="">
+  </div>
+
+  <script>
+        var imgUrls = "css/images/pose01.jpg,https://source.unsplash.com/collection/954550/1920x1080,https://source.unsplash.com/collection/954550/1920x1081".split(",");
+        var random = Math.floor((Math.random() * imgUrls.length ));
+        if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
+          document.getElementById("originBg").src=imgUrls[random];
+          document.getElementById("blurBg").src=imgUrls[random];
+        } else {
+          document.getElementById("originBg").src='/' + imgUrls[random];
+          document.getElementById("blurBg").src='/' + imgUrls[random];
+        }
+    </script>
+
+
 
 
 <header id="allheader" class="site-header" role="banner" 
-   >
+   style="width: 100%; position: absolute; top:0; background: rgba(255,255,255,.8);"  >
   <div class="clearfix container">
       <div class="site-branding">
 
@@ -87,7 +109,7 @@
           </h1>
           
           
-            <div class="site-description">A collection of pointless, random, and probaly bad ideas</div>
+            <div class="site-description">A collection of pointless, random, and probably bad ideas</div>
           
             
           <nav id="main-navigation" class="main-navigation" role="navigation">
@@ -189,7 +211,7 @@
 <img src="/2017/12/29/Peer-to-Peer-Domain-Name-System-P2PN-DNS/Figure7.png" class="">
 <p>Figure 7: Syslog output from two nodes</p>
 <p>In the figure above, the syslog output of two nodes can be observed. To produce these results, a DNS update packet was sent to one node. Syslog was monitored for logs containing information about the record update between the two nodes. The update to a record can be seen in one node and in less than one second later, the update is available on the other node. Network capabilities have an impact on the overall record sync time and can affect time jitter. The network variability(jitter) timing issue was avoided by running the nodes on the same network with a common NTP server.</p>
-<h2 id="VI-Conclusion"><a href="#VI-Conclusion" class="headerlink" title="VI.  Conclusion"></a>VI.  Conclusion</h2><p>With our implementation of a distributed DNS we were able to find a workable tradeoff between consistency, availability, and partition tolerance. By conducting thorough experiments and analysis, we showed that P2PN-DNS can guarantee eventually consistency, availability, and partition tolerance while also providing a comparable amount time required to process DNS queries as compared to existing DNS solutions such as DNSmasq.P2PN-DNS was shown to be available even as nodes were removed giving credence to the claim that P2PN-DNS would be less susceptible than current DNS to regional outages or purposeful attacks.<br>Additionally, the distributed nature of P2PN-DNS makes it applicable for software containers which would benefit from a fault tolerant solution such as P2PN-DNS.</p>
+<h2 id="VI-Conclusion"><a href="#VI-Conclusion" class="headerlink" title="VI.  Conclusion"></a>VI.  Conclusion</h2><p>With our implementation of a distributed DNS we were able to find a workable tradeoff between consistency, availability, and partition tolerance. By conducting thorough experiments and analysis, we showed that P2PN-DNS can guarantee eventual consistency, high availability, and partition tolerance while also providing a comparable amount time required to process DNS queries as compared to existing DNS solutions such as DNSmasq. P2PN-DNS was shown to be available even as nodes were removed giving credence to the claim that P2PN-DNS would be less susceptible than current DNS to regional outages or purposeful attacks.<br>Additionally, the distributed nature of P2PN-DNS makes it applicable for software containers which would benefit from a fault tolerant solution such as P2PN-DNS.</p>
 <h2 id="VII-References"><a href="#VII-References" class="headerlink" title="VII.  References"></a>VII.  References</h2><p>[1] “Domain Name System”. En.wikipedia.org. N.p., 2017. Web. 2 November 2017.<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Domain_Name_System">https://en.wikipedia.org/wiki/Domain_Name_System</a><br>[2] “Distributed Denial of Service Attacks on Root Nameservers ”. En.wikipedia.org. N.p., 2017. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Distributed_denial-of-service_attacks_on_root_nameservers">https://en.wikipedia.org/wiki/Distributed_denial-of-service_attacks_on_root_nameservers</a><br>[3] “I Fought My ISPS Bad Behavior and Won”. Eric Helgeson. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://erichelgeson.github.io/blog/2013/12/31/i-fought-my-isps-bad-behavior-and-won/">https://erichelgeson.github.io/blog/2013/12/31/i-fought-my-isps-bad-behavior-and-won/</a><br>[4] Eckersley, Technical Analysis by Peter. “Widespread Hijacking of Search Traffic in the United States.” Electronic Frontier Foundation, 14 Oct. 2011. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://www.eff.org/deeplinks/2011/07/widespread-search-hijacking-in-the-us">https://www.eff.org/deeplinks/2011/07/widespread-search-hijacking-in-the-us</a><br>[5] “Transaction Log”. En.wikipedia.org. N.p., 2017. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Transaction_log">https://en.wikipedia.org/wiki/Transaction_log</a><br>[6] “Merkle Tree”. En.wikipedia.org. N.p., 2017. Web. 2 November 2017.<br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Merkle_tree">https://en.wikipedia.org/wiki/Merkle_tree</a><br>[7]  Kangasharju, Jussi. Chapter 4: Distributed Systems: Replication and Consistency. N.p., 2017. Web. 7 November 2017. <a target="_blank" rel="noopener" href="https://www.cs.helsinki.fi/webfm_send/1256">https://www.cs.helsinki.fi/webfm_send/1256</a><br>[8] “Blockchain”. En.wikipedia.org. N.p., 2017. Web. 7 November 2017. <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Blockchain">https://en.wikipedia.org/wiki/Blockchain</a><br>[9] Jacquin, Ludovic, et al. “The Trust Problem in Modern Network Infrastructures.” SpringerLink, Springer, Cham, 28 Apr. 2015. N.p., 2017. Web. 7 November 2017.  <a target="_blank" rel="noopener" href="https://link.springer.com/chapter/10.1007/978-3-319-25360-2_10">https://link.springer.com/chapter/10.1007/978-3-319-25360-2_10</a><br>[10] “ACID”. En.wikipedia.org. N.p., 2017. Web. 8 November 2017. <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/ACID">https://en.wikipedia.org/wiki/ACID</a><br>[11] DataStax Academy Follow. “A Deep Dive Into Understanding Apache Cassandra.”LinkedIn SlideShare, 25 Sept. 2013. N.p., 2017. Web. 2 December 2017.  <a target="_blank" rel="noopener" href="https://www.slideshare.net/planetcassandra/a-deep-dive-into-understanding-apache-cassandra">https://www.slideshare.net/planetcassandra/a-deep-dive-into-understanding-apache-cassandra</a><br>[12] “Peer-to-Peer (P2P) Systems.” SlidePlayer. N.p., 2017. Web. 2 December 2017 <a target="_blank" rel="noopener" href="http://slideplayer.com/slide/4168557/">http://slideplayer.com/slide/4168557/</a><br>[13] “Non-Transitive Connectivity and DHTs “<a target="_blank" rel="noopener" href="https://www.usenix.org/legacy/events/worlds05/tech/full_papers/freedman/freedman_html/index.html">https://www.usenix.org/legacy/events/worlds05/tech/full_papers/freedman/freedman_html/index.html</a><br>[14] “Amazon Route 53”. En.wikipedia.org. N.p., 2017. Web. 6 December 2017.<br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Amazon_Route_53">https://en.wikipedia.org/wiki/Amazon_Route_53</a><br>[15] “Distributed hash table” .En.wikipedia.org. N.p., 2017. Web. 6 December 2017. <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Distributed_hash_table">https://en.wikipedia.org/wiki/Distributed_hash_table</a><br>[16] “FIFO (computing and electronics)” .En.wikipedia.org. N.p., 2017. Web. 6 December 2017. <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/FIFO_(computing_and_electronics)">https://en.wikipedia.org/wiki/FIFO_(computing_and_electronics)</a><br>[17] “RFC 1034  DOMAIN NAMES - CONCEPTS AND FACILITIES”, N.p., 2017. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://www.ietf.org/rfc/rfc1034.txt">https://www.ietf.org/rfc/rfc1034.txt</a><br>[18] “RFC 1035 DOMAIN NAMES - IMPLEMENTATION AND SPECIFICATION” , N.p., 2017. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://www.ietf.org/rfc/rfc1035.txt">https://www.ietf.org/rfc/rfc1035.txt</a><br>[19] “Embedded DNS server in user-defined networks” N.p., 2017. Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://docs.docker.com/engine/userguide/networking/configure-dns/">https://docs.docker.com/engine/userguide/networking/configure-dns/</a><br>[20] “OpenDHT”   Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://github.com/savoirfairelinux/opendht">https://github.com/savoirfairelinux/opendht</a><br>[21] “SimpleDNS: Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://github.com/mwarning/SimpleDNS">https://github.com/mwarning/SimpleDNS</a><br>[22] “  Dynamic Updates in the Domain Name System (DNS UPDATE)” Web. 2 November 2017. <a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2136">https://tools.ietf.org/html/rfc2136</a><br>[23] “ You can’t Peer to Peer the DNS”<br><a target="_blank" rel="noopener" href="https://nohats.ca/wordpress/blog/2012/04/09/you-cant-p2p-the-dns-and-have-it-too/">https://nohats.ca/wordpress/blog/2012/04/09/you-cant-p2p-the-dns-and-have-it-too/</a><br>[24] “DNS Server”<br><a target="_blank" rel="noopener" href="https://gitlearning.wordpress.com/2015/06/23/dns-server/">https://gitlearning.wordpress.com/2015/06/23/dns-server/</a><br>[25] “Internet censorship in Iran” <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Internet_censorship_in_Iran">https://en.wikipedia.org/wiki/Internet_censorship_in_Iran</a><br>[26] “Great Firewall”<br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Great_Firewall">https://en.wikipedia.org/wiki/Great_Firewall</a><br>[27] “ Amazon Route 53”<br><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Amazon_Route_53">https://en.wikipedia.org/wiki/Amazon_Route_53</a><br>[28] “DC/OS” <a target="_blank" rel="noopener" href="https://dcos.io/">https://dcos.io/</a><br>[29] “Kad Node” <a target="_blank" rel="noopener" href="https://github.com/kadtools/kad">https://github.com/kadtools/kad</a></p>
 
       
@@ -240,7 +262,7 @@
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          Electrical_Enclosures_With_OpenScad
+          Electrical Enclosures With OpenScad
         
       </div>
     </a>
@@ -285,7 +307,7 @@
 
   <div class="clearfix container">
       <div class="site-info">
-	      &copy; 2024 Questionable Engineering All Rights Reserved.
+	      &copy; 2025 Questionable Engineering All Rights Reserved.
         
       </div>
       <div class="site-credit">
@@ -306,6 +328,9 @@
 
 
     <!-- headerblur min height -->
+    
+      var headerblur = document.getElementById("header-blur");
+      headerblur.style.minHeight = window.getComputedStyle(document.getElementById("allheader"), null).height;
     
     
 </script>

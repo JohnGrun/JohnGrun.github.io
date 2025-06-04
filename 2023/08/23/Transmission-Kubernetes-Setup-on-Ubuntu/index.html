@@ -6,7 +6,7 @@
   <title>Transmission Kubernetes Setup on Ubuntu | Questionable Engineering</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="KubernetesComputingMicrok8s" />
+  <meta name="keywords" content="ComputingKubernetesMicrok8s" />
   
   
   
@@ -21,8 +21,8 @@
 <meta property="article:published_time" content="2023-08-23T16:28:03.000Z">
 <meta property="article:modified_time" content="2024-07-15T00:17:54.922Z">
 <meta property="article:author" content="John Grun">
-<meta property="article:tag" content="Kubernetes">
 <meta property="article:tag" content="Computing">
+<meta property="article:tag" content="Kubernetes">
 <meta property="article:tag" content="Microk8s">
 <meta name="twitter:card" content="summary">
   
@@ -65,10 +65,32 @@
 
 
   
+  
+  <div class="site-header-image">
+    <img id="originBg" width="100%" alt="Hike News" src="">
+  </div>
+
+  <div id="header-blur" class="site-header-image blur" style="position: absolute; top:0; height: 207px; min-height: 207px; min-width: 100%;">
+    <img id="blurBg" width="100%" style="top: 96%" alt="Hike News" src="">
+  </div>
+
+  <script>
+        var imgUrls = "css/images/pose01.jpg,https://source.unsplash.com/collection/954550/1920x1080,https://source.unsplash.com/collection/954550/1920x1081".split(",");
+        var random = Math.floor((Math.random() * imgUrls.length ));
+        if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
+          document.getElementById("originBg").src=imgUrls[random];
+          document.getElementById("blurBg").src=imgUrls[random];
+        } else {
+          document.getElementById("originBg").src='/' + imgUrls[random];
+          document.getElementById("blurBg").src='/' + imgUrls[random];
+        }
+    </script>
+
+
 
 
 <header id="allheader" class="site-header" role="banner" 
-   >
+   style="width: 100%; position: absolute; top:0; background: rgba(255,255,255,.8);"  >
   <div class="clearfix container">
       <div class="site-branding">
 
@@ -79,7 +101,7 @@
           </h1>
           
           
-            <div class="site-description">A collection of pointless, random, and probaly bad ideas</div>
+            <div class="site-description">A collection of pointless, random, and probably bad ideas</div>
           
             
           <nav id="main-navigation" class="main-navigation" role="navigation">
@@ -248,9 +270,9 @@
     </a>
   
   
-    <a href="/2023/04/16/MQTT-K8s-Setup-on-Ubuntu-20-04/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2023/05/24/Syncthing-K8s-Setup-on-Ubuntu-20-04/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">MQTT K8s Setup on Ubuntu 20.04</div>
+      <div class="article-nav-title">Syncthing K8s Setup on Ubuntu 20.04</div>
     </a>
   
 </nav>
@@ -287,7 +309,7 @@
 
   <div class="clearfix container">
       <div class="site-info">
-	      &copy; 2024 Questionable Engineering All Rights Reserved.
+	      &copy; 2025 Questionable Engineering All Rights Reserved.
         
       </div>
       <div class="site-credit">
@@ -308,6 +330,9 @@
 
 
     <!-- headerblur min height -->
+    
+      var headerblur = document.getElementById("header-blur");
+      headerblur.style.minHeight = window.getComputedStyle(document.getElementById("allheader"), null).height;
     
     
 </script>
